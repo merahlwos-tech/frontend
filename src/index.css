@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #0A0A0A;
+    color: #F5F5F5;
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: #E8001D;
+    color: #F5F5F5;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0A0A0A;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #3A3A3A;
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #E8001D;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-red text-white font-heading font-bold tracking-wider uppercase
+           px-8 py-3 transition-all duration-200
+           hover:bg-white hover:text-brand-black hover:shadow-brutal-red
+           active:translate-x-1 active:translate-y-1 active:shadow-none
+           disabled:opacity-50 disabled:cursor-not-allowed;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+
+  .btn-secondary {
+    @apply bg-transparent text-brand-white font-heading font-bold tracking-wider uppercase
+           px-8 py-3 border-2 border-brand-white transition-all duration-200
+           hover:bg-brand-white hover:text-brand-black hover:shadow-brutal
+           active:translate-x-1 active:translate-y-1 active:shadow-none;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-brand-gray-300 font-heading font-semibold tracking-wider uppercase
+           px-6 py-2 border border-brand-gray-600 transition-all duration-200
+           hover:border-brand-red hover:text-brand-red;
+  }
+
+  .card-product {
+    @apply bg-brand-gray-800 border border-brand-gray-700 overflow-hidden
+           transition-all duration-300 cursor-pointer
+           hover:border-brand-red hover:-translate-y-1 hover:shadow-brutal-red;
+  }
+
+  .tag {
+    @apply inline-block bg-brand-red text-white text-xs font-heading font-bold
+           tracking-widest uppercase px-3 py-1;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  }
+
+  .tag-outline {
+    @apply inline-block border border-brand-gray-500 text-brand-gray-300 text-xs
+           font-heading font-semibold tracking-widest uppercase px-3 py-1;
+  }
+
+  .section-label {
+    @apply text-brand-red font-heading font-bold tracking-ultra uppercase text-xs mb-2;
+  }
+
+  .section-title {
+    @apply font-display text-5xl md:text-6xl text-brand-white tracking-wide leading-none;
+  }
+
+  .input-field {
+    @apply w-full bg-brand-gray-800 border border-brand-gray-600 text-brand-white
+           font-body px-4 py-3 outline-none transition-all duration-200
+           placeholder:text-brand-gray-500
+           focus:border-brand-red focus:ring-1 focus:ring-brand-red/30;
+  }
+
+  .select-field {
+    @apply w-full bg-brand-gray-800 border border-brand-gray-600 text-brand-white
+           font-body px-4 py-3 outline-none transition-all duration-200
+           focus:border-brand-red focus:ring-1 focus:ring-brand-red/30
+           appearance-none cursor-pointer;
+  }
+
+  .table-row {
+    @apply border-b border-brand-gray-700 hover:bg-brand-gray-800/50 transition-colors duration-150;
+  }
+
+  .admin-card {
+    @apply bg-brand-gray-800 border border-brand-gray-700 p-6;
+  }
+}
+
+@layer utilities {
+  .text-stroke {
+    -webkit-text-stroke: 1px currentColor;
+    color: transparent;
+  }
+
+  .text-stroke-red {
+    -webkit-text-stroke: 1px #E8001D;
+    color: transparent;
+  }
+
+  .clip-diagonal {
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 95% 100%, 0 100%);
+  }
+
+  .noise-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.03;
+  }
+}
