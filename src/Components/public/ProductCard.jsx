@@ -38,13 +38,23 @@ function ProductCard({ product }) {
 
         {/* Badge rupture */}
         {!hasStock && (
-          <div className="absolute inset-0 bg-brand-black/60 flex items-center justify-center">
-            <span className="font-heading font-bold tracking-widest uppercase text-xs
-                             text-brand-gray-300 border border-brand-gray-600 px-3 py-1">
-              Épuisé
-            </span>
-          </div>
-        )}
+  <Link
+    to={`/products?category=${product.category}`}
+    onClick={(e) => e.stopPropagation()}
+    className="absolute inset-0 bg-brand-black/60 flex flex-col items-center
+               justify-center gap-2 group/out"
+  >
+    <span className="font-heading font-bold tracking-widest uppercase text-xs
+                     text-brand-gray-300 border border-brand-gray-600 px-3 py-1">
+      Épuisé
+    </span>
+    <span className="text-brand-red text-xs font-heading font-semibold tracking-wider
+                     uppercase opacity-0 group-hover/out:opacity-100 transition-opacity
+                     underline">
+      Voir articles similaires →
+    </span>
+  </Link>
+)}
       </div>
 
       {/* Infos produit */}

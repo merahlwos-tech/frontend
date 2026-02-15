@@ -7,20 +7,24 @@ import api from '../../utils/api'
 import AdminOrderRow from '../../Components/admin/AdminOrderRow'
 import toast from 'react-hot-toast'
 
-const STATUS_FILTERS = ['Tous', 'confirmé', 'en livraison', 'livré', 'retour']
+const STATUS_FILTERS = ['Tous', 'en attente', 'confirmé', 'en livraison', 'livré', 'retour', 'annulé']
 
 const STATUS_LABELS = {
+  'en attente': 'En attente',
   confirmé: 'Confirmé',
   'en livraison': 'En livraison',
   livré: 'Livré',
   retour: 'Retour',
+  annulé: 'Annulé',
 }
 
 const STATUS_COLORS = {
+  'en attente': 'text-gray-400',
   confirmé: 'text-blue-400',
   'en livraison': 'text-yellow-400',
   livré: 'text-emerald-400',
-  retour: 'text-red-400',
+  retour: 'text-orange-400',
+  annulé: 'text-red-400',
 }
 
 function AdminOrdersPage() {
