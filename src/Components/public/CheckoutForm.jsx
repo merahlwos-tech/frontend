@@ -1,7 +1,5 @@
-// src/components/public/CheckoutForm.jsx
-// Formulaire de commande avec sélecteur de wilaya et commune libre
-
-import { useState } from 'react'
+// src/Components/public/CheckoutForm.jsx
+import { useState, useCallback } from 'react'
 import { ChevronDown } from 'lucide-react'
 import wilayas from '../../data/wilayas'
 
@@ -27,35 +25,81 @@ function CheckoutForm({ onSubmit, loading }) {
     return e
   }
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }))
-  }
+    setErrors((prev) => ({ ...prev, [name]: '' }))
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const e2 = validate()
-    if (Object.keys(e2).length > 0) {
-      setErrors(e2)
+    const errs = validate()
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs)
       return
     }
     onSubmit(form)
   }
 
-  const Field = ({ name, label, type = 'text', placeholder, as }) => (
-    <div>
-      <label className="block text-brand-gray-400 text-xs font-heading font-semibold
-                         tracking-widest uppercase mb-2">
-        {label}
-      </label>
-      {as === 'select' ? (
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-brand-gray-400 text-xs font-heading font-semibold
+                             tracking-widest uppercase mb-2">Prénom</label>
+          <input
+            type="text"
+            name="firstName"
+            value={form.firstName}
+            onChange={handleChange}
+            placeholder="Karim"
+            autoComplete="given-name"
+            className={`input-field ${errors.firstName ? 'border-brand-red' : ''}`}
+          />
+          {errors.firstName && <p className="mt-1 text-brand-red text-xs">{errors.firstName}</p>}
+        </div>
+
+        <div>
+          <label className="block text-brand-gray-400 text-xs font-heading font-semibold
+                             tracking-widest uppercase mb-2">Nom</label>
+          <input
+            type="text"
+            name="lastName"
+            value={form.lastName}
+            onChange={handleChange}
+            placeholder="Benali"
+            autoComplete="family-name"
+            className={`input-field ${errors.lastName ? 'border-brand-red' : ''}`}
+          />
+          {errors.lastName && <p className="mt-1 text-brand-red text-xs">{errors.lastName}</p>}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-brand-gray-400 text-xs font-heading font-semibold
+                           tracking-widest uppercase mb-2">Téléphone</label>
+        <input
+          type="tel"
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+          placeholder="0551234567"
+          autoComplete="tel"
+          inputMode="numeric"
+          className={`input-field ${errors.phone ? 'border-brand-red' : ''}`}
+        />
+        {errors.phone && <p className="mt-1 text-brand-red text-xs">{errors.phone}</p>}
+      </div>
+
+      <div>
+        <label className="block text-brand-gray-400 text-xs font-heading font-semibold
+                           tracking-widest uppercase mb-2">Wilaya</label>
         <div className="relative">
           <select
-            name={name}
-            value={form[name]}
+            name="wilaya"
+            value={form.wilaya}
             onChange={handleChange}
-            className={`select-field ${errors[name] ? 'border-brand-red' : ''}`}
+            className={`select-field ${errors.wilaya ? 'border-brand-red' : ''}`}
           >
             <option value="">Sélectionner une wilaya</option>
             {wilayas.map((w) => (
@@ -66,44 +110,26 @@ function CheckoutForm({ onSubmit, loading }) {
           </select>
           <ChevronDown
             size={16}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-gray-400
-                        pointer-events-none"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-gray-400 pointer-events-none"
           />
         </div>
-      ) : (
-        <input
-          type={type}
-          name={name}
-          value={form[name]}
-          onChange={handleChange}
-          placeholder={placeholder}
-          className={`input-field ${errors[name] ? 'border-brand-red' : ''}`}
-        />
-      )}
-      {errors[name] && (
-        <p className="mt-1 text-brand-red text-xs font-body">{errors[name]}</p>
-      )}
-    </div>
-  )
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field name="firstName" label="Prénom" placeholder="Karim" />
-        <Field name="lastName" label="Nom" placeholder="Benali" />
+        {errors.wilaya && <p className="mt-1 text-brand-red text-xs">{errors.wilaya}</p>}
       </div>
-      <Field
-        name="phone"
-        label="Téléphone"
-        type="tel"
-        placeholder="0551234567"
-      />
-      <Field name="wilaya" label="Wilaya" as="select" />
-      <Field
-        name="commune"
-        label="Commune"
-        placeholder="Votre commune"
-      />
+
+      <div>
+        <label className="block text-brand-gray-400 text-xs font-heading font-semibold
+                           tracking-widest uppercase mb-2">Commune</label>
+        <input
+          type="text"
+          name="commune"
+          value={form.commune}
+          onChange={handleChange}
+          placeholder="Votre commune"
+          autoComplete="address-level2"
+          className={`input-field ${errors.commune ? 'border-brand-red' : ''}`}
+        />
+        {errors.commune && <p className="mt-1 text-brand-red text-xs">{errors.commune}</p>}
+      </div>
 
       <button
         type="submit"
