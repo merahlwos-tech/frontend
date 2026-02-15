@@ -51,7 +51,7 @@
 
   .card-product {
     @apply bg-transparent overflow-hidden transition-all duration-500
-           cursor-pointer group;
+           cursor-pointer;
   }
 
   .lm-label {
