@@ -218,11 +218,11 @@ function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { title: 'Look Bébé Printemps', desc: 'Body + Salopette + Chaussons', emoji: '🌸', color: 'bg-sf-rose-soft', category: 'Bébé' },
-              { title: 'Look Femme Casual', desc: 'Haut + Pantalon + Sac', emoji: '🌿', color: 'bg-sf-sage-soft', category: 'Femme' },
-              { title: 'Idées de cadeaux', desc: 'Sélection spéciale cadeaux', emoji: '🎁', color: 'bg-amber-50', category: 'Accessoires' },
-            ].map(({ title, desc, emoji, color, category }, i) => (
-              <Link key={title} to={`/products?category=${category}`}
+              { title: 'Look Bébé Printemps', desc: 'Body + Salopette + Chaussons', emoji: '🌸', color: 'bg-sf-rose-soft', tag: 'look-bebe-printemps' },
+              { title: 'Look Femme Casual', desc: 'Haut + Pantalon + Sac', emoji: '🌿', color: 'bg-sf-sage-soft', tag: 'look-femme-casual' },
+              { title: 'Idées de cadeaux', desc: 'Sélection spéciale cadeaux', emoji: '🎁', color: 'bg-amber-50', tag: 'idees-de-cadeaux' },
+            ].map(({ title, desc, emoji, color, tag }, i) => (
+              <Link key={title} to={`/tag/${tag}`}
                 className={`${color} rounded-2xl p-8 text-center border border-sf-beige-dark
                              hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-1
                              animate-fade-up block`}

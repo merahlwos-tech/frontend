@@ -18,6 +18,10 @@ function ProductDetailPage() {
   const [currentImage, setCurrentImage] = useState(0)
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [id])
+
+  useEffect(() => {
     api.get(`/products/${id}`)
       .then((res) => {
         setProduct(res.data)

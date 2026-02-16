@@ -19,6 +19,10 @@ function ProductsPage() {
   const activeCategory = searchParams.get('category') || 'Tous'
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
     api.get('/products')
       .then((res) => setProducts(res.data || []))
       .catch(() => setProducts([]))
