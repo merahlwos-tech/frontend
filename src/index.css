@@ -22,7 +22,7 @@
 @layer components {
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
-           bg-sf-rose text-sf-text font-body font-600
+           bg-sf-rose text-sf-text font-body font-semibold
            rounded-full px-8 py-3 text-sm
            transition-all duration-300
            hover:bg-sf-rose-dark hover:shadow-rose;
@@ -30,7 +30,7 @@
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2
-           bg-transparent text-sf-text font-body font-600
+           bg-transparent text-sf-text font-body font-semibold
            rounded-full px-8 py-3 text-sm border-2 border-sf-beige-dark
            transition-all duration-300
            hover:border-sf-rose hover:bg-sf-rose-soft;
@@ -38,7 +38,7 @@
 
   .btn-sage {
     @apply inline-flex items-center justify-center gap-2
-           bg-sf-sage text-white font-body font-600
+           bg-sf-sage text-white font-body font-semibold
            rounded-full px-8 py-3 text-sm
            transition-all duration-300
            hover:bg-sf-sage-dark hover:shadow-soft;
@@ -51,7 +51,7 @@
   }
 
   .sf-label {
-    @apply text-sf-rose-dark font-body font-600 tracking-widest uppercase text-xs;
+    @apply text-sf-rose-dark font-body font-semibold tracking-widest uppercase text-xs;
   }
 
   .sf-title {
@@ -74,11 +74,11 @@
 
   .badge {
     @apply inline-block bg-sf-rose text-sf-text text-xs font-body
-           font-700 px-3 py-1 rounded-full;
+           font-bold px-3 py-1 rounded-full;
   }
 
   .badge-sage {
     @apply inline-block bg-sf-sage text-white text-xs font-body
-           font-700 px-3 py-1 rounded-full;
+           font-bold px-3 py-1 rounded-full;
   }
 }
