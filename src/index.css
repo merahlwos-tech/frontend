@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;500;600;700&family=Dancing+Script:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;500;600;700;800&family=Dancing+Script:wght@400;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,108 +8,103 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
-    background: linear-gradient(135deg, #FDF0F4 0%, #F5F0FC 40%, #EEF9F5 100%);
+    background: linear-gradient(160deg, #FFF0F6 0%, #F5EEFF 45%, #EEF9F5 100%);
     background-attachment: fixed;
     color: #2D2340;
     font-family: 'Nunito', sans-serif;
-    font-weight: 400;
     -webkit-font-smoothing: antialiased;
   }
   ::selection { background-color: #F9C8D4; color: #2D2340; }
   ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: #FDF7F9; }
+  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #E8DCF5; border-radius: 10px; }
 }
 
 @layer components {
-  /* ── Boutons ─────────────────────────────────────────── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
-           bg-tb-purple text-white font-body font-semibold
-           rounded-full px-7 py-3 text-sm
-           transition-all duration-300
-           hover:opacity-90 hover:shadow-pink;
+           font-body font-semibold rounded-full px-7 py-3 text-sm
+           transition-all duration-300;
+    background: #9B5FC0;
+    color: white;
   }
+  .btn-primary:hover { opacity: 0.88; }
+
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2
-           bg-white text-tb-text font-body font-semibold
-           rounded-full px-7 py-3 text-sm border border-tb-pink
-           transition-all duration-300 hover:bg-tb-pink-soft;
-  }
-  .btn-sage {
-    @apply inline-flex items-center justify-center gap-2
-           bg-tb-green text-white font-body font-semibold
-           rounded-full px-7 py-3 text-sm
-           transition-all duration-300 hover:opacity-90;
+           bg-white font-body font-semibold
+           rounded-full px-7 py-3 text-sm border
+           transition-all duration-300;
+    color: #2D2340;
+    border-color: #F9C8D4;
   }
 
-  /* ── Cards ───────────────────────────────────────────── */
   .card-product {
-    @apply bg-white rounded-3xl overflow-hidden shadow-card
-           transition-all duration-300 cursor-pointer
-           hover:shadow-soft-lg hover:-translate-y-1;
+    @apply bg-white rounded-3xl overflow-hidden cursor-pointer
+           transition-all duration-300;
+    box-shadow: 0 2px 16px rgba(155,95,192,0.09);
   }
-  .card-glass {
-    @apply bg-white/80 backdrop-blur-sm rounded-3xl
-           border border-white/60 shadow-card;
+  .card-product:hover {
+    box-shadow: 0 6px 32px rgba(155,95,192,0.16);
+    transform: translateY(-2px);
   }
 
-  /* ── Typographie ─────────────────────────────────────── */
   .sf-label {
-    @apply text-tb-purple font-body font-semibold
-           tracking-widest uppercase text-xs;
-  }
-  .sf-title {
-    @apply font-display text-tb-text leading-tight;
-  }
-  .magic-text {
-    @apply font-magic text-tb-text;
+    @apply font-body font-semibold tracking-widest uppercase text-xs;
+    color: #9B5FC0;
   }
 
-  /* ── Inputs ──────────────────────────────────────────── */
   .sf-input {
-    @apply w-full bg-white border border-tb-lavender text-tb-text
-           font-body text-sm px-4 py-3 rounded-2xl outline-none
-           transition-all duration-300 placeholder:text-tb-text-light
-           focus:border-tb-purple focus:ring-2 focus:ring-tb-lav-deep/20;
+    @apply w-full font-body text-sm px-4 py-3 rounded-2xl outline-none transition-all duration-300;
+    background: white;
+    border: 1.5px solid rgba(249,200,212,0.5);
+    color: #2D2340;
   }
+  .sf-input:focus { border-color: #9B5FC0; box-shadow: 0 0 0 3px rgba(155,95,192,0.1); }
+
   .sf-select {
-    @apply w-full bg-white border border-tb-lavender text-tb-text
-           font-body text-sm px-4 py-3 rounded-2xl outline-none
-           transition-all duration-300 focus:border-tb-purple
-           focus:ring-2 focus:ring-tb-lav-deep/20 appearance-none cursor-pointer;
+    @apply w-full font-body text-sm px-4 py-3 rounded-2xl outline-none transition-all duration-300 appearance-none cursor-pointer;
+    background: white;
+    border: 1.5px solid rgba(249,200,212,0.5);
+    color: #2D2340;
   }
 
-  /* ── Badges ──────────────────────────────────────────── */
   .badge {
-    @apply inline-block bg-tb-pink text-tb-text text-xs
-           font-body font-bold px-3 py-1 rounded-full;
+    @apply inline-block text-xs font-body font-bold px-3 py-1 rounded-full;
+    background: #F9C8D4;
+    color: #2D2340;
   }
   .badge-purple {
-    @apply inline-block bg-tb-purple text-white text-xs
-           font-body font-bold px-3 py-1 rounded-full;
-  }
-
-  /* ── Bottom nav ──────────────────────────────────────── */
-  .bottom-nav-item {
-    @apply flex flex-col items-center gap-1 text-tb-text-light
-           transition-colors duration-200;
-  }
-  .bottom-nav-item.active {
-    @apply text-tb-purple;
-  }
-
-  /* ── Section florale ─────────────────────────────────── */
-  .section-divider {
-    @apply flex items-center gap-3 mb-3;
-  }
-  .floral-line {
-    font-size: 0.85rem;
-    color: #C9ADE8;
-    opacity: 0.7;
+    @apply inline-block text-white text-xs font-body font-bold px-3 py-1 rounded-full;
+    background: #9B5FC0;
   }
 }
 
-/* scrollbar hide utility */
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-.scrollbar-hide::-webkit-scrollbar { display: none; }
+@layer utilities {
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-7px); }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.animate-fade-up  { animation: fadeUp 0.6s ease-out both; }
+.animate-fade-in  { animation: fadeIn 0.4s ease-out both; }
+.animate-float    { animation: float 3s ease-in-out infinite; }
+.animate-marquee  { animation: marquee 35s linear infinite; }

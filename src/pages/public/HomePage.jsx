@@ -3,92 +3,109 @@ import { Link } from 'react-router-dom'
 import { Heart, Star, Plus } from 'lucide-react'
 import api from '../../utils/api'
 
+/* ── Catégories avec vraies photos Unsplash ──────────── */
 const CATEGORIES = [
   {
     label: 'Skincare',
-    img: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200&h=200&fit=crop&q=80',
-    ring: 'ring-tb-pink',
-    bg: 'bg-tb-pink-soft',
+    img: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=160&h=160&fit=crop&q=80',
+    bg: 'rgba(255,220,235,0.6)',
+    border: '#F9C8D4',
   },
   {
     label: 'Makeup',
-    img: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=200&h=200&fit=crop&q=80',
-    ring: 'ring-orange-200',
-    bg: 'bg-orange-50',
+    img: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=160&h=160&fit=crop&q=80',
+    bg: 'rgba(200,160,230,0.55)',
+    border: '#C9ADE8',
   },
   {
     label: 'Body Care',
-    img: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f35f?w=200&h=200&fit=crop&q=80',
-    ring: 'ring-tb-lavender',
-    bg: 'bg-tb-lav-soft',
+    img: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f35f?w=160&h=160&fit=crop&q=80',
+    bg: 'rgba(180,215,230,0.55)',
+    border: '#A8D8E8',
   },
   {
     label: 'Hair Care',
-    img: 'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?w=200&h=200&fit=crop&q=80',
-    ring: 'ring-tb-mint',
-    bg: 'bg-tb-mint-soft',
+    img: 'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?w=160&h=160&fit=crop&q=80',
+    bg: 'rgba(160,210,200,0.55)',
+    border: '#C8EDE0',
   },
 ]
 
-function ProductMini({ product }) {
+/* ── Carte produit ───────────────────────────────────── */
+function ProductCard({ product }) {
   const [liked, setLiked] = useState(false)
-  const imageUrl = product.images?.[0] || '/placeholder.jpg'
-  const rating   = product.rating  || (4 + Math.random()).toFixed(1)
-  const reviews  = product.reviews || Math.floor(40 + Math.random() * 30)
+  const img     = product.images?.[0] || '/placeholder.jpg'
+  const rating  = product.rating  || (4 + Math.random()).toFixed(1)
+  const reviews = product.reviews || Math.floor(40 + Math.random() * 30)
 
   return (
-    <Link
-      to={`/products/${product._id}`}
-      className="bg-white rounded-3xl overflow-hidden shadow-card hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-0.5 block relative flex-shrink-0 w-44"
-    >
-      <div className="relative aspect-square bg-tb-pink-soft overflow-hidden">
-        <img src={imageUrl} alt={product.name} className="w-full h-full object-cover" loading="lazy" />
-        <button
-          onClick={(e) => { e.preventDefault(); setLiked(!liked) }}
-          className="absolute top-2 right-2 w-7 h-7 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
-        >
-          <Heart size={13} className={liked ? 'fill-tb-pink-deep text-tb-pink-deep' : 'text-tb-text-light'} />
-        </button>
-        <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-white/80 backdrop-blur-sm rounded-full px-1.5 py-0.5">
-          <Star size={9} className="text-amber-400 fill-amber-400" />
-          <span className="text-[9px] font-body font-bold text-tb-text">{rating}</span>
-          <span className="text-[9px] font-body text-tb-text-light">({reviews})</span>
-        </div>
-      </div>
-      <div className="p-3">
-        <p className="font-body font-semibold text-tb-text text-xs leading-tight mb-0.5 line-clamp-2">
-          {product.name}
-        </p>
-        <p className="font-body text-tb-text-light text-[10px] mb-2">{product.brand}</p>
-        <div className="flex items-center justify-between">
-          <span className="font-body font-bold text-tb-text text-sm">
-            ${(product.price ?? 0).toFixed(2)}
-          </span>
-          <button
-            onClick={(e) => e.preventDefault()}
-            className="w-6 h-6 bg-tb-purple rounded-full flex items-center justify-center hover:opacity-80 transition-opacity"
-          >
-            <Plus size={12} className="text-white" />
+    <Link to={`/products/${product._id}`}
+      className="flex-shrink-0 block"
+      style={{ width: 155 }}>
+      <div className="rounded-3xl overflow-hidden"
+           style={{ background: 'white', boxShadow: '0 2px 16px rgba(155,95,192,0.09)' }}>
+        {/* Image */}
+        <div className="relative overflow-hidden" style={{ aspectRatio: '1/1', background: '#FDF5F8' }}>
+          <img src={img} alt={product.name} className="w-full h-full object-cover" loading="lazy" />
+          {/* Cœur */}
+          <button onClick={(e) => { e.preventDefault(); setLiked(!liked) }}
+            className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(255,255,255,0.85)' }}>
+            <Heart size={14}
+              style={{ fill: liked ? '#E8A0B4' : 'none', color: liked ? '#E8A0B4' : '#C4B0D8', strokeWidth: 2 }} />
           </button>
+          {/* Rating */}
+          <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full px-2 py-0.5"
+               style={{ background: 'rgba(255,255,255,0.85)' }}>
+            <Star size={9} style={{ fill: '#FBBF24', color: '#FBBF24' }} />
+            <span style={{ fontSize: '9px', fontWeight: 700, color: '#2D2340' }}>{rating}</span>
+            <span style={{ fontSize: '9px', color: '#B8A8C8' }}>({reviews})</span>
+          </div>
+        </div>
+        {/* Infos */}
+        <div className="p-3">
+          <p style={{ fontSize: '11px', color: '#B8A8C8', marginBottom: 2 }}>{product.brand}</p>
+          <p className="font-body font-semibold line-clamp-2"
+             style={{ fontSize: '12px', color: '#2D2340', lineHeight: 1.3, marginBottom: 8, minHeight: 30 }}>
+            {product.name}
+          </p>
+          <div className="flex items-center justify-between">
+            <span style={{ fontSize: '14px', fontWeight: 700, color: '#2D2340' }}>
+              ${(product.price ?? 0).toFixed(2)}
+            </span>
+            <button onClick={(e) => e.preventDefault()}
+              className="w-7 h-7 rounded-full flex items-center justify-center"
+              style={{ background: '#9B5FC0' }}>
+              <Plus size={14} color="white" />
+            </button>
+          </div>
         </div>
       </div>
     </Link>
   )
 }
 
-function SectionHeader({ title, to }) {
+function SectionTitle({ title, to }) {
   return (
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-between mb-4 px-5">
       <div className="flex items-center gap-2">
-        <h2 className="font-body font-bold text-tb-text text-base">{title}</h2>
-        <span
-          className="text-tb-text-light text-xs"
-          style={{ fontFamily: 'Georgia,serif', fontStyle: 'italic' }}
-        >
-          ~~~~
+        <span style={{ fontFamily: 'Nunito, sans-serif', fontSize: '18px', fontWeight: 800, color: '#2D2340' }}>
+          {title}
         </span>
+        {/* Branche florale décorative */}
+        <svg width="60" height="18" viewBox="0 0 80 20" fill="none" style={{ opacity: 0.4 }}>
+          <path d="M2 10 Q20 2 40 10 Q60 18 78 10" stroke="#9B8FA8" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+          <path d="M15 10 Q20 5 25 8" stroke="#9B8FA8" strokeWidth="1" fill="none" strokeLinecap="round"/>
+          <path d="M40 10 Q45 4 50 7" stroke="#9B8FA8" strokeWidth="1" fill="none" strokeLinecap="round"/>
+          <path d="M60 10 Q65 15 70 12" stroke="#9B8FA8" strokeWidth="1" fill="none" strokeLinecap="round"/>
+          <circle cx="25" cy="7" r="1.5" fill="#C9ADE8" opacity="0.6"/>
+          <circle cx="50" cy="6" r="1.5" fill="#C9ADE8" opacity="0.6"/>
+          <circle cx="70" cy="11" r="1.5" fill="#C9ADE8" opacity="0.6"/>
+        </svg>
       </div>
-      <Link to={to} className="font-body text-tb-green text-xs font-semibold hover:opacity-70">
+      <Link to={to}
+        style={{ fontSize: '13px', fontWeight: 600, color: '#7B6B8A' }}
+        className="hover:text-tb-purple transition-colors">
         See All
       </Link>
     </div>
@@ -104,90 +121,91 @@ function HomePage() {
     api.get('/products')
       .then((res) => {
         const all = res.data || []
-        setTrending(all.slice(0, 6))
-        setArrivals(all.slice(0, 6).reverse())
+        setTrending(all.slice(0, 8))
+        setArrivals([...all].reverse().slice(0, 8))
       })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
-  const skeleton = (
-    <div className="flex gap-3 overflow-hidden">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="w-44 flex-shrink-0 bg-white rounded-3xl h-52 animate-pulse" />
+  const SkeletonRow = () => (
+    <div className="flex gap-3 px-5 overflow-hidden">
+      {[1,2,3].map(i => (
+        <div key={i} className="flex-shrink-0 rounded-3xl bg-white/60 animate-pulse" style={{ width: 155, height: 220 }} />
       ))}
     </div>
   )
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(160deg,#FDF0F4 0%,#F5F0FC 50%,#EEF9F5 100%)' }}>
+    <div className="min-h-screen pb-4"
+         style={{ background: 'linear-gradient(160deg, #FFF0F6 0%, #F5EEFF 45%, #EEF9F5 100%)' }}>
 
-      {/* ── Hero Banner ─ photo uploadée ──── */}
-      <section className="max-w-md mx-auto px-4 pt-4 pb-2 animate-fade-up">
-        <div className="relative rounded-3xl overflow-hidden" style={{ minHeight: 190 }}>
-          {/* L'image que l'utilisateur a uploadée */}
-          <img
-            src="/hero-banner.jpg"
-            alt="Tinkerbells New Collection"
-            className="absolute inset-0 w-full h-full object-cover object-center"
-          />
-          {/* Overlay dégradé léger pour le texte */}
-          <div
-            className="absolute inset-0"
-            style={{ background: 'linear-gradient(to right, rgba(140,100,200,0.72) 0%, rgba(140,100,200,0.35) 55%, rgba(140,100,200,0) 100%)' }}
-          />
+      {/* ── Hero Banner ─────────────────────── */}
+      <section className="px-5 pt-5 pb-2 animate-fade-up">
+        <div className="relative rounded-3xl overflow-hidden" style={{ height: 230 }}>
+          {/* Photo uploadée */}
+          <img src="/hero-banner.jpg" alt="Fairy Glow"
+               className="absolute inset-0 w-full h-full object-cover object-center" />
+          {/* Overlay gauche pour le texte */}
+          <div className="absolute inset-0"
+               style={{ background: 'linear-gradient(100deg, rgba(120,80,180,0.68) 0%, rgba(120,80,180,0.38) 55%, transparent 100%)' }} />
           {/* Texte */}
-          <div className="relative z-10 p-5 pb-5">
-            <p className="font-body text-white/80 text-[10px] tracking-widest uppercase mb-1">
+          <div className="relative z-10 p-6 h-full flex flex-col justify-center" style={{ maxWidth: '58%' }}>
+            <p style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', marginBottom: 4 }}>
               New Collection
             </p>
-            <p
-              style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.8rem', fontWeight: 700, lineHeight: 1.1 }}
-              className="text-white mb-2"
-            >
+            <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '2rem', fontWeight: 700, color: 'white', lineHeight: 1.1, marginBottom: 8 }}>
               Fairy Glow
             </p>
-            <p className="font-body text-white/85 text-[11px] leading-relaxed mb-3 max-w-[52%]">
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, marginBottom: 16 }}>
               Japanese essences infused with morning dew magic.
             </p>
-            <Link
-              to="/products"
-              className="inline-flex items-center gap-1.5 bg-white text-tb-text font-body font-semibold text-xs rounded-full px-4 py-2 hover:shadow-pink transition-all"
-            >
+            <Link to="/products"
+              className="inline-flex items-center gap-2"
+              style={{ background: 'white', color: '#2D2340', fontWeight: 700, fontSize: '13px', borderRadius: 50, padding: '10px 20px', width: 'fit-content', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
               Shop Now →
             </Link>
           </div>
-          <span className="absolute top-3 right-5 text-yellow-200 text-lg animate-float z-10">✦</span>
+          {/* Étoile déco */}
+          <span className="absolute top-5 right-6 text-yellow-200 text-2xl animate-float" style={{ zIndex: 10 }}>✦</span>
         </div>
       </section>
 
-      {/* ── Shop by Magic ─────────────────── */}
-      <section className="max-w-md mx-auto px-4 py-5 animate-fade-up" style={{ animationDelay: '80ms' }}>
-        <div className="flex items-center justify-between mb-4">
+      {/* ── Shop by Magic ───────────────────── */}
+      <section className="pt-5 pb-3 animate-fade-up" style={{ animationDelay: '80ms' }}>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4 px-5">
           <div className="flex items-center gap-2">
-            <span className="text-tb-lav-deep text-sm">✦</span>
-            <h2 className="font-body font-bold text-tb-text text-base">Shop by Magic</h2>
-            <span className="text-tb-text-light text-xs" style={{ fontFamily: 'Georgia,serif', fontStyle: 'italic' }}>~~~~</span>
+            {/* Petite étoile rose */}
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 1v12M1 7h12M3 3l8 8M11 3l-8 8" stroke="#E8A0B4" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            <span style={{ fontSize: '18px', fontWeight: 800, color: '#2D2340' }}>Shop by Magic</span>
+            {/* Branche florale */}
+            <svg width="70" height="18" viewBox="0 0 90 20" fill="none" style={{ opacity: 0.4 }}>
+              <path d="M2 10 Q25 2 45 10 Q65 18 88 10" stroke="#9B8FA8" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+              <path d="M20 10 Q25 4 30 7" stroke="#9B8FA8" strokeWidth="1" fill="none" strokeLinecap="round"/>
+              <path d="M45 10 Q50 3 55 6" stroke="#9B8FA8" strokeWidth="1" fill="none" strokeLinecap="round"/>
+              <path d="M68 10 Q73 16 78 13" stroke="#9B8FA8" strokeWidth="1" fill="none" strokeLinecap="round"/>
+              <circle cx="30" cy="7" r="1.5" fill="#C9ADE8" opacity="0.7"/>
+              <circle cx="55" cy="6" r="1.5" fill="#F9C8D4" opacity="0.7"/>
+              <circle cx="78" cy="12" r="1.5" fill="#C9ADE8" opacity="0.7"/>
+            </svg>
           </div>
-          <Link to="/products" className="font-body text-tb-green text-xs font-semibold hover:opacity-70">
-            See All
-          </Link>
+          <Link to="/products" style={{ fontSize: '13px', fontWeight: 600, color: '#7B6B8A' }}>See All</Link>
         </div>
 
-        <div className="grid grid-cols-4 gap-3">
-          {CATEGORIES.map(({ label, img, ring, bg }, i) => (
-            <Link
-              key={label}
-              to={`/products?category=${label}`}
+        {/* Cercles catégories */}
+        <div className="grid grid-cols-4 gap-2 px-5">
+          {CATEGORIES.map(({ label, img, bg, border }, i) => (
+            <Link key={label} to={`/products?category=${label}`}
               className="flex flex-col items-center gap-2 animate-fade-up"
-              style={{ animationDelay: `${i * 60}ms` }}
-            >
-              <div
-                className={`w-16 h-16 ring-2 ring-offset-2 ${ring} ${bg} rounded-full overflow-hidden hover:scale-105 transition-transform shadow-card`}
-              >
-                <img src={img} alt={label} className="w-full h-full object-cover" />
+              style={{ animationDelay: `${i * 60}ms` }}>
+              <div className="rounded-full overflow-hidden"
+                   style={{ width: 72, height: 72, background: bg, border: `2.5px solid ${border}`, boxShadow: '0 2px 12px rgba(155,95,192,0.12)' }}>
+                <img src={img} alt={label} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
               </div>
-              <span className="font-body text-tb-text-soft text-[11px] font-semibold text-center leading-tight">
+              <span style={{ fontSize: '12px', fontWeight: 600, color: '#5A4A6A', textAlign: 'center' }}>
                 {label}
               </span>
             </Link>
@@ -195,51 +213,43 @@ function HomePage() {
         </div>
       </section>
 
-      {/* ── Trending Now ──────────────────── */}
-      <section className="max-w-md mx-auto px-4 py-3 animate-fade-up" style={{ animationDelay: '140ms' }}>
-        <SectionHeader title="Trending Now" to="/products" />
-        {loading ? skeleton : trending.length > 0 ? (
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {trending.map((p) => <ProductMini key={p._id} product={p} />)}
+      {/* ── Trending Now ────────────────────── */}
+      <section className="py-3 animate-fade-up" style={{ animationDelay: '140ms' }}>
+        <SectionTitle title="Trending Now" to="/products" />
+        {loading ? <SkeletonRow /> : trending.length > 0 ? (
+          <div className="flex gap-3 px-5 overflow-x-auto pb-2 scrollbar-hide">
+            {trending.map(p => <ProductCard key={p._id} product={p} />)}
           </div>
         ) : (
-          <p className="text-center font-body text-tb-text-soft text-sm py-6">No products yet 🌸</p>
+          <p className="text-center text-sm py-6" style={{ color: '#B8A8C8' }}>No products yet 🌸</p>
         )}
       </section>
 
-      {/* ── New Arrivals ──────────────────── */}
-      <section className="max-w-md mx-auto px-4 py-3 animate-fade-up" style={{ animationDelay: '200ms' }}>
-        <SectionHeader title="New Arrivals" to="/products" />
-        {loading ? skeleton : arrivals.length > 0 && (
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {arrivals.map((p) => <ProductMini key={`a-${p._id}`} product={p} />)}
+      {/* ── New Arrivals ────────────────────── */}
+      <section className="py-3 animate-fade-up" style={{ animationDelay: '200ms' }}>
+        <SectionTitle title="New Arrivals" to="/products" />
+        {loading ? <SkeletonRow /> : arrivals.length > 0 && (
+          <div className="flex gap-3 px-5 overflow-x-auto pb-2 scrollbar-hide">
+            {arrivals.map(p => <ProductCard key={`a-${p._id}`} product={p} />)}
           </div>
         )}
 
-        {/* ── Banner Clean Japanese Beauty ── */}
-        <div
-          className="mt-4 rounded-3xl overflow-hidden relative"
-          style={{ background: 'linear-gradient(135deg,#F5F0FC 0%,#FDF0F4 50%,#EEF9F5 100%)', minHeight: 130 }}
-        >
-          <div className="p-5 text-center">
-            <div className="text-3xl mb-2">🦋</div>
-            <p
-              style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.4rem', fontWeight: 700 }}
-              className="text-tb-text mb-1"
-            >
-              Clean Japanese Beauty
-            </p>
-            <p className="font-body text-tb-text-soft text-xs leading-relaxed">
-              Curated with love from Tokyo to your doorstep.<br />
-              Cruelty-free and magical.
-            </p>
-          </div>
-          <span className="absolute top-3 left-4 text-tb-lav-deep text-xs">✦</span>
-          <span className="absolute bottom-3 right-6 text-tb-pink text-sm">✦</span>
+        {/* Banner Clean Japanese Beauty */}
+        <div className="mx-5 mt-4 rounded-3xl overflow-hidden relative py-8 px-6 text-center"
+             style={{ background: 'linear-gradient(135deg, #F0EAFF 0%, #FFE8F0 50%, #E8F8F0 100%)', minHeight: 160 }}>
+          <span className="absolute top-3 left-5 text-xs" style={{ color: '#C9ADE8' }}>✦</span>
+          <span className="absolute bottom-3 right-7 text-sm" style={{ color: '#F9C8D4' }}>✦</span>
+          {/* Lotus icon */}
+          <div className="text-3xl mb-2">🪷</div>
+          <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.5rem', fontWeight: 700, color: '#5A4A6A' }} className="mb-2">
+            Clean Japanese Beauty
+          </p>
+          <p style={{ fontSize: '13px', color: '#8B7A9B', lineHeight: 1.6 }}>
+            Curated with love from Tokyo to your doorstep.<br />
+            Cruelty-free and magical.
+          </p>
         </div>
       </section>
-
-      <div className="h-4" />
     </div>
   )
 }
