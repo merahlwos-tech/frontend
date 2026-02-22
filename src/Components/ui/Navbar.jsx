@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ShoppingBag, Search, Bell, Menu, X } from 'lucide-react'
+import { ShoppingBag, Search, Menu, X } from 'lucide-react'
 import { useCart } from '../../context/CartContext'
 
 const NAV_LINKS = [
-  { to: '/products?category=Skincare', label: 'Skincare' },
-  { to: '/products?category=Makeup',   label: 'Makeup' },
-  { to: '/products?category=Body Care',label: 'Body Care' },
-  { to: '/products?category=Hair Care',label: 'Hair Care' },
-  { to: '/products',                   label: 'All Products' },
+  { to: '/products?category=Skincare',  label: 'Skincare' },
+  { to: '/products?category=Makeup',    label: 'Makeup' },
+  { to: '/products?category=Body Care', label: 'Body Care' },
+  { to: '/products?category=Hair Care', label: 'Hair Care' },
+  { to: '/products',                    label: 'All Products' },
+  { to: '/about',                       label: 'About Us' },
 ]
 
 function Navbar() {
@@ -32,41 +33,39 @@ function Navbar() {
         <div className="max-w-md mx-auto px-4">
           <div className="flex items-center justify-between h-14">
 
-            {/* Burger / Menu */}
-            <button onClick={() => setMenuOpen(!menuOpen)}
-              className="p-1.5 text-tb-text-soft hover:text-tb-text transition-colors">
+            {/* Burger */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-1.5 text-tb-text-soft hover:text-tb-text transition-colors"
+            >
               {menuOpen ? <X size={20} /> : <Menu size={20} strokeWidth={1.8} />}
             </button>
 
-            {/* Logo central */}
+            {/* Logo centré */}
             <Link to="/" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
               <div className="w-8 h-8 rounded-full overflow-hidden bg-tb-pink-soft border border-tb-pink flex items-center justify-center">
                 <span className="text-base">🌸</span>
               </div>
-              <span style={{fontFamily:'Dancing Script, cursive', fontSize:'1.25rem', fontWeight:700}}
-                    className="text-tb-text tracking-wide">
+              <span
+                style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.25rem', fontWeight: 700 }}
+                className="text-tb-text tracking-wide"
+              >
                 Tinkerbells
               </span>
             </Link>
 
-            {/* Actions droite */}
-            <div className="flex items-center gap-1">
-              <button className="relative p-1.5 text-tb-text-soft hover:text-tb-text transition-colors">
-                <Bell size={20} strokeWidth={1.8} />
-                <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-tb-pink-deep rounded-full" />
-              </button>
-              <button onClick={() => navigate('/cart')}
-                className="relative p-1.5 text-tb-text-soft hover:text-tb-text transition-colors">
-                <ShoppingBag size={20} strokeWidth={1.8} />
-                {itemCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-tb-purple
-                                   text-white text-[9px] font-bold
-                                   flex items-center justify-center rounded-full">
-                    {itemCount}
-                  </span>
-                )}
-              </button>
-            </div>
+            {/* Panier uniquement (pas de cloche) */}
+            <button
+              onClick={() => navigate('/cart')}
+              className="relative p-1.5 text-tb-text-soft hover:text-tb-text transition-colors"
+            >
+              <ShoppingBag size={20} strokeWidth={1.8} />
+              {itemCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-tb-purple text-white text-[9px] font-bold flex items-center justify-center rounded-full">
+                  {itemCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
@@ -78,10 +77,7 @@ function Navbar() {
               value={searchVal}
               onChange={(e) => setSearchVal(e.target.value)}
               placeholder="Search for magic potions..."
-              className="w-full bg-tb-lav-soft border-0 rounded-2xl
-                         pl-10 pr-4 py-2.5 text-sm font-body text-tb-text
-                         placeholder:text-tb-text-light outline-none
-                         focus:ring-2 focus:ring-tb-lav-deep/30 transition-all"
+              className="w-full bg-tb-lav-soft border-0 rounded-2xl pl-10 pr-4 py-2.5 text-sm font-body text-tb-text placeholder:text-tb-text-light outline-none focus:ring-2 focus:ring-tb-lav-deep/30 transition-all"
             />
           </form>
         </div>
@@ -89,24 +85,26 @@ function Navbar() {
 
       {/* ── Menu slide ──────────────────────────── */}
       {menuOpen && (
-        <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
-             onClick={() => setMenuOpen(false)}>
-          <div className="absolute top-0 left-0 w-72 h-full bg-white shadow-soft-lg pt-16 px-6"
-               onClick={e => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+          onClick={() => setMenuOpen(false)}
+        >
+          <div
+            className="absolute top-0 left-0 w-72 h-full bg-white shadow-soft-lg pt-16 px-6"
+            onClick={(e) => e.stopPropagation()}
+          >
             <p className="sf-label mb-5">Categories</p>
             {NAV_LINKS.map(({ to, label }) => (
-              <Link key={label} to={to} onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 py-3 border-b border-tb-lav-soft
-                           font-body text-tb-text-soft hover:text-tb-purple transition-colors">
+              <Link
+                key={label}
+                to={to}
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 py-3 border-b border-tb-lav-soft font-body text-tb-text-soft hover:text-tb-purple transition-colors"
+              >
                 <span className="w-2 h-2 rounded-full bg-tb-pink" />
                 {label}
               </Link>
             ))}
-            <Link to="/about" onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-3 py-3 font-body text-tb-text-soft hover:text-tb-purple transition-colors mt-2">
-              <span className="w-2 h-2 rounded-full bg-tb-lavender" />
-              About Us
-            </Link>
           </div>
         </div>
       )}

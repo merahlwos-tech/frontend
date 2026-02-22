@@ -1,59 +1,60 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Star, Heart, Plus } from 'lucide-react'
+import { Heart, Star, Plus } from 'lucide-react'
 import api from '../../utils/api'
 
-/* ── Catégories style Tinkerbells ─────────────────────── */
 const CATEGORIES = [
-  { label: 'Skincare',  emoji: '🌸', color: 'bg-tb-pink-soft',  ring: 'ring-tb-pink' },
-  { label: 'Makeup',    emoji: '💄', color: 'bg-tb-peach/30',   ring: 'ring-tb-peach' },
-  { label: 'Body Care', emoji: '🧴', color: 'bg-tb-lav-soft',   ring: 'ring-tb-lavender' },
-  { label: 'Hair Care', emoji: '💆', color: 'bg-tb-mint-soft',  ring: 'ring-tb-mint' },
+  {
+    label: 'Skincare',
+    img: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200&h=200&fit=crop&q=80',
+    ring: 'ring-tb-pink',
+    bg: 'bg-tb-pink-soft',
+  },
+  {
+    label: 'Makeup',
+    img: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=200&h=200&fit=crop&q=80',
+    ring: 'ring-orange-200',
+    bg: 'bg-orange-50',
+  },
+  {
+    label: 'Body Care',
+    img: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f35f?w=200&h=200&fit=crop&q=80',
+    ring: 'ring-tb-lavender',
+    bg: 'bg-tb-lav-soft',
+  },
+  {
+    label: 'Hair Care',
+    img: 'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?w=200&h=200&fit=crop&q=80',
+    ring: 'ring-tb-mint',
+    bg: 'bg-tb-mint-soft',
+  },
 ]
 
-/* ── Étoiles ─────────────────────────────────────────── */
-function Stars({ count = 5 }) {
-  return (
-    <div className="flex gap-0.5">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} size={10}
-          className={i < count ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200'} />
-      ))}
-    </div>
-  )
-}
-
-/* ── Carte produit compacte ──────────────────────────── */
 function ProductMini({ product }) {
   const [liked, setLiked] = useState(false)
   const imageUrl = product.images?.[0] || '/placeholder.jpg'
-  const rating = product.rating || (4 + Math.random()).toFixed(1)
-  const reviews = product.reviews || Math.floor(40 + Math.random() * 30)
+  const rating   = product.rating  || (4 + Math.random()).toFixed(1)
+  const reviews  = product.reviews || Math.floor(40 + Math.random() * 30)
 
   return (
-    <Link to={`/products/${product._id}`}
-      className="bg-white rounded-3xl overflow-hidden shadow-card hover:shadow-soft-lg
-                 transition-all duration-300 hover:-translate-y-0.5 block relative flex-shrink-0 w-44">
-      {/* Image */}
+    <Link
+      to={`/products/${product._id}`}
+      className="bg-white rounded-3xl overflow-hidden shadow-card hover:shadow-soft-lg transition-all duration-300 hover:-translate-y-0.5 block relative flex-shrink-0 w-44"
+    >
       <div className="relative aspect-square bg-tb-pink-soft overflow-hidden">
-        <img src={imageUrl} alt={product.name}
-          className="w-full h-full object-cover" loading="lazy" />
-        {/* Wishlist */}
-        <button onClick={(e) => { e.preventDefault(); setLiked(!liked) }}
-          className="absolute top-2 right-2 w-7 h-7 bg-white/80 backdrop-blur-sm
-                     rounded-full flex items-center justify-center shadow-sm
-                     hover:scale-110 transition-transform">
+        <img src={imageUrl} alt={product.name} className="w-full h-full object-cover" loading="lazy" />
+        <button
+          onClick={(e) => { e.preventDefault(); setLiked(!liked) }}
+          className="absolute top-2 right-2 w-7 h-7 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+        >
           <Heart size={13} className={liked ? 'fill-tb-pink-deep text-tb-pink-deep' : 'text-tb-text-light'} />
         </button>
-        {/* Rating */}
-        <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-white/80
-                        backdrop-blur-sm rounded-full px-1.5 py-0.5">
+        <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-white/80 backdrop-blur-sm rounded-full px-1.5 py-0.5">
           <Star size={9} className="text-amber-400 fill-amber-400" />
           <span className="text-[9px] font-body font-bold text-tb-text">{rating}</span>
           <span className="text-[9px] font-body text-tb-text-light">({reviews})</span>
         </div>
       </div>
-      {/* Info */}
       <div className="p-3">
         <p className="font-body font-semibold text-tb-text text-xs leading-tight mb-0.5 line-clamp-2">
           {product.name}
@@ -63,9 +64,10 @@ function ProductMini({ product }) {
           <span className="font-body font-bold text-tb-text text-sm">
             ${(product.price ?? 0).toFixed(2)}
           </span>
-          <button onClick={(e) => e.preventDefault()}
-            className="w-6 h-6 bg-tb-purple rounded-full flex items-center justify-center
-                       hover:opacity-80 transition-opacity">
+          <button
+            onClick={(e) => e.preventDefault()}
+            className="w-6 h-6 bg-tb-purple rounded-full flex items-center justify-center hover:opacity-80 transition-opacity"
+          >
             <Plus size={12} className="text-white" />
           </button>
         </div>
@@ -74,68 +76,98 @@ function ProductMini({ product }) {
   )
 }
 
-/* ── Page principale ─────────────────────────────────── */
+function SectionHeader({ title, to }) {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center gap-2">
+        <h2 className="font-body font-bold text-tb-text text-base">{title}</h2>
+        <span
+          className="text-tb-text-light text-xs"
+          style={{ fontFamily: 'Georgia,serif', fontStyle: 'italic' }}
+        >
+          ~~~~
+        </span>
+      </div>
+      <Link to={to} className="font-body text-tb-green text-xs font-semibold hover:opacity-70">
+        See All
+      </Link>
+    </div>
+  )
+}
+
 function HomePage() {
-  const [products, setProducts]         = useState([])
-  const [trending, setTrending]         = useState([])
-  const [loading, setLoading]           = useState(true)
+  const [trending, setTrending] = useState([])
+  const [arrivals, setArrivals] = useState([])
+  const [loading, setLoading]   = useState(true)
 
   useEffect(() => {
     api.get('/products')
       .then((res) => {
         const all = res.data || []
-        setProducts(all.slice(0, 8))
-        setTrending(all.slice(0, 4))
+        setTrending(all.slice(0, 6))
+        setArrivals(all.slice(0, 6).reverse())
       })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
-  return (
-    <div className="min-h-screen" style={{background:'linear-gradient(160deg,#FDF0F4 0%,#F5F0FC 50%,#EEF9F5 100%)'}}>
+  const skeleton = (
+    <div className="flex gap-3 overflow-hidden">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="w-44 flex-shrink-0 bg-white rounded-3xl h-52 animate-pulse" />
+      ))}
+    </div>
+  )
 
-      {/* ── Hero Banner ───────────────────────── */}
+  return (
+    <div className="min-h-screen" style={{ background: 'linear-gradient(160deg,#FDF0F4 0%,#F5F0FC 50%,#EEF9F5 100%)' }}>
+
+      {/* ── Hero Banner ─ photo uploadée ──── */}
       <section className="max-w-md mx-auto px-4 pt-4 pb-2 animate-fade-up">
-        <div className="relative rounded-3xl overflow-hidden"
-             style={{background:'linear-gradient(135deg, #C8B5E8 0%, #E8D0F0 40%, #F0C8A8 100%)', minHeight:180}}>
-          {/* Contenu */}
-          <div className="p-5 pb-4 z-10 relative">
+        <div className="relative rounded-3xl overflow-hidden" style={{ minHeight: 190 }}>
+          {/* L'image que l'utilisateur a uploadée */}
+          <img
+            src="/hero-banner.jpg"
+            alt="Tinkerbells New Collection"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+          {/* Overlay dégradé léger pour le texte */}
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(to right, rgba(140,100,200,0.72) 0%, rgba(140,100,200,0.35) 55%, rgba(140,100,200,0) 100%)' }}
+          />
+          {/* Texte */}
+          <div className="relative z-10 p-5 pb-5">
             <p className="font-body text-white/80 text-[10px] tracking-widest uppercase mb-1">
               New Collection
             </p>
-            <p style={{fontFamily:'Dancing Script, cursive', fontSize:'1.75rem', fontWeight:700, lineHeight:1.1}}
-               className="text-white mb-1.5">
+            <p
+              style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.8rem', fontWeight: 700, lineHeight: 1.1 }}
+              className="text-white mb-2"
+            >
               Fairy Glow
             </p>
-            <p className="font-body text-white/80 text-xs leading-relaxed mb-3 max-w-[55%]">
+            <p className="font-body text-white/85 text-[11px] leading-relaxed mb-3 max-w-[52%]">
               Japanese essences infused with morning dew magic.
             </p>
-            <Link to="/products"
-              className="inline-flex items-center gap-1.5 bg-white text-tb-text
-                         font-body font-semibold text-xs rounded-full px-4 py-2
-                         hover:shadow-pink transition-all">
+            <Link
+              to="/products"
+              className="inline-flex items-center gap-1.5 bg-white text-tb-text font-body font-semibold text-xs rounded-full px-4 py-2 hover:shadow-pink transition-all"
+            >
               Shop Now →
             </Link>
           </div>
-          {/* Déco florale */}
-          <div className="absolute right-0 top-0 bottom-0 w-2/5 flex items-center justify-center opacity-20">
-            <span style={{fontSize:'6rem'}}>🌸</span>
-          </div>
-          {/* Étoiles déco */}
-          <span className="absolute top-3 right-4 text-yellow-300 text-xl animate-float">✦</span>
-          <span className="absolute bottom-4 right-12 text-white/50 text-xs">✦</span>
+          <span className="absolute top-3 right-5 text-yellow-200 text-lg animate-float z-10">✦</span>
         </div>
       </section>
 
-      {/* ── Shop by Magic (Catégories) ─────────── */}
-      <section className="max-w-md mx-auto px-4 py-5 animate-fade-up" style={{animationDelay:'80ms'}}>
+      {/* ── Shop by Magic ─────────────────── */}
+      <section className="max-w-md mx-auto px-4 py-5 animate-fade-up" style={{ animationDelay: '80ms' }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <span className="text-tb-lav-deep text-sm">✦</span>
             <h2 className="font-body font-bold text-tb-text text-base">Shop by Magic</h2>
-            <span className="text-tb-text-light text-xs" style={{fontFamily:'Georgia,serif',fontStyle:'italic'}}>
-              ~~~~
-            </span>
+            <span className="text-tb-text-light text-xs" style={{ fontFamily: 'Georgia,serif', fontStyle: 'italic' }}>~~~~</span>
           </div>
           <Link to="/products" className="font-body text-tb-green text-xs font-semibold hover:opacity-70">
             See All
@@ -143,16 +175,19 @@ function HomePage() {
         </div>
 
         <div className="grid grid-cols-4 gap-3">
-          {CATEGORIES.map(({ label, emoji, color, ring }, i) => (
-            <Link key={label} to={`/products?category=${label}`}
+          {CATEGORIES.map(({ label, img, ring, bg }, i) => (
+            <Link
+              key={label}
+              to={`/products?category=${label}`}
               className="flex flex-col items-center gap-2 animate-fade-up"
-              style={{ animationDelay: `${i * 60}ms` }}>
-              <div className={`w-16 h-16 ${color} ring-2 ring-offset-1 ${ring}
-                               rounded-full flex items-center justify-center
-                               hover:scale-105 transition-transform shadow-card`}>
-                <span style={{fontSize:'1.5rem'}}>{emoji}</span>
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
+              <div
+                className={`w-16 h-16 ring-2 ring-offset-2 ${ring} ${bg} rounded-full overflow-hidden hover:scale-105 transition-transform shadow-card`}
+              >
+                <img src={img} alt={label} className="w-full h-full object-cover" />
               </div>
-              <span className="font-body text-tb-text-soft text-[11px] font-semibold text-center">
+              <span className="font-body text-tb-text-soft text-[11px] font-semibold text-center leading-tight">
                 {label}
               </span>
             </Link>
@@ -160,83 +195,50 @@ function HomePage() {
         </div>
       </section>
 
-      {/* ── Trending Now ──────────────────────── */}
-      <section className="max-w-md mx-auto px-4 py-3 animate-fade-up" style={{animationDelay:'140ms'}}>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <h2 className="font-body font-bold text-tb-text text-base">Trending Now</h2>
-            <span className="text-tb-text-light text-xs" style={{fontFamily:'Georgia,serif',fontStyle:'italic'}}>
-              ~~~~
-            </span>
-          </div>
-          <Link to="/products" className="font-body text-tb-green text-xs font-semibold hover:opacity-70">
-            See All
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="flex gap-3 overflow-hidden">
-            {[1,2,3,4].map(i => (
-              <div key={i} className="w-44 flex-shrink-0 bg-white rounded-3xl h-52 animate-pulse" />
-            ))}
-          </div>
-        ) : products.length > 0 ? (
+      {/* ── Trending Now ──────────────────── */}
+      <section className="max-w-md mx-auto px-4 py-3 animate-fade-up" style={{ animationDelay: '140ms' }}>
+        <SectionHeader title="Trending Now" to="/products" />
+        {loading ? skeleton : trending.length > 0 ? (
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {products.map((product) => (
-              <ProductMini key={product._id} product={product} />
-            ))}
+            {trending.map((p) => <ProductMini key={p._id} product={p} />)}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <span className="text-4xl">🌸</span>
-            <p className="font-body text-tb-text-soft text-sm mt-2">No products yet</p>
-          </div>
+          <p className="text-center font-body text-tb-text-soft text-sm py-6">No products yet 🌸</p>
         )}
       </section>
 
-      {/* ── Trending Now 2 + Banner Clean Beauty ─ */}
-      <section className="max-w-md mx-auto px-4 py-3 animate-fade-up" style={{animationDelay:'200ms'}}>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <h2 className="font-body font-bold text-tb-text text-base">Trending Now</h2>
-            <span className="text-tb-text-light text-xs" style={{fontFamily:'Georgia,serif',fontStyle:'italic'}}>
-              ~~~~
-            </span>
-          </div>
-          <Link to="/products" className="font-body text-tb-green text-xs font-semibold hover:opacity-70">
-            See All
-          </Link>
-        </div>
-
-        {!loading && trending.length > 0 && (
+      {/* ── New Arrivals ──────────────────── */}
+      <section className="max-w-md mx-auto px-4 py-3 animate-fade-up" style={{ animationDelay: '200ms' }}>
+        <SectionHeader title="New Arrivals" to="/products" />
+        {loading ? skeleton : arrivals.length > 0 && (
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {trending.map((product) => (
-              <ProductMini key={`t-${product._id}`} product={product} />
-            ))}
+            {arrivals.map((p) => <ProductMini key={`a-${p._id}`} product={p} />)}
           </div>
         )}
 
-        {/* ── Banner Clean Japanese Beauty ──── */}
-        <div className="mt-4 rounded-3xl overflow-hidden relative"
-             style={{background:'linear-gradient(135deg,#F5F0FC 0%,#FDF0F4 50%,#EEF9F5 100%)', minHeight:130}}>
+        {/* ── Banner Clean Japanese Beauty ── */}
+        <div
+          className="mt-4 rounded-3xl overflow-hidden relative"
+          style={{ background: 'linear-gradient(135deg,#F5F0FC 0%,#FDF0F4 50%,#EEF9F5 100%)', minHeight: 130 }}
+        >
           <div className="p-5 text-center">
             <div className="text-3xl mb-2">🦋</div>
-            <p style={{fontFamily:'Dancing Script, cursive', fontSize:'1.4rem', fontWeight:700}}
-               className="text-tb-text mb-1">
+            <p
+              style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.4rem', fontWeight: 700 }}
+              className="text-tb-text mb-1"
+            >
               Clean Japanese Beauty
             </p>
             <p className="font-body text-tb-text-soft text-xs leading-relaxed">
-              Curated with love from Tokyo to your doorstep.<br/>
+              Curated with love from Tokyo to your doorstep.<br />
               Cruelty-free and magical.
             </p>
           </div>
-          {/* Étoiles déco */}
           <span className="absolute top-3 left-4 text-tb-lav-deep text-xs">✦</span>
           <span className="absolute bottom-3 right-6 text-tb-pink text-sm">✦</span>
         </div>
       </section>
 
-      {/* Spacer bas */}
       <div className="h-4" />
     </div>
   )
