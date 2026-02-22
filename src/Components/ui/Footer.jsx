@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Instagram, Facebook, Heart, Truck, CreditCard } from 'lucide-react'
+import { Home, Sparkles, Heart, User } from 'lucide-react'
+import { useLocation } from 'react-router-dom'
 
 function AdminSecretAccess() {
   const [clicks, setClicks] = useState(0)
@@ -25,14 +26,12 @@ function AdminSecretAccess() {
 
   return (
     <div className="relative inline-block">
-      <span onClick={handleClick}
-        className="text-sf-beige-dark text-xs cursor-default select-none">©</span>
+      <span onClick={handleClick} className="text-tb-text-light text-xs cursor-default select-none">©</span>
       {showInput && (
         <input autoFocus type="text" value={value} onChange={handleChange}
           onBlur={() => { setShowInput(false); setValue(''); setClicks(0) }}
-          className="absolute bottom-6 right-0 w-24 bg-white border border-sf-beige-dark
-                     text-sf-text text-xs font-body px-2 py-1 rounded-lg outline-none
-                     shadow-soft"
+          className="absolute bottom-6 right-0 w-24 bg-white border border-tb-lavender
+                     text-tb-text text-xs font-body px-2 py-1 rounded-xl outline-none shadow-soft"
           placeholder="..." />
       )}
     </div>
@@ -40,111 +39,68 @@ function AdminSecretAccess() {
 }
 
 function Footer() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const path = location.pathname
+
+  const navItems = [
+    { icon: Home,     label: 'Home',     to: '/' },
+    { icon: Sparkles, label: 'Shop',     to: '/products' },
+    { icon: Heart,    label: 'Wishlist', to: '/products' },
+    { icon: User,     label: 'Profile',  to: '/' },
+  ]
+
   return (
-    <footer className="bg-sf-beige mt-auto">
-      {/* Bandeau avantages */}
-      <div className="bg-sf-rose-soft border-y border-sf-rose/30 py-4">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-10 h-10 bg-sf-rose rounded-full flex items-center justify-center">
-              <Truck size={18} className="text-sf-text" />
-            </div>
-            <div>
-              <p className="font-body font-700 text-sf-text text-sm">Livraison rapide</p>
-              <p className="font-body text-sf-text-soft text-xs">Dans toutes les wilayas</p>
-            </div>
+    <>
+      {/* ── Footer mini ──────────────────────── */}
+      <footer className="bg-white/80 border-t border-tb-pink/20 py-8 px-6 text-center">
+        <div className="max-w-md mx-auto">
+          <p style={{fontFamily:'Dancing Script, cursive', fontSize:'1.4rem', fontWeight:700}}
+             className="text-tb-text mb-2">Tinkerbells 🌸</p>
+          <p className="font-body text-tb-text-light text-xs mb-4">
+            Clean Japanese Beauty • Cruelty-free & magical
+          </p>
+          <div className="flex justify-center gap-4 mb-6 flex-wrap">
+            {['Skincare', 'Makeup', 'Body Care', 'Hair Care'].map((cat) => (
+              <Link key={cat} to={`/products?category=${cat}`}
+                className="font-body text-tb-text-soft text-xs hover:text-tb-purple transition-colors">
+                {cat}
+              </Link>
+            ))}
           </div>
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-10 h-10 bg-sf-sage rounded-full flex items-center justify-center">
-              <CreditCard size={18} className="text-white" />
-            </div>
-            <div>
-              <p className="font-body font-700 text-sf-text text-sm">Paiement à la livraison</p>
-              <p className="font-body text-sf-text-soft text-xs">100% sécurisé</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Marquee */}
-      <div className="overflow-hidden py-3 border-b border-sf-beige-dark">
-        <div className="whitespace-nowrap animate-marquee inline-block">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <span key={i} className="inline-block mx-10 font-display text-sf-text-light italic text-sm">
-              SheinMe Store • Mode & Tendance • Bébé • Enfants • Femme • Homme •
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 bg-sf-rose rounded-full flex items-center justify-center">
-                <span className="font-display text-sf-text text-sm">S</span>
-              </div>
-              <div>
-                <p className="font-display text-sf-text text-xl">SheinMe Store</p>
-              </div>
-            </div>
-            <p className="font-body text-sf-text-soft text-sm leading-relaxed max-w-xs mb-6">
-              Mode douce et élégante pour toute la famille, du nouveau-né aux parents.
-            </p>
-            <div className="flex gap-3">
-              <a href="#" className="w-9 h-9 bg-sf-rose rounded-full flex items-center
-                                    justify-center hover:bg-sf-rose-dark transition-colors">
-                <Instagram size={16} className="text-sf-text" />
-              </a>
-              <a href="#" className="w-9 h-9 bg-sf-rose rounded-full flex items-center
-                                    justify-center hover:bg-sf-rose-dark transition-colors">
-                <Facebook size={16} className="text-sf-text" />
-              </a>
-            </div>
-          </div>
-
-          {/* Catégories */}
-          <div>
-            <p className="sf-label mb-4">Catégories</p>
-            <ul className="space-y-2">
-              {['Bébé', 'Enfants', 'Femme', 'Homme', 'Lingerie', 'Accessoires'].map((cat) => (
-                <li key={cat}>
-                  <Link to={`/products?category=${cat}`}
-                    className="font-body text-sf-text-soft text-sm hover:text-sf-rose
-                               transition-colors">
-                    {cat}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Infos */}
-          <div>
-            <p className="sf-label mb-4">Informations</p>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/about"
-                  className="font-body text-sf-text-soft text-sm hover:text-sf-rose transition-colors">
-                  Qui sommes-nous
-                </Link>
-              </li>
-              <li className="font-body text-sf-text-soft text-sm">Livraison 58 wilayas</li>
-              <li className="font-body text-sf-text-soft text-sm">Retour sous 7 jours</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="mt-10 pt-6 border-t border-sf-beige-dark flex items-center justify-between">
-          <p className="font-body text-sf-text-light text-xs flex items-center gap-1">
-            <AdminSecretAccess />
-            {' '}{new Date().getFullYear()} SheinMe Store. Fait avec{' '}
-            <Heart size={10} className="text-sf-rose fill-sf-rose" /> en Algérie
+          <p className="font-body text-tb-text-light text-xs flex items-center justify-center gap-1">
+            <AdminSecretAccess /> {new Date().getFullYear()} Tinkerbells. Made with
+            <Heart size={10} className="text-tb-pink fill-tb-pink mx-0.5" /> magic
           </p>
         </div>
+      </footer>
+
+      {/* ── Bottom Navigation ─────────────────── */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md
+                      border-t border-tb-pink/20 pb-safe">
+        <div className="max-w-md mx-auto px-4">
+          <div className="flex items-center justify-around py-2">
+            {navItems.map(({ icon: Icon, label, to }) => {
+              const isActive = path === to || (to !== '/' && path.startsWith(to))
+              return (
+                <button key={label} onClick={() => navigate(to)}
+                  className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl
+                              transition-all duration-200
+                              ${isActive
+                                ? 'text-tb-purple bg-tb-lav-soft'
+                                : 'text-tb-text-light hover:text-tb-text-soft'}`}>
+                  <Icon size={20} strokeWidth={isActive ? 2 : 1.5} />
+                  <span className="text-[10px] font-body font-semibold">{label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
       </div>
-    </footer>
+
+      {/* Spacer pour la bottom nav */}
+      <div className="h-16" />
+    </>
   )
 }
 

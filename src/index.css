@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;500;600;700&family=Dancing+Script:wght@400;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,79 +8,108 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
-    background-color: #FAF7F2;
-    color: #3D3530;
+    background: linear-gradient(135deg, #FDF0F4 0%, #F5F0FC 40%, #EEF9F5 100%);
+    background-attachment: fixed;
+    color: #2D2340;
     font-family: 'Nunito', sans-serif;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
   }
-  ::selection { background-color: #F2C4CE; color: #3D3530; }
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: #FAF7F2; }
-  ::-webkit-scrollbar-thumb { background: #E5DDD0; border-radius: 10px; }
-  ::-webkit-scrollbar-thumb:hover { background: #A8BBA8; }
+  ::selection { background-color: #F9C8D4; color: #2D2340; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #FDF7F9; }
+  ::-webkit-scrollbar-thumb { background: #E8DCF5; border-radius: 10px; }
 }
 
 @layer components {
+  /* ── Boutons ─────────────────────────────────────────── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
-           bg-sf-rose text-sf-text font-body font-semibold
-           rounded-full px-8 py-3 text-sm
+           bg-tb-purple text-white font-body font-semibold
+           rounded-full px-7 py-3 text-sm
            transition-all duration-300
-           hover:bg-sf-rose-dark hover:shadow-rose;
+           hover:opacity-90 hover:shadow-pink;
   }
-
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2
-           bg-transparent text-sf-text font-body font-semibold
-           rounded-full px-8 py-3 text-sm border-2 border-sf-beige-dark
-           transition-all duration-300
-           hover:border-sf-rose hover:bg-sf-rose-soft;
+           bg-white text-tb-text font-body font-semibold
+           rounded-full px-7 py-3 text-sm border border-tb-pink
+           transition-all duration-300 hover:bg-tb-pink-soft;
   }
-
   .btn-sage {
     @apply inline-flex items-center justify-center gap-2
-           bg-sf-sage text-white font-body font-semibold
-           rounded-full px-8 py-3 text-sm
-           transition-all duration-300
-           hover:bg-sf-sage-dark hover:shadow-soft;
+           bg-tb-green text-white font-body font-semibold
+           rounded-full px-7 py-3 text-sm
+           transition-all duration-300 hover:opacity-90;
   }
 
+  /* ── Cards ───────────────────────────────────────────── */
   .card-product {
-    @apply bg-white rounded-2xl overflow-hidden shadow-soft
+    @apply bg-white rounded-3xl overflow-hidden shadow-card
            transition-all duration-300 cursor-pointer
            hover:shadow-soft-lg hover:-translate-y-1;
   }
+  .card-glass {
+    @apply bg-white/80 backdrop-blur-sm rounded-3xl
+           border border-white/60 shadow-card;
+  }
 
+  /* ── Typographie ─────────────────────────────────────── */
   .sf-label {
-    @apply text-sf-rose-dark font-body font-semibold tracking-widest uppercase text-xs;
+    @apply text-tb-purple font-body font-semibold
+           tracking-widest uppercase text-xs;
   }
-
   .sf-title {
-    @apply font-display text-sf-text leading-tight;
+    @apply font-display text-tb-text leading-tight;
+  }
+  .magic-text {
+    @apply font-magic text-tb-text;
   }
 
+  /* ── Inputs ──────────────────────────────────────────── */
   .sf-input {
-    @apply w-full bg-white border border-sf-beige-dark text-sf-text
-           font-body text-sm px-4 py-3 rounded-xl outline-none
-           transition-all duration-300 placeholder:text-sf-text-light
-           focus:border-sf-rose focus:ring-2 focus:ring-sf-rose/20;
+    @apply w-full bg-white border border-tb-lavender text-tb-text
+           font-body text-sm px-4 py-3 rounded-2xl outline-none
+           transition-all duration-300 placeholder:text-tb-text-light
+           focus:border-tb-purple focus:ring-2 focus:ring-tb-lav-deep/20;
   }
-
   .sf-select {
-    @apply w-full bg-white border border-sf-beige-dark text-sf-text
-           font-body text-sm px-4 py-3 rounded-xl outline-none
-           transition-all duration-300 focus:border-sf-rose
-           focus:ring-2 focus:ring-sf-rose/20 appearance-none cursor-pointer;
+    @apply w-full bg-white border border-tb-lavender text-tb-text
+           font-body text-sm px-4 py-3 rounded-2xl outline-none
+           transition-all duration-300 focus:border-tb-purple
+           focus:ring-2 focus:ring-tb-lav-deep/20 appearance-none cursor-pointer;
   }
 
+  /* ── Badges ──────────────────────────────────────────── */
   .badge {
-    @apply inline-block bg-sf-rose text-sf-text text-xs font-body
-           font-bold px-3 py-1 rounded-full;
+    @apply inline-block bg-tb-pink text-tb-text text-xs
+           font-body font-bold px-3 py-1 rounded-full;
+  }
+  .badge-purple {
+    @apply inline-block bg-tb-purple text-white text-xs
+           font-body font-bold px-3 py-1 rounded-full;
   }
 
-  .badge-sage {
-    @apply inline-block bg-sf-sage text-white text-xs font-body
-           font-bold px-3 py-1 rounded-full;
+  /* ── Bottom nav ──────────────────────────────────────── */
+  .bottom-nav-item {
+    @apply flex flex-col items-center gap-1 text-tb-text-light
+           transition-colors duration-200;
+  }
+  .bottom-nav-item.active {
+    @apply text-tb-purple;
+  }
+
+  /* ── Section florale ─────────────────────────────────── */
+  .section-divider {
+    @apply flex items-center gap-3 mb-3;
+  }
+  .floral-line {
+    font-size: 0.85rem;
+    color: #C9ADE8;
+    opacity: 0.7;
   }
 }
+
+/* scrollbar hide utility */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
