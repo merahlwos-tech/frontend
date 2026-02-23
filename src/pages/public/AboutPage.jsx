@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom'
 import { Heart, Leaf, Sparkles, ShieldCheck } from 'lucide-react'
 
 const VALUES = [
-  { icon: Leaf,        title: 'Clean Ingredients',    desc: 'Pure, natural ingredients sourced from Japan. No harmful chemicals, no compromise.', color: '#EEF9F5', iconColor: '#6BBFA0' },
+  { icon: Leaf,        title: 'Clean Ingredients',    desc: 'Pure, natural ingredients sourced from Korea. No harmful chemicals, no compromise.', color: '#EEF9F5', iconColor: '#6BBFA0' },
   { icon: Heart,       title: 'Cruelty-Free',         desc: '100% cruelty-free, never tested on animals. Beauty that is kind to all living beings.', color: '#FDF0F4', iconColor: '#E8A0B4' },
-  { icon: Sparkles,    title: 'Japanese Magic',       desc: 'Inspired by centuries-old Japanese beauty rituals, blending tradition with modern science.', color: '#F5F0FC', iconColor: '#9B5FC0' },
+  { icon: Sparkles,    title: 'Korean Magic',         desc: 'Inspired by centuries-old Korean beauty rituals, blending tradition with modern science.', color: '#F5F0FC', iconColor: '#9B5FC0' },
   { icon: ShieldCheck, title: 'Dermatologist Tested', desc: 'Clinically tested and approved for all skin types. Safe, effective, and gentle.', color: '#FFF5E8', iconColor: '#F4A460' },
 ]
 
@@ -26,7 +26,7 @@ function AboutPage() {
             Born from magic,<br />made with love.
           </p>
           <p style={{ fontSize: '13px', color: '#6A5080', lineHeight: 1.7 }} className="max-w-xs mx-auto">
-            Tinkerbells est née d'un rêve — apporter les secrets de la beauté japonaise
+            Tinkerbells est née d'un rêve — apporter les secrets de la beauté coréenne
             en Algérie, naturellement et avec intention.
           </p>
         </div>
@@ -37,17 +37,17 @@ function AboutPage() {
         <div className="rounded-3xl p-6" style={{ background: 'white', boxShadow: '0 2px 16px rgba(155,95,192,0.08)' }}>
           <p className="sf-label mb-2">Qui sommes-nous</p>
           <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.35rem', fontWeight: 700, color: '#2D2340', marginBottom: 12 }}>
-            Un peu de Tokyo,<br />beaucoup de passion.
+            Un peu de Séoul,<br />beaucoup de passion.
           </p>
           <p style={{ fontSize: '13px', color: '#7B6B8A', lineHeight: 1.75 }} className="mb-3">
             Tinkerbells est une marque de beauté clean inspirée de la sagesse ancestrale
-            des soins japonais. Nous croyons que la beauté doit être simple, honnête et
+            des soins coréens. Nous croyons que la beauté doit être simple, honnête et
             bienveillante — pour votre peau et pour la planète.
           </p>
           <p style={{ fontSize: '13px', color: '#7B6B8A', lineHeight: 1.75 }}>
-            Chaque produit est formulé avec des ingrédients comme l'extrait de saké,
-            le thé vert, l'huile de camélia et des botaniques de rosée matinale —
-            choisis pour leur efficacité prouvée et leur douceur. Disponibles partout
+            Chaque produit est formulé avec des ingrédients précieux comme
+            le thé vert, l'huile de camélia, la bave d'escargot et des botaniques de rosée matinale —
+            choisis pour leur efficacité prouvée et leur douceur féerique. Disponibles partout
             en Algérie, livrés directement chez vous. 🇩🇿
           </p>
         </div>
@@ -88,7 +88,7 @@ function AboutPage() {
             Prête à ressentir la magie ?
           </p>
           <p style={{ fontSize: '12px', color: '#8B7A9B', marginBottom: 16 }}>
-            Découvrez notre gamme complète de beauté clean<br />inspirée du Japon, livrée dans toute l'Algérie.
+            Découvrez notre gamme complète de beauté clean<br />inspirée de la Corée, livrée dans toute l'Algérie.
           </p>
           <Link to="/products"
             className="inline-flex items-center gap-2 font-body font-semibold text-sm"
