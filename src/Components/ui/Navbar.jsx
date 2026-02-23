@@ -57,7 +57,8 @@ function Navbar() {
             <div className="flex items-center gap-1">
               <Link to="/wishlist"
                 className="relative p-1 text-tb-text-soft hover:text-tb-text transition-colors">
-                <Heart size={20} strokeWidth={1.8} style={{ fill: wishCount > 0 ? '#E8A0B4' : 'none', color: wishCount > 0 ? '#E8A0B4' : undefined }} />
+                <Heart size={20} strokeWidth={1.8}
+                  style={{ fill: wishCount > 0 ? '#E8A0B4' : 'none', color: wishCount > 0 ? '#E8A0B4' : undefined }} />
                 {wishCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-tb-purple text-white text-[9px] font-bold flex items-center justify-center rounded-full">
                     {wishCount}
@@ -106,6 +107,11 @@ function Navbar() {
                 {label}
               </Link>
             ))}
+            <Link to="/wishlist" onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 py-3 border-b border-tb-lav-soft font-body text-tb-text-soft hover:text-tb-purple transition-colors text-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-tb-pink flex-shrink-0" />
+              💜 Ma Wishlist {wishCount > 0 && `(${wishCount})`}
+            </Link>
           </div>
         </div>
       )}

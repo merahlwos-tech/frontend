@@ -50,7 +50,6 @@ function WishlistPage() {
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 16px' }}>
 
         {wishlist.length === 0 ? (
-          /* État vide */
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div style={{ width: 90, height: 90, background: 'rgba(232,160,180,0.12)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
               <Heart size={36} style={{ color: '#E8A0B4', opacity: 0.7 }} />
@@ -77,11 +76,11 @@ function WishlistPage() {
                 return (
                   <div key={product._id} className="animate-fade-up" style={{ animationDelay: `${i * 50}ms` }}>
                     <div style={{ background: 'white', borderRadius: 20, overflow: 'hidden', boxShadow: '0 2px 16px rgba(155,95,192,0.09)', position: 'relative' }}>
-                      {/* Image */}
-                      <Link to={`/products/${product._id}`}>
+                      <Link to={`/products/${product._id}`} style={{ textDecoration: 'none' }}>
                         <div style={{ aspectRatio: '3/4', background: '#F8F3FC', overflow: 'hidden', position: 'relative' }}>
-                          <img src={img} alt={product.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
-                          {/* Rating */}
+                          <img src={img} alt={product.name}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            loading="lazy" />
                           <div className="absolute bottom-3 left-3 flex items-center gap-1 rounded-full px-2 py-0.5"
                             style={{ background: 'rgba(255,255,255,0.88)' }}>
                             <Star size={9} style={{ fill: '#FBBF24', color: '#FBBF24' }} />
@@ -91,7 +90,7 @@ function WishlistPage() {
                         </div>
                       </Link>
 
-                      {/* Bouton retrait */}
+                      {/* Bouton suppression */}
                       <button
                         onClick={() => handleRemove(product)}
                         className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
@@ -99,7 +98,6 @@ function WishlistPage() {
                         <Trash2 size={14} style={{ color: '#E8A0B4' }} />
                       </button>
 
-                      {/* Infos */}
                       <div style={{ padding: '12px 14px 14px' }}>
                         <p style={{ fontSize: '11px', color: '#B8A8C8', marginBottom: 3 }}>{product.brand}</p>
                         <Link to={`/products/${product._id}`} style={{ textDecoration: 'none' }}>
@@ -124,7 +122,6 @@ function WishlistPage() {
               })}
             </div>
 
-            {/* CTA bas de page */}
             <div className="mt-10 text-center">
               <Link to="/products"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(155,95,192,0.10)', color: '#9B5FC0', textDecoration: 'none', borderRadius: 50, padding: '11px 24px', fontFamily: 'Nunito, sans-serif', fontWeight: 700, fontSize: 13, border: '1.5px solid rgba(155,95,192,0.20)' }}>
