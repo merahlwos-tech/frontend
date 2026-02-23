@@ -28,7 +28,6 @@ function AdminSecretAccess() {
   )
 }
 
-/* Icônes SVG custom pour coller exactement au design */
 function IconWand() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -53,26 +52,10 @@ function Footer() {
   const path = location.pathname
 
   const navItems = [
-    {
-      label: 'Home',
-      to: '/',
-      icon: () => <Home size={22} strokeWidth={1.8} />,
-    },
-    {
-      label: 'Shop',
-      to: '/products',
-      icon: IconWand,
-    },
-    {
-      label: 'Wishlist',
-      to: '/products',
-      icon: IconHeart,
-    },
-    {
-      label: 'Info',
-      to: '/about',
-      icon: () => <Info size={22} strokeWidth={1.8} />,
-    },
+    { label: 'Home',     to: '/',         icon: () => <Home size={22} strokeWidth={1.8} />, exact: true  },
+    { label: 'Shop',     to: '/products', icon: IconWand,                                   exact: false },
+    { label: 'Wishlist', to: '/wishlist', icon: IconHeart,                                  exact: true  },
+    { label: 'Info',     to: '/about',    icon: () => <Info size={22} strokeWidth={1.8} />, exact: true  },
   ]
 
   return (
@@ -92,13 +75,13 @@ function Footer() {
         </div>
       </footer>
 
-      {/* Bottom Navigation — exactement comme le design */}
+      {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-50"
            style={{ background: 'rgba(255,245,252,0.96)', backdropFilter: 'blur(16px)', borderTop: '1px solid rgba(249,200,212,0.3)', boxShadow: '0 -4px 24px rgba(155,95,192,0.08)' }}>
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-around py-2.5 px-4">
-            {navItems.map(({ label, to, icon: Icon }) => {
-              const isActive = path === to || (to !== '/' && path.startsWith(to))
+            {navItems.map(({ label, to, icon: Icon, exact }) => {
+              const isActive = exact ? path === to : path === to || path.startsWith(to + '/')
               return (
                 <button key={label} onClick={() => navigate(to)}
                   className="flex flex-col items-center gap-1 min-w-[56px] transition-all duration-200"
