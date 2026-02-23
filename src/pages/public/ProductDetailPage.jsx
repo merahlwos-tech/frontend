@@ -1,108 +1,137 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ShoppingBag, ArrowLeft, ChevronLeft, ChevronRight, Heart } from 'lucide-react'
+import { ShoppingBag, ArrowLeft, ChevronLeft, ChevronRight, Heart, Minus, Plus } from 'lucide-react'
 import api from '../../utils/api'
 import { useCart } from '../../context/CartContext'
-import SizeSelector from '../../Components/public/SizeSelector'
-import QuantitySelector from '../../Components/public/QuantitySelector'
+import { useWishlist } from '../../context/WishlistContext'
 import toast from 'react-hot-toast'
 
 function ProductDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { addToCart } = useCart()
+  const { addToCart, cartItems } = useCart()
+  const { toggle, isWished } = useWishlist()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [selectedSize, setSelectedSize] = useState(null)
   const [quantity, setQuantity] = useState(1)
   const [currentImage, setCurrentImage] = useState(0)
 
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [id])
+  useEffect(() => { window.scrollTo(0, 0) }, [id])
 
   useEffect(() => {
     api.get(`/products/${id}`)
-      .then((res) => {
-        setProduct(res.data)
-        const first = res.data.sizes?.find((s) => s.stock > 0)
-        if (first) setSelectedSize(first.size)
-      })
+      .then((res) => setProduct(res.data))
       .catch(() => navigate('/products'))
       .finally(() => setLoading(false))
   }, [id])
 
   if (loading) return (
-    <div className="min-h-screen bg-sf-cream flex items-center justify-center pt-20">
-      <div className="w-10 h-10 border-3 border-sf-beige-dark border-t-sf-rose
-                      rounded-full animate-spin" />
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#FEF0F8' }}>
+      <div className="w-10 h-10 rounded-full animate-spin"
+        style={{ border: '3px solid rgba(249,200,212,0.3)', borderTopColor: '#9B5FC0' }} />
     </div>
   )
 
   if (!product) return null
 
-  const maxStock = product.sizes?.find((s) => s.size === selectedSize)?.stock || 1
+  const liked = isWished(product._id)
   const images = product.images?.length > 0 ? product.images : ['/placeholder.jpg']
 
+  // Compteur panier
+  const cartQty = cartItems?.reduce((acc, item) => {
+    return item._id === product._id || item.product?._id === product._id
+      ? acc + (item.quantity || 1) : acc
+  }, 0) || 0
+
   const handleAddToCart = () => {
-    if (!selectedSize) { toast.error('Veuillez sélectionner une taille 👆'); return }
-    addToCart(product, selectedSize, quantity)
-    toast.success(`${product.name} ajouté au panier ! 🛍️`)
+    addToCart(product, null, quantity)
+    toast.success(`🛍️ ${product.name} ajouté au panier !`)
   }
 
+  const handleWishlist = () => {
+    const wasLiked = isWished(product._id)
+    toggle(product)
+    if (!wasLiked) toast.success('💜 Ajouté à ta wishlist !', { duration: 2000 })
+    else toast('🤍 Retiré de ta wishlist', { duration: 1500 })
+  }
+
+  const CAT_COLORS = {
+    'Skincare':  { bg: '#FFE8EF', color: '#C4607A' },
+    'Makeup':    { bg: '#FFF0E8', color: '#C46020' },
+    'Body Care': { bg: '#EBE0FF', color: '#7B3FA0' },
+    'Hair Care': { bg: '#D6FFEE', color: '#2A8A60' },
+  }
+  const catStyle = CAT_COLORS[product.category] || { bg: '#EBE0FF', color: '#7B3FA0' }
+
   return (
-    <div className="min-h-screen bg-sf-cream pt-20">
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 pt-8 pb-6">
+    <div className="min-h-screen pb-12" style={{ background: '#FEF0F8' }}>
+
+      {/* Back */}
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '16px 16px 0' }}>
         <button onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sf-text-soft hover:text-sf-text
-                     transition-colors text-sm font-body group">
-          <ArrowLeft size={16}
-            className="group-hover:-translate-x-1 transition-transform" />
-          Retour
+          className="flex items-center gap-2 transition-colors"
+          style={{ fontSize: 13, fontWeight: 700, color: '#8B7A9B', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Nunito, sans-serif' }}>
+          <ArrowLeft size={15} /> Retour
         </button>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-16">
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '16px' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-          {/* Galerie */}
+          {/* ── Galerie ── */}
           <div className="flex flex-col gap-3">
-            <div className="relative aspect-[3/4] bg-sf-beige rounded-2xl overflow-hidden group">
+            <div className="relative overflow-hidden group" style={{ aspectRatio: '1/1', background: '#F8F3FC', borderRadius: 24 }}>
               <img src={images[currentImage]} alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-700
-                           group-hover:scale-105" />
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+
               {images.length > 1 && (
                 <>
-                  <button onClick={() => setCurrentImage((i) => i === 0 ? images.length - 1 : i - 1)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90
-                               rounded-full flex items-center justify-center shadow-soft
-                               opacity-0 group-hover:opacity-100 transition-opacity
-                               hover:bg-white">
-                    <ChevronLeft size={18} />
+                  <button onClick={() => setCurrentImage(i => i === 0 ? images.length - 1 : i - 1)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ background: 'rgba(255,255,255,0.90)', boxShadow: '0 2px 10px rgba(0,0,0,0.10)' }}>
+                    <ChevronLeft size={16} style={{ color: '#5A4A6A' }} />
                   </button>
-                  <button onClick={() => setCurrentImage((i) => i === images.length - 1 ? 0 : i + 1)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90
-                               rounded-full flex items-center justify-center shadow-soft
-                               opacity-0 group-hover:opacity-100 transition-opacity
-                               hover:bg-white">
-                    <ChevronRight size={18} />
+                  <button onClick={() => setCurrentImage(i => i === images.length - 1 ? 0 : i + 1)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ background: 'rgba(255,255,255,0.90)', boxShadow: '0 2px 10px rgba(0,0,0,0.10)' }}>
+                    <ChevronRight size={16} style={{ color: '#5A4A6A' }} />
                   </button>
                 </>
               )}
+
+              {/* Badge catégorie */}
               <div className="absolute top-3 left-3">
-                <span className="bg-white/90 rounded-full px-3 py-1 text-xs font-body
-                                 font-600 text-sf-text shadow-soft">
+                <span className="text-[11px] font-bold px-3 py-1 rounded-full"
+                  style={{ background: catStyle.bg, color: catStyle.color }}>
                   {product.category}
                 </span>
               </div>
+
+              {/* Wishlist */}
+              <button onClick={handleWishlist}
+                className="absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                style={{ background: liked ? 'rgba(232,160,180,0.95)' : 'rgba(255,255,255,0.90)', boxShadow: '0 2px 10px rgba(0,0,0,0.10)' }}>
+                <Heart size={17} style={{ fill: liked ? 'white' : 'none', color: liked ? 'white' : '#C4B0D8', strokeWidth: 2 }} />
+              </button>
+
+              {/* Compteur panier badge */}
+              {cartQty > 0 && (
+                <div className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full px-3 py-1"
+                  style={{ background: '#9B5FC0', boxShadow: '0 2px 10px rgba(155,95,192,0.35)' }}>
+                  <ShoppingBag size={11} color="white" />
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'white' }}>
+                    {cartQty} dans le panier
+                  </span>
+                </div>
+              )}
             </div>
 
+            {/* Thumbnails */}
             {images.length > 1 && (
               <div className="grid grid-cols-5 gap-2">
                 {images.map((img, i) => (
                   <button key={i} onClick={() => setCurrentImage(i)}
-                    className={`aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all
-                                ${i === currentImage ? 'border-sf-rose shadow-rose' : 'border-transparent'}`}>
+                    style={{ aspectRatio: '1/1', borderRadius: 12, overflow: 'hidden', border: `2px solid ${i === currentImage ? '#9B5FC0' : 'transparent'}`, transition: 'border 0.2s', padding: 0, background: 'none', cursor: 'pointer' }}>
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
@@ -110,73 +139,103 @@ function ProductDetailPage() {
             )}
           </div>
 
-          {/* Infos */}
-          <div className="flex flex-col gap-6 animate-fade-up">
+          {/* ── Infos produit ── */}
+          <div className="flex flex-col gap-5 animate-fade-up">
+
+            {/* Titre + Prix */}
             <div>
-              <p className="sf-label mb-2">{product.brand}</p>
-              <h1 className="font-display text-sf-text text-4xl sm:text-5xl leading-tight mb-4">
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#9B5FC0', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 6 }}>
+                {product.brand}
+              </p>
+              <h1 style={{ fontFamily: 'Nunito, sans-serif', fontSize: '1.6rem', fontWeight: 800, color: '#2D2340', lineHeight: 1.25, marginBottom: 12 }}>
                 {product.name}
               </h1>
-              <p className="font-body font-700 text-sf-text text-3xl">
-                {(product.price ?? 0).toLocaleString('fr-DZ')}
-                <span className="text-base text-sf-text-soft font-400 ml-2">DA</span>
-              </p>
+              <div className="flex items-baseline gap-2">
+                <span style={{ fontSize: '2rem', fontWeight: 900, color: '#2D2340' }}>
+                  {(product.price ?? 0).toFixed(0)}
+                </span>
+                <span style={{ fontSize: '1rem', fontWeight: 700, color: '#8B7A9B' }}>DA</span>
+              </div>
             </div>
 
-            <div className="h-px bg-sf-beige" />
+            <div style={{ height: 1, background: 'rgba(249,200,212,0.4)' }} />
 
+            {/* Quantité */}
             <div>
-              <p className="font-body text-sf-text-soft text-sm font-600 uppercase
-                             tracking-wider mb-3">
-                Taille
-                {selectedSize && <span className="ml-2 text-sf-rose-dark">{selectedSize}</span>}
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>
+                Quantité
               </p>
-              <SizeSelector sizes={product.sizes || []} selected={selectedSize}
-                onChange={(size) => { setSelectedSize(size); setQuantity(1) }} />
-              {selectedSize && (
-                <p className="text-sf-text-light text-xs font-body mt-2">
-                  {maxStock} disponible{maxStock > 1 ? 's' : ''}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center" style={{ background: 'white', borderRadius: 50, border: '1.5px solid rgba(249,200,212,0.5)', boxShadow: '0 2px 10px rgba(155,95,192,0.07)' }}>
+                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                    className="w-10 h-10 flex items-center justify-center rounded-full transition-all hover:opacity-70"
+                    style={{ color: '#9B5FC0', background: 'none', border: 'none', cursor: 'pointer' }}>
+                    <Minus size={14} />
+                  </button>
+                  <span style={{ width: 36, textAlign: 'center', fontSize: 16, fontWeight: 800, color: '#2D2340' }}>
+                    {quantity}
+                  </span>
+                  <button onClick={() => setQuantity(q => q + 1)}
+                    className="w-10 h-10 flex items-center justify-center rounded-full transition-all hover:opacity-70"
+                    style={{ color: '#9B5FC0', background: 'none', border: 'none', cursor: 'pointer' }}>
+                    <Plus size={14} />
+                  </button>
+                </div>
+
+                {/* Total ligne */}
+                <div style={{ background: 'rgba(155,95,192,0.08)', borderRadius: 12, padding: '8px 14px' }}>
+                  <p style={{ fontSize: 10, color: '#9B5FC0', fontWeight: 700 }}>Total</p>
+                  <p style={{ fontSize: 15, fontWeight: 900, color: '#2D2340' }}>
+                    {((product.price ?? 0) * quantity).toFixed(0)} DA
+                  </p>
+                </div>
+              </div>
+
+              {/* Info panier actuel */}
+              {cartQty > 0 && (
+                <p style={{ fontSize: 12, color: '#9B5FC0', fontWeight: 600, marginTop: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <ShoppingBag size={12} /> {cartQty} déjà dans ton panier
                 </p>
               )}
             </div>
 
-            <div>
-              <p className="font-body text-sf-text-soft text-sm font-600 uppercase
-                             tracking-wider mb-3">Quantité</p>
-              <QuantitySelector value={quantity} min={1} max={maxStock}
-                onChange={setQuantity} />
-            </div>
-
+            {/* Bouton ajouter */}
             <button onClick={handleAddToCart}
-              className="btn-primary w-full py-4 text-base rounded-2xl">
+              className="flex items-center justify-center gap-2 w-full rounded-2xl py-4 font-body font-bold text-white transition-all hover:opacity-90"
+              style={{ background: 'linear-gradient(135deg, #9B5FC0, #B896D4)', boxShadow: '0 4px 20px rgba(155,95,192,0.35)', fontSize: 15, fontFamily: 'Nunito, sans-serif', border: 'none', cursor: 'pointer' }}>
               <ShoppingBag size={18} />
-              Ajouter au panier
+              Ajouter au panier — {((product.price ?? 0) * quantity).toFixed(0)} DA
             </button>
 
+            {/* Description */}
             {product.description && (
               <>
-                <div className="h-px bg-sf-beige" />
+                <div style={{ height: 1, background: 'rgba(249,200,212,0.4)' }} />
                 <div>
-                  <p className="font-body text-sf-text-soft text-sm font-600 uppercase
-                                 tracking-wider mb-3">Description</p>
-                  <p className="font-body text-sf-text-soft leading-relaxed text-sm">
+                  <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>
+                    Description
+                  </p>
+                  <p style={{ fontSize: 13, color: '#7B6B8A', lineHeight: 1.75 }}>
                     {product.description}
                   </p>
                 </div>
               </>
             )}
 
-            <div className="bg-sf-sage-soft rounded-2xl p-4 flex items-start gap-3">
-              <span className="text-2xl">🚚</span>
+            {/* Livraison */}
+            <div className="flex items-start gap-3 rounded-2xl p-4"
+              style={{ background: 'rgba(155,95,192,0.07)', border: '1px solid rgba(155,95,192,0.12)' }}>
+              <span style={{ fontSize: 22 }}>🚚</span>
               <div>
-                <p className="font-body font-700 text-sf-text text-sm">
-                  Livraison dans toute l'Algérie
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#2D2340', marginBottom: 2 }}>
+                  Livraison dans toute l'Algérie 🇩🇿
                 </p>
-                <p className="font-body text-sf-text-soft text-xs mt-0.5">
+                <p style={{ fontSize: 12, color: '#8B7A9B' }}>
                   Paiement à la livraison · 2 à 5 jours ouvrables
                 </p>
               </div>
             </div>
+
           </div>
         </div>
       </div>

@@ -24,12 +24,13 @@ function AdminLayout() {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-6 py-6" style={{ borderBottom: '1px solid rgba(249,200,212,0.25)' }}>
+      <div className="px-6 py-5" style={{ borderBottom: '1px solid rgba(249,200,212,0.25)' }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-               style={{ background: 'linear-gradient(135deg, #F9C8D4, #E8DCF5)' }}>
-            <span style={{ fontSize: '1.2rem' }}>🌿</span>
-          </div>
+          <img
+            src="/images/logo.jpg"
+            alt="Tinkerbells"
+            style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(249,200,212,0.5)', boxShadow: '0 2px 10px rgba(155,95,192,0.15)', flexShrink: 0 }}
+          />
           <div>
             <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.3rem', fontWeight: 700, color: '#7B5EA7', lineHeight: 1 }}>
               Tinkerbells
@@ -108,9 +109,13 @@ function AdminLayout() {
           <button onClick={() => setSidebarOpen(true)} style={{ color: '#B8A8C8' }}>
             <Menu size={22} />
           </button>
-          <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.4rem', fontWeight: 700, color: '#7B5EA7' }}>
-            Tinkerbells
-          </p>
+          <div className="flex items-center gap-2">
+            <img src="/images/logo.jpg" alt="Tinkerbells"
+              style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover', border: '1.5px solid rgba(249,200,212,0.5)' }} />
+            <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.4rem', fontWeight: 700, color: '#7B5EA7' }}>
+              Tinkerbells
+            </p>
+          </div>
           <div className="w-8" />
         </header>
 
