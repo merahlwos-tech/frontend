@@ -34,9 +34,10 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <Toaster position="top-right"
+        <WishlistProvider>
+          <CartProvider>
+            <Toaster
+              position="top-right"
               toastOptions={{
                 style: {
                   background: '#FFFFFF',
@@ -48,28 +49,28 @@ function App() {
                   boxShadow: '0 4px 24px rgba(139,111,94,0.12)',
                 },
                 success: { iconTheme: { primary: '#A8BBA8', secondary: '#fff' } },
-                error:   { iconTheme: { primary: '#F2C4CE', secondary: '#3D3530' } },
+                error: { iconTheme: { primary: '#F2C4CE', secondary: '#3D3530' } },
               }}
             />
             <Routes>
-              <Route path="/"           element={<PublicLayout><HomePage /></PublicLayout>} />
-              <Route path="/products"   element={<PublicLayout><ProductsPage /></PublicLayout>} />
+              <Route path="/"             element={<PublicLayout><HomePage /></PublicLayout>} />
+              <Route path="/products"     element={<PublicLayout><ProductsPage /></PublicLayout>} />
               <Route path="/products/:id" element={<PublicLayout><ProductDetailPage /></PublicLayout>} />
-              <Route path="/tag/:tag"   element={<PublicLayout><TagProductsPage /></PublicLayout>} />
-              <Route path="/cart"       element={<PublicLayout><CartPage /></PublicLayout>} />
+              <Route path="/tag/:tag"     element={<PublicLayout><TagProductsPage /></PublicLayout>} />
+              <Route path="/cart"         element={<PublicLayout><CartPage /></PublicLayout>} />
               <Route path="/confirmation" element={<PublicLayout><ConfirmationPage /></PublicLayout>} />
-              <Route path="/about"      element={<PublicLayout><AboutPage /></PublicLayout>} />
-              <Route path="/wishlist"   element={<PublicLayout><WishlistPage /></PublicLayout>} />
-              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route path="/about"        element={<PublicLayout><AboutPage /></PublicLayout>} />
+              <Route path="/wishlist"     element={<PublicLayout><WishlistPage /></PublicLayout>} />
+              <Route path="/admin/login"  element={<AdminLoginPage />} />
               <Route path="/admin" element={<PrivateRoute><AdminLayout /></PrivateRoute>}>
-                <Route index element={<AdminDashboardPage />} />
+                <Route index           element={<AdminDashboardPage />} />
                 <Route path="products" element={<AdminProductsPage />} />
                 <Route path="orders"   element={<AdminOrdersPage />} />
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-          </WishlistProvider>
-        </CartProvider>
+          </CartProvider>
+        </WishlistProvider>
       </AuthProvider>
     </BrowserRouter>
   )
