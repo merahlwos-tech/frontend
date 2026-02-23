@@ -80,7 +80,7 @@ function ConfirmationPage() {
     }
     setCancelling(true)
     try {
-      await api.put(`/orders/${orderId}`, { status: 'annulé' })
+      await api.patch(`/orders/${orderId}/cancel`)
       setShowToast(false)
       toast.success('Commande annulée ✓')
       sessionStorage.removeItem('lastOrderId')
