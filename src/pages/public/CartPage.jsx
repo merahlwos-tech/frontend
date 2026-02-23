@@ -27,7 +27,9 @@ function CartPage() {
         total,
       })
       clearCart()
-      navigate('/confirmation', { replace: true, state: { orderId: res.data._id } })
+      const newOrderId = res.data._id || res.data.id || res.data?.order?._id
+      sessionStorage.setItem('lastOrderId', newOrderId || '')
+      navigate('/confirmation', { replace: true, state: { orderId: newOrderId } })
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de la commande.')
     } finally {

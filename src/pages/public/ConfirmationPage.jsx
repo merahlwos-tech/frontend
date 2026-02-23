@@ -64,7 +64,7 @@ function CancelToast({ onCancel, onDismiss, cancelling }) {
 function ConfirmationPage() {
   const location = useLocation()
   const navigate = useNavigate()
-  const orderId = location.state?.orderId
+  const orderId = location.state?.orderId || sessionStorage.getItem('lastOrderId')
 
   const [showToast, setShowToast] = useState(true)
   const [cancelling, setCancelling] = useState(false)
@@ -83,6 +83,7 @@ function ConfirmationPage() {
       await api.put(`/orders/${orderId}`, { status: 'annulé' })
       setShowToast(false)
       toast.success('Commande annulée ✓')
+      sessionStorage.removeItem('lastOrderId')
       navigate('/cart', { replace: true })
     } catch {
       toast.error("Erreur lors de l'annulation")
