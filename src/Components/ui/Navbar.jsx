@@ -45,7 +45,7 @@ function Navbar() {
 
             {/* Logo centré */}
             <Link to="/" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
-              <img src="/logo.jpg" alt="Tinkerbells Beauty World"
+              <img src="images/logo.jpg" alt="Tinkerbells Beauty World"
                 style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(249,200,212,0.6)', boxShadow: '0 2px 8px rgba(155,95,192,0.15)' }} />
               <span style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.5rem', fontWeight: 700, color: '#7B5EA7', letterSpacing: '0.01em' }}>
                 Tinkerbells
@@ -100,7 +100,7 @@ function Navbar() {
                onClick={e => e.stopPropagation()}>
             {/* Logo dans le menu */}
             <div className="flex items-center gap-3 mb-6 pb-5 border-b border-tb-lav-soft">
-              <img src="/logo.jpg" alt="Tinkerbells"
+              <img src="images/logo.jpg" alt="Tinkerbells"
                 style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(249,200,212,0.6)' }} />
               <div>
                 <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.2rem', fontWeight: 700, color: '#7B5EA7' }}>Tinkerbells</p>

@@ -20,7 +20,7 @@ function AboutPage() {
           <span className="absolute top-4 left-5 text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>✦</span>
           <span className="absolute top-4 right-7 text-lg animate-float" style={{ color: 'rgba(255,255,255,0.4)' }}>✦</span>
           <span className="absolute bottom-5 left-10 text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>✦</span>
-          <img src="/logo.jpg" alt="Tinkerbells Beauty World"
+          <img src="images/logo.jpg" alt="Tinkerbells Beauty World"
             style={{ width: 90, height: 90, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 16px', border: '3px solid rgba(255,255,255,0.6)', boxShadow: '0 4px 20px rgba(155,95,192,0.20)' }} />
           <p className="sf-label mb-2">Our Story</p>
           <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '2rem', fontWeight: 700, color: '#4A3060', lineHeight: 1.15 }} className="mb-3">
