@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
-import { CheckCircle, ShoppingBag, Home, X, RotateCcw } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { CheckCircle, ShoppingBag, Home, X, RotateCcw, Loader2 } from 'lucide-react'
+import api from '../../utils/api'
+import toast from 'react-hot-toast'
 
 /* ══ TOAST ANNULATION 5s ══ */
-function CancelToast({ onCancel, onDismiss }) {
+function CancelToast({ onCancel, onDismiss, cancelling }) {
   const [progress, setProgress] = useState(100)
   const ref = useRef(null)
   const DURATION = 5000
@@ -38,8 +40,13 @@ function CancelToast({ onCancel, onDismiss }) {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <button onClick={onCancel} style={{ background: '#FFF0F0', border: 'none', borderRadius: 50, padding: '5px 10px', fontSize: 11, fontWeight: 700, color: '#CC5555', cursor: 'pointer', fontFamily: 'Nunito, sans-serif', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <RotateCcw size={11} /> Annuler
+          <button
+            onClick={onCancel}
+            disabled={cancelling}
+            style={{ background: '#FFF0F0', border: 'none', borderRadius: 50, padding: '5px 10px', fontSize: 11, fontWeight: 700, color: '#CC5555', cursor: cancelling ? 'wait' : 'pointer', fontFamily: 'Nunito, sans-serif', display: 'flex', alignItems: 'center', gap: 4, opacity: cancelling ? 0.7 : 1 }}
+          >
+            {cancelling ? <Loader2 size={11} className="animate-spin" /> : <RotateCcw size={11} />}
+            Annuler
           </button>
           <button onClick={onDismiss} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#CCC', padding: 4 }}>
             <X size={14} />
@@ -55,34 +62,42 @@ function CancelToast({ onCancel, onDismiss }) {
 }
 
 function ConfirmationPage() {
-  const [showToast, setShowToast] = useState(true)
-  const [cancelled, setCancelled] = useState(false)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const orderId = location.state?.orderId
 
-  // Scroll vers le haut à l'arrivée sur la page
+  const [showToast, setShowToast] = useState(true)
+  const [cancelling, setCancelling] = useState(false)
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
-  const handleCancel = () => {
-    setCancelled(true)
-    setShowToast(false)
-    window.history.back()
+  const handleCancel = async () => {
+    if (!orderId) {
+      toast.error("Impossible d'annuler : ID de commande introuvable")
+      return
+    }
+    setCancelling(true)
+    try {
+      await api.put(`/orders/${orderId}`, { status: 'annulé' })
+      setShowToast(false)
+      toast.success('Commande annulée ✓')
+      navigate('/cart', { replace: true })
+    } catch {
+      toast.error("Erreur lors de l'annulation")
+    } finally {
+      setCancelling(false)
+    }
   }
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#F9F8FC' }}>
-
       <div style={{ width: '100%', maxWidth: 400, textAlign: 'center' }}>
 
         {/* Icône succès */}
         <div style={{ position: 'relative', display: 'inline-block', marginBottom: 28 }}>
-          <div style={{
-            width: 100, height: 100, borderRadius: '50%',
-            background: '#F0F7EE',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto',
-            border: '2px solid #D0E8D0',
-          }}>
+          <div style={{ width: 100, height: 100, borderRadius: '50%', background: '#F0F7EE', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', border: '2px solid #D0E8D0' }}>
             <span style={{ fontSize: 46 }}>✓</span>
           </div>
         </div>
@@ -103,31 +118,29 @@ function ConfirmationPage() {
         <div style={{ background: 'white', borderRadius: 16, padding: '16px 20px', marginBottom: 24, border: '1px solid #F0EDF5', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14 }}>
           <span style={{ fontSize: 28, flexShrink: 0 }}>🚚</span>
           <div>
-            <p style={{ fontSize: 13, fontWeight: 700, color: '#1A1A2E', marginBottom: 3 }}>
-              Livraison dans toute l'Algérie 🇩🇿
-            </p>
-            <p style={{ fontSize: 12, color: '#888' }}>
-              2 à 5 jours ouvrables · Paiement à la livraison
-            </p>
+            <p style={{ fontSize: 13, fontWeight: 700, color: '#1A1A2E', marginBottom: 3 }}>Livraison dans toute l'Algérie 🇩🇿</p>
+            <p style={{ fontSize: 12, color: '#888' }}>2 à 5 jours ouvrables · Paiement à la livraison</p>
           </div>
         </div>
 
         {/* Boutons */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <Link to="/products"
-            style={{ background: '#1A1A2E', color: 'white', borderRadius: 50, padding: '13px 28px', textDecoration: 'none', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          <Link to="/products" style={{ background: '#1A1A2E', color: 'white', borderRadius: 50, padding: '13px 28px', textDecoration: 'none', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
             <ShoppingBag size={15} /> Continuer mes achats
           </Link>
-          <Link to="/"
-            style={{ background: 'white', color: '#555', borderRadius: 50, padding: '12px 28px', textDecoration: 'none', fontSize: 14, fontWeight: 600, fontFamily: 'Nunito, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, border: '1px solid #E8E5F0' }}>
+          <Link to="/" style={{ background: 'white', color: '#555', borderRadius: 50, padding: '12px 28px', textDecoration: 'none', fontSize: 14, fontWeight: 600, fontFamily: 'Nunito, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, border: '1px solid #E8E5F0' }}>
             <Home size={15} /> Retour à l'accueil
           </Link>
         </div>
       </div>
 
       {/* Toast annulation */}
-      {showToast && !cancelled && (
-        <CancelToast onCancel={handleCancel} onDismiss={() => setShowToast(false)} />
+      {showToast && (
+        <CancelToast
+          onCancel={handleCancel}
+          onDismiss={() => setShowToast(false)}
+          cancelling={cancelling}
+        />
       )}
     </div>
   )

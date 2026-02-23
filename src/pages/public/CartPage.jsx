@@ -16,19 +16,18 @@ function CartPage() {
     if (items.length === 0) { toast.error('Votre panier est vide'); return }
     setSubmitting(true)
     try {
-      await api.post('/orders', {
+      const res = await api.post('/orders', {
         customerInfo,
         items: items.map(item => ({
           product: item.productId,
           name: item.name,
-
           quantity: item.quantity,
           price: item.price,
         })),
         total,
       })
       clearCart()
-      navigate('/confirmation', { replace: true })
+      navigate('/confirmation', { replace: true, state: { orderId: res.data._id } })
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de la commande.')
     } finally {
