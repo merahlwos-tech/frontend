@@ -108,7 +108,7 @@ function WishlistPage() {
                         </Link>
                         <div className="flex items-center justify-between">
                           <span style={{ fontSize: '15px', fontWeight: 800, color: '#2D2340' }}>
-                            ${(product.price ?? 0).toFixed(2)}
+                            ${(product.price ?? 0).toFixed(0)} DA
                           </span>
                           <Link to={`/products/${product._id}`}
                             style={{ background: '#9B5FC0', color: 'white', borderRadius: 50, padding: '6px 12px', fontSize: 11, fontWeight: 700, fontFamily: 'Nunito, sans-serif', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>

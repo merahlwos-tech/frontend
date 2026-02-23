@@ -80,7 +80,7 @@ function ProductCard({ product }) {
              className="line-clamp-2">{product.name}</p>
           <div className="flex items-center justify-between">
             <span style={{ fontSize: '13px', fontWeight: 800, color: '#2D2340' }}>
-              ${(product.price ?? 0).toFixed(2)}
+              {(product.price ?? 0).toFixed(0)} DA
             </span>
             <button onClick={(e) => e.preventDefault()}
               className="w-6 h-6 rounded-full flex items-center justify-center"

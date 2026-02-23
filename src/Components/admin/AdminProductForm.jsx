@@ -3,9 +3,9 @@ import { Plus, Trash2, Upload, X, Loader2 } from 'lucide-react'
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
 
-const CATEGORIES = ['Skincare', 'Makeup', 'Body Care', 'Hair Care', 'Accessoires']
+const CATEGORIES = ['Skincare', 'Makeup', 'Body Care', 'Hair Care']
 
-const EMPTY = { name: '', brand: '', category: 'Skincare', price: '', description: '', sizes: [{ size: '', stock: '' }], images: [], tags: [] }
+const EMPTY = { name: '', brand: '', category: 'Skincare', price: '', description: '', images: [], tags: [] }
 
 const inputStyle = (err) => ({
   width: '100%', padding: '10px 14px', borderRadius: 14, outline: 'none',
@@ -42,9 +42,10 @@ function Section({ num, title, color = '#F9C8D4', children }) {
 function AdminProductForm({ initialData, onSuccess, onCancel }) {
   const isEditing = !!initialData
   const [form, setForm] = useState(initialData ? {
-    ...initialData, price: initialData.price.toString(),
-    sizes: initialData.sizes?.length > 0 ? initialData.sizes.map(s => ({ size: s.size.toString(), stock: s.stock.toString() })) : [{ size: '', stock: '' }],
-    images: initialData.images || [], tags: initialData.tags || [],
+    ...initialData,
+    price: initialData.price.toString(),
+    images: initialData.images || [],
+    tags: initialData.tags || [],
   } : EMPTY)
   const [errors, setErrors] = useState({})
   const [uploading, setUploading] = useState(false)
@@ -56,10 +57,6 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     setForm(p => ({ ...p, [name]: value }))
     if (errors[name]) setErrors(p => ({ ...p, [name]: '' }))
   }
-
-  const addSize = () => setForm(p => ({ ...p, sizes: [...p.sizes, { size: '', stock: '' }] }))
-  const removeSize = (i) => setForm(p => ({ ...p, sizes: p.sizes.filter((_, idx) => idx !== i) }))
-  const updateSize = (i, field, value) => setForm(p => ({ ...p, sizes: p.sizes.map((s, idx) => idx === i ? { ...s, [field]: value } : s) }))
 
   const uploadFiles = async (files) => {
     if (!files?.length) return
@@ -83,8 +80,6 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     if (!form.brand.trim()) e.brand = 'Marque requise'
     if (!form.price || isNaN(Number(form.price)) || Number(form.price) <= 0) e.price = 'Prix invalide'
     if (form.images.length === 0 && !isEditing) e.images = 'Au moins une image requise'
-    if (!form.sizes.every(s => s.size.toString().trim() !== '' && !isNaN(Number(s.stock)) && Number(s.stock) >= 0))
-      e.sizes = 'Tailles & stocks invalides'
     return e
   }
 
@@ -94,12 +89,24 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
     setSaving(true)
     try {
-      const payload = { ...form, price: Number(form.price), sizes: form.sizes.filter(s => s.size.toString().trim() !== '').map(s => ({ size: s.size, stock: Number(s.stock) })) }
-      if (isEditing) { await api.put(`/products/${initialData._id}`, payload); toast.success('Produit mis à jour ✨') }
-      else { await api.post('/products', payload); toast.success('Produit créé 🌸') }
+      const payload = {
+        ...form,
+        price: Number(form.price),
+        sizes: [],
+      }
+      if (isEditing) {
+        await api.put(`/products/${initialData._id}`, payload)
+        toast.success('Produit mis à jour ✨')
+      } else {
+        await api.post('/products', payload)
+        toast.success('Produit créé 🌸')
+      }
       onSuccess?.()
-    } catch (err) { toast.error(err.response?.data?.message || 'Erreur sauvegarde') }
-    finally { setSaving(false) }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Erreur sauvegarde')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -129,8 +136,8 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </Field>
-          <Field label="Prix ($) *" error={errors.price}>
-            <input name="price" value={form.price} onChange={handleChange} type="number" min="0" placeholder="Ex: 29.90"
+          <Field label="Prix (DA) *" error={errors.price}>
+            <input name="price" value={form.price} onChange={handleChange} type="number" min="0" placeholder="Ex: 1500"
               style={inputStyle(errors.price)}
               onFocus={e => e.target.style.borderColor = '#9B5FC0'}
               onBlur={e => e.target.style.borderColor = errors.price ? '#E8A0A0' : 'rgba(249,200,212,0.5)'} />
@@ -144,43 +151,8 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
         </Field>
       </div>
 
-      {/* Section 2 — Tailles */}
-      <Section num="2" title="Tailles & Stocks *" color="#C9ADE8">
-        <div className="space-y-3">
-          {form.sizes.map((s, i) => (
-            <div key={i} className="flex items-center gap-3 rounded-2xl p-3"
-                 style={{ background: 'rgba(249,200,212,0.1)', border: '1px solid rgba(249,200,212,0.3)' }}>
-              <div className="flex-1">
-                <label style={{ fontSize: '10px', fontWeight: 700, color: '#C4B0D8', display: 'block', marginBottom: 4 }}>Taille</label>
-                <input value={s.size} onChange={e => updateSize(i, 'size', e.target.value)} placeholder="Ex: S, M, L..."
-                  style={{ ...inputStyle(false), padding: '8px 12px' }}
-                  onFocus={e => e.target.style.borderColor = '#9B5FC0'}
-                  onBlur={e => e.target.style.borderColor = 'rgba(249,200,212,0.5)'} />
-              </div>
-              <div className="flex-1">
-                <label style={{ fontSize: '10px', fontWeight: 700, color: '#C4B0D8', display: 'block', marginBottom: 4 }}>Stock</label>
-                <input type="number" min="0" value={s.stock} onChange={e => updateSize(i, 'stock', e.target.value)} placeholder="0"
-                  style={{ ...inputStyle(false), padding: '8px 12px' }}
-                  onFocus={e => e.target.style.borderColor = '#9B5FC0'}
-                  onBlur={e => e.target.style.borderColor = 'rgba(249,200,212,0.5)'} />
-              </div>
-              <button type="button" onClick={() => removeSize(i)} className="mt-5 w-8 h-8 rounded-full flex items-center justify-center transition-all"
-                style={{ background: 'rgba(232,160,160,0.15)', color: '#E8A0A0' }}>
-                <Trash2 size={14} />
-              </button>
-            </div>
-          ))}
-        </div>
-        {errors.sizes && <p style={{ fontSize: '11px', color: '#E8A0A0' }}>{errors.sizes}</p>}
-        <button type="button" onClick={addSize}
-          className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-body font-bold transition-all"
-          style={{ background: 'rgba(155,95,192,0.1)', color: '#9B5FC0', border: '1.5px dashed rgba(155,95,192,0.3)' }}>
-          <Plus size={14} /> Ajouter une taille
-        </button>
-      </Section>
-
-      {/* Section 3 — Images */}
-      <Section num="3" title={`Images ${!isEditing ? '*' : ''}`} color="#C8EDE0">
+      {/* Section 2 — Images */}
+      <Section num="2" title={`Images ${!isEditing ? '*' : ''}`} color="#C8EDE0">
         <label
           className="flex flex-col items-center justify-center gap-3 rounded-3xl cursor-pointer transition-all"
           style={{
