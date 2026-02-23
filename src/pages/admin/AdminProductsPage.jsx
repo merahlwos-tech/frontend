@@ -88,7 +88,9 @@ function AdminProductsPage() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
           {filtered.map((product) => {
-            const totalStock = product.sizes?.reduce((s, x) => s + x.stock, 0) || 0
+            const totalStock = product.sizes?.length > 0
+                ? product.sizes.reduce((s, x) => s + x.stock, 0)
+                : (product.stock ?? 0)
             return (
               <div key={product._id} className="rounded-3xl overflow-hidden group"
                    style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(249,200,212,0.3)', boxShadow: '0 2px 16px rgba(155,95,192,0.07)' }}>
