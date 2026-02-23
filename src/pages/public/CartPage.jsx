@@ -18,9 +18,12 @@ function CartPage() {
     try {
       await api.post('/orders', {
         customerInfo,
-        items: items.map((item) => ({
-          product: item.productId, name: item.name, size: item.size,
-          quantity: item.quantity, price: item.price,
+        items: items.map(item => ({
+          product: item.productId,
+          name: item.name,
+          size: item.size,
+          quantity: item.quantity,
+          price: item.price,
         })),
         total,
       })
@@ -28,21 +31,24 @@ function CartPage() {
       navigate('/confirmation', { replace: true })
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de la commande.')
-    } finally { setSubmitting(false) }
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (items.length === 0) return (
-    <div className="min-h-screen bg-sf-cream pt-20 flex items-center justify-center">
-      <div className="text-center px-4">
-        <div className="w-24 h-24 bg-sf-rose-soft rounded-full flex items-center
-                        justify-center mx-auto mb-6 text-4xl">
+    <div className="min-h-screen flex items-center justify-center px-5"
+         style={{ background: 'linear-gradient(160deg, #FFF0F6 0%, #F5EEFF 45%, #EEF9F5 100%)' }}>
+      <div className="text-center">
+        <div style={{ width: 90, height: 90, borderRadius: '50%', background: 'linear-gradient(135deg, #F9C8D4, #E8D6FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 40 }}>
           🛒
         </div>
-        <h2 className="font-display text-sf-text text-3xl mb-2">Panier vide</h2>
-        <p className="font-body text-sf-text-soft mb-8">
-          Découvrez notre belle sélection
-        </p>
-        <Link to="/products" className="btn-primary">
+        <h2 style={{ fontFamily: 'Dancing Script, cursive', fontSize: '2rem', fontWeight: 700, color: '#2D2340', marginBottom: 8 }}>
+          Panier vide
+        </h2>
+        <p style={{ fontSize: 14, color: '#8B7A9B', marginBottom: 24 }}>Découvrez notre belle sélection ✨</p>
+        <Link to="/products"
+          style={{ background: '#9B5FC0', color: 'white', borderRadius: 50, padding: '12px 28px', textDecoration: 'none', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 16px rgba(155,95,192,0.30)' }}>
           <ShoppingBag size={16} /> Découvrir la boutique
         </Link>
       </div>
@@ -50,72 +56,76 @@ function CartPage() {
   )
 
   return (
-    <div className="min-h-screen bg-sf-cream pt-20">
-      <div className="bg-gradient-to-r from-sf-rose-soft to-sf-cream border-b
-                      border-sf-beige-dark py-10">
-        <div className="max-w-6xl mx-auto px-6 sm:px-10">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(160deg, #FFF0F6 0%, #F5EEFF 60%, #EEF9F5 100%)' }}>
+
+      {/* Header */}
+      <div style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(249,200,212,0.3)', padding: '14px 20px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <button onClick={() => navigate('/products')}
-            className="flex items-center gap-2 text-sf-text-soft hover:text-sf-text
-                       transition-colors text-sm font-body mb-4 group">
-            <ArrowLeft size={14}
-              className="group-hover:-translate-x-1 transition-transform" />
-            Continuer mes achats
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: '#8B7A9B', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Nunito, sans-serif', marginBottom: 10 }}>
+            <ArrowLeft size={14} /> Continuer mes achats
           </button>
-          <p className="sf-label mb-2">Récapitulatif</p>
-          <h1 className="font-display text-sf-text text-4xl">
+          <h1 style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.8rem', fontWeight: 700, color: '#2D2340' }}>
             Mon panier 🛍️
           </h1>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 sm:px-10 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '20px 16px' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
           {/* Articles */}
           <div className="lg:col-span-3 space-y-3">
-            <div className="flex items-center justify-between mb-4">
-              <p className="font-body text-sf-text-soft text-sm">
+            <div className="flex items-center justify-between" style={{ marginBottom: 4 }}>
+              <p style={{ fontSize: 13, color: '#8B7A9B', fontWeight: 600 }}>
                 {items.length} article{items.length !== 1 ? 's' : ''}
               </p>
               <button onClick={clearCart}
-                className="flex items-center gap-1 text-sf-text-light hover:text-red-400
-                           transition-colors text-xs font-body">
-                <Trash2 size={12} /> Vider
+                style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#C4B0D8', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Nunito, sans-serif', fontWeight: 600 }}>
+                <Trash2 size={12} /> Vider le panier
               </button>
             </div>
-            {items.map((item) => <CartItem key={item.key} item={item} />)}
+            {items.map(item => <CartItem key={item.key} item={item} />)}
           </div>
 
-          {/* Résumé */}
+          {/* Résumé + Formulaire */}
           <div className="lg:col-span-2">
-            <div className="sticky top-24 space-y-6">
-              <div className="bg-white rounded-2xl shadow-soft p-6">
-                <p className="sf-label mb-4">Total</p>
-                <div className="space-y-2 mb-4">
-                  {items.map((item) => (
-                    <div key={item.key} className="flex justify-between text-sm font-body">
-                      <span className="text-sf-text-soft truncate mr-4 flex-1">
+            <div style={{ position: 'sticky', top: 100 }}>
+
+              {/* Total */}
+              <div style={{ background: 'white', borderRadius: 20, padding: '20px', marginBottom: 16, boxShadow: '0 2px 16px rgba(155,95,192,0.08)' }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 14 }}>
+                  Récapitulatif
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+                  {items.map(item => (
+                    <div key={item.key} className="flex justify-between" style={{ fontSize: 13 }}>
+                      <span style={{ color: '#8B7A9B', flex: 1, marginRight: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {item.name} ×{item.quantity}
                       </span>
-                      <span className="text-sf-text whitespace-nowrap font-600">
+                      <span style={{ color: '#2D2340', fontWeight: 700, whiteSpace: 'nowrap' }}>
                         {(item.price * item.quantity).toLocaleString('fr-DZ')} DA
                       </span>
                     </div>
                   ))}
                 </div>
-                <div className="h-px bg-sf-beige mb-4" />
+                <div style={{ height: 1, background: 'rgba(249,200,212,0.4)', marginBottom: 14 }} />
                 <div className="flex justify-between items-center">
-                  <span className="font-body text-sf-text-soft text-sm">Total</span>
-                  <span className="font-display text-sf-text text-3xl">
+                  <span style={{ fontSize: 13, color: '#8B7A9B', fontWeight: 600 }}>Total</span>
+                  <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#2D2340', fontFamily: 'Nunito, sans-serif' }}>
                     {total.toLocaleString('fr-DZ')} DA
                   </span>
                 </div>
-                <p className="text-sf-text-light text-xs font-body mt-1 text-right">
-                  Paiement à la livraison
+                <p style={{ fontSize: 11, color: '#C4B0D8', textAlign: 'right', marginTop: 4 }}>
+                  Paiement à la livraison 🚚
                 </p>
               </div>
 
-              <div className="bg-white rounded-2xl shadow-soft p-6">
-                <p className="sf-label mb-5">Informations de livraison</p>
+              {/* Formulaire avec modale fraude intégrée */}
+              <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 2px 16px rgba(155,95,192,0.08)' }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 16 }}>
+                  Informations de livraison
+                </p>
                 <CheckoutForm onSubmit={handleOrder} loading={submitting} />
               </div>
             </div>
