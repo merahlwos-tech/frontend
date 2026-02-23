@@ -256,7 +256,7 @@ function HomePage() {
           </div>
         )}
 
-        {/* ── Clean Japanese Beauty ── */}
+        {/* ── Clean Korean Beauty ── */}
         <div className="mx-5 mt-4 rounded-3xl overflow-hidden relative text-center"
              style={{
                background: 'linear-gradient(135deg, #FFD6E8 0%, #E8D6FF 28%, #D6EEFF 55%, #D6FFE8 78%, #FFF0D6 100%)',
@@ -264,6 +264,8 @@ function HomePage() {
              }}>
           <span className="absolute top-3 left-5" style={{ fontSize: 11, color: '#C9ADE8', opacity: 0.7 }}>✦</span>
           <span className="absolute top-3 right-6" style={{ fontSize: 9, color: '#F9C8D4', opacity: 0.7 }}>✦</span>
+          <span className="absolute bottom-4 left-8" style={{ fontSize: 8, color: '#E8D6FF', opacity: 0.8 }}>✦</span>
+          <span className="absolute bottom-6 right-10" style={{ fontSize: 7, color: '#F9C8D4', opacity: 0.6 }}>●</span>
           <svg className="mx-auto mb-3" width="34" height="34" viewBox="0 0 36 36" fill="none">
             <path d="M18 30 C18 30 6 22 6 14 C6 9 10 6 14 8 C15.5 8.5 17 10 18 12 C19 10 20.5 8.5 22 8 C26 6 30 9 30 14 C30 22 18 30 18 30Z"
                   fill="#9B5FC0" opacity="0.85"/>
@@ -272,11 +274,12 @@ function HomePage() {
             <path d="M18 12 C18 12 16 8 18 5 C20 8 18 12 18 12Z" fill="#C9ADE8"/>
           </svg>
           <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.55rem', fontWeight: 700, color: '#4A3070', lineHeight: 1.1, marginBottom: 8 }}>
-            Clean Japanese Beauty
+            Clean Korean Beauty
           </p>
-          <p style={{ fontSize: '13px', color: '#7A6888', lineHeight: 1.65 }}>
-            Curated with love from Tokyo to your doorstep.<br />
-            Cruelty-free and magical.
+          <p style={{ fontSize: '13px', color: '#7A6888', lineHeight: 1.75 }}>
+            Les secrets de beauté de Séoul, enfin disponibles<br />
+            partout en Algérie ✨ Des soins doux, lumineux<br />
+            et féeriques — livrés jusqu'à ta porte. 🌸
           </p>
         </div>
       </section>
