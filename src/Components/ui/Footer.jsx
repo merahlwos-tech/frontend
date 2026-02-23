@@ -66,11 +66,13 @@ function Footer() {
 
         {/* Logo + slogan */}
         <div style={{ textAlign: 'center', padding: '36px 20px 28px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          <img src="/logo.jpg" alt="Tinkerbells Beauty World"
+            style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 12px', border: '3px solid rgba(249,200,212,0.4)', boxShadow: '0 4px 20px rgba(155,95,192,0.25)' }} />
           <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.8rem', fontWeight: 700, color: '#F9C8D4', marginBottom: 6 }}>
-            Tinkerbells 🌸
+            Tinkerbells Beauty World
           </p>
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em' }}>
-            Clean Japanese Beauty • Cruelty-free &amp; magical
+            Clean Korean Beauty • Cruelty-free &amp; magical
           </p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 12 }}>
             <MapPin size={13} style={{ color: '#C9ADE8' }} />

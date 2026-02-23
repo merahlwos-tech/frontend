@@ -44,10 +44,9 @@ function Navbar() {
             </button>
 
             {/* Logo centré */}
-            <Link to="/" className="flex items-center gap-2.5 absolute left-1/2 -translate-x-1/2">
-              <div className="w-9 h-9 rounded-full bg-white border-2 border-tb-pink shadow-sm flex items-center justify-center overflow-hidden">
-                <span style={{ fontSize: '1.1rem' }}>🌿</span>
-              </div>
+            <Link to="/" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+              <img src="/logo.jpg" alt="Tinkerbells Beauty World"
+                style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(249,200,212,0.6)', boxShadow: '0 2px 8px rgba(155,95,192,0.15)' }} />
               <span style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.5rem', fontWeight: 700, color: '#7B5EA7', letterSpacing: '0.01em' }}>
                 Tinkerbells
               </span>
@@ -97,8 +96,17 @@ function Navbar() {
       {menuOpen && (
         <div className="fixed inset-0 z-40 bg-black/25 backdrop-blur-sm"
              onClick={() => setMenuOpen(false)}>
-          <div className="absolute top-0 left-0 w-72 h-full bg-white shadow-soft-lg pt-20 px-6"
+          <div className="absolute top-0 left-0 w-72 h-full bg-white shadow-soft-lg pt-6 px-6"
                onClick={e => e.stopPropagation()}>
+            {/* Logo dans le menu */}
+            <div className="flex items-center gap-3 mb-6 pb-5 border-b border-tb-lav-soft">
+              <img src="/logo.jpg" alt="Tinkerbells"
+                style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(249,200,212,0.6)' }} />
+              <div>
+                <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.2rem', fontWeight: 700, color: '#7B5EA7' }}>Tinkerbells</p>
+                <p style={{ fontSize: 10, color: '#C4B0D8', fontWeight: 600 }}>Beauty World</p>
+              </div>
+            </div>
             <p className="sf-label mb-5">Navigate</p>
             {NAV_LINKS.map(({ to, label }) => (
               <Link key={label} to={to} onClick={() => setMenuOpen(false)}
