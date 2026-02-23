@@ -3,7 +3,6 @@ import { ShoppingBag, ArrowLeft, Trash2 } from 'lucide-react'
 import { useCart } from '../../context/CartContext'
 import CartItem from '../../Components/public/CartItem'
 import CheckoutForm from '../../Components/public/CheckoutForm'
-import api from '../../utils/api'
 import toast from 'react-hot-toast'
 import { useState } from 'react'
 
@@ -15,26 +14,25 @@ function CartPage() {
   const handleOrder = async (customerInfo) => {
     if (items.length === 0) { toast.error('Votre panier est vide'); return }
     setSubmitting(true)
-    try {
-      const res = await api.post('/orders', {
-        customerInfo,
-        items: items.map(item => ({
-          product: item.productId,
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-        })),
-        total,
-      })
-      clearCart()
-      const newOrderId = res.data._id || res.data.id || res.data?.order?._id
-      sessionStorage.setItem('lastOrderId', newOrderId || '')
-      navigate('/confirmation', { replace: true, state: { orderId: newOrderId } })
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Erreur lors de la commande.')
-    } finally {
-      setSubmitting(false)
+
+    // On prépare le payload mais on NE l'envoie PAS encore
+    // On navigue vers la confirmation avec les données en attente
+    const pendingOrder = {
+      customerInfo,
+      items: items.map(item => ({
+        product: item.productId,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      total,
     }
+
+    // Sauvegarder dans sessionStorage pour que ConfirmationPage puisse l'envoyer
+    sessionStorage.setItem('pendingOrder', JSON.stringify(pendingOrder))
+    clearCart()
+    setSubmitting(false)
+    navigate('/confirmation', { replace: true })
   }
 
   if (items.length === 0) return (
@@ -122,7 +120,7 @@ function CartPage() {
                 </p>
               </div>
 
-              {/* Formulaire avec modale fraude intégrée */}
+              {/* Formulaire */}
               <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 2px 16px rgba(155,95,192,0.08)' }}>
                 <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 16 }}>
                   Informations de livraison
