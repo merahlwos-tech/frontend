@@ -1,9 +1,6 @@
-// src/pages/admin/AdminLoginPage.jsx
-// Page de connexion admin
-
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Eye, EyeOff, Lock, Zap, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Lock, Loader2 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import toast from 'react-hot-toast'
 
@@ -12,133 +9,108 @@ function AdminLoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from?.pathname || '/admin'
-
   const [form, setForm] = useState({ username: '', password: '' })
   const [showPass, setShowPass] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!form.username || !form.password) {
-      toast.error('Identifiants requis')
-      return
-    }
+    if (!form.username || !form.password) { toast.error('Identifiants requis'); return }
     setLoading(true)
     try {
       await login(form.username, form.password)
-      toast.success('Connexion réussie')
+      toast.success('Bienvenue ✨')
       navigate(from, { replace: true })
     } catch (err) {
       toast.error(err.response?.data?.message || 'Identifiants incorrects')
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
 
   return (
-    <div className="min-h-screen bg-brand-black flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center px-4"
+         style={{ background: 'linear-gradient(160deg, #FFF0F6 0%, #F5EEFF 50%, #EEF9F5 100%)' }}>
 
-      {/* Background décoratif */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
-          }}
-        />
-        <div className="absolute top-0 left-0 w-full h-1 bg-brand-red" />
-        <div
-          className="absolute -left-20 top-1/2 -translate-y-1/2 font-display text-[20vw]
-                      leading-none select-none"
-          style={{ color: 'transparent', WebkitTextStroke: '1px rgba(255,255,255,0.03)' }}
-        >
-          ADMIN
-        </div>
-      </div>
+      {/* Déco flottante */}
+      <span className="fixed top-10 left-10 text-4xl opacity-20 animate-float">🌸</span>
+      <span className="fixed bottom-16 right-12 text-3xl opacity-15 animate-float" style={{ animationDelay: '1.5s' }}>✦</span>
+      <span className="fixed top-1/3 right-8 text-2xl opacity-10 animate-float" style={{ animationDelay: '0.8s' }}>🪷</span>
 
-      <div className="relative w-full max-w-md animate-slide-up">
+      <div className="w-full max-w-sm animate-fade-up">
 
         {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-10">
-          <div
-            className="w-10 h-10 bg-brand-red flex items-center justify-center"
-            style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%)' }}
-          >
-            <Zap size={16} className="text-white fill-white" />
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
+               style={{ background: 'linear-gradient(135deg, #F9C8D4, #E8DCF5)', boxShadow: '0 4px 20px rgba(155,95,192,0.2)' }}>
+            <span style={{ fontSize: '1.8rem' }}>🌿</span>
           </div>
-          <span className="font-display text-3xl tracking-widest text-brand-white">SOLEKICKS</span>
+          <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '2rem', fontWeight: 700, color: '#7B5EA7' }}>
+            Tinkerbells
+          </p>
+          <p style={{ fontSize: '11px', color: '#B8A8C8', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 4 }}>
+            Espace Administrateur
+          </p>
         </div>
 
         {/* Card */}
-        <div className="bg-brand-gray-900 border border-brand-gray-700 p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <Lock size={16} className="text-brand-red" />
-            <h1 className="font-heading font-bold tracking-widest uppercase text-sm text-brand-gray-300">
-              Espace Administrateur
-            </h1>
+        <div className="rounded-3xl p-8"
+             style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(16px)', boxShadow: '0 8px 40px rgba(155,95,192,0.12)', border: '1.5px solid rgba(249,200,212,0.4)' }}>
+
+          <div className="flex items-center gap-2 mb-6">
+            <Lock size={14} style={{ color: '#9B5FC0' }} />
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#9B5FC0', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              Connexion
+            </span>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
-              <label className="block text-brand-gray-500 text-xs font-heading font-semibold
-                                 tracking-widest uppercase mb-2">
+              <label style={{ fontSize: '12px', fontWeight: 700, color: '#7B6B8A', display: 'block', marginBottom: 6 }}>
                 Identifiant
               </label>
               <input
-                type="text"
-                value={form.username}
-                onChange={(e) => setForm((p) => ({ ...p, username: e.target.value }))}
-                placeholder="admin"
-                autoComplete="username"
-                className="input-field"
+                type="text" value={form.username}
+                onChange={(e) => setForm(p => ({ ...p, username: e.target.value }))}
+                placeholder="admin" autoComplete="username"
+                className="w-full rounded-2xl px-4 py-3 text-sm outline-none transition-all"
+                style={{ background: '#FDF5F8', border: '1.5px solid rgba(249,200,212,0.5)', color: '#2D2340',
+                         fontFamily: 'Nunito, sans-serif' }}
+                onFocus={e => e.target.style.borderColor = '#9B5FC0'}
+                onBlur={e => e.target.style.borderColor = 'rgba(249,200,212,0.5)'}
               />
             </div>
 
             <div>
-              <label className="block text-brand-gray-500 text-xs font-heading font-semibold
-                                 tracking-widest uppercase mb-2">
+              <label style={{ fontSize: '12px', fontWeight: 700, color: '#7B6B8A', display: 'block', marginBottom: 6 }}>
                 Mot de passe
               </label>
               <div className="relative">
                 <input
-                  type={showPass ? 'text' : 'password'}
-                  value={form.password}
-                  onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  className="input-field pr-12"
+                  type={showPass ? 'text' : 'password'} value={form.password}
+                  onChange={(e) => setForm(p => ({ ...p, password: e.target.value }))}
+                  placeholder="••••••••" autoComplete="current-password"
+                  className="w-full rounded-2xl px-4 py-3 pr-12 text-sm outline-none transition-all"
+                  style={{ background: '#FDF5F8', border: '1.5px solid rgba(249,200,212,0.5)', color: '#2D2340',
+                           fontFamily: 'Nunito, sans-serif' }}
+                  onFocus={e => e.target.style.borderColor = '#9B5FC0'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(249,200,212,0.5)'}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPass((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-gray-500
-                             hover:text-brand-white transition-colors"
-                  aria-label={showPass ? 'Cacher le mot de passe' : 'Afficher le mot de passe'}
-                >
+                <button type="button" onClick={() => setShowPass(s => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                  style={{ color: '#C4B0D8' }}>
                   {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full flex items-center justify-center gap-3 mt-6"
-            >
-              {loading ? (
-                <>
-                  <Loader2 size={14} className="animate-spin" />
-                  Connexion...
-                </>
-              ) : (
-                'SE CONNECTER'
-              )}
+            <button type="submit" disabled={loading}
+              className="w-full flex items-center justify-center gap-2 rounded-full py-3 mt-2 font-body font-bold text-sm text-white transition-all"
+              style={{ background: '#9B5FC0', boxShadow: '0 4px 16px rgba(155,95,192,0.35)', opacity: loading ? 0.7 : 1 }}>
+              {loading ? <><Loader2 size={14} className="animate-spin" /> Connexion...</> : 'Se connecter ✨'}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-brand-gray-700 text-xs font-body mt-6">
+        <p className="text-center mt-5" style={{ fontSize: '11px', color: '#C4B0D8' }}>
           Accès restreint — Personnel autorisé uniquement
         </p>
       </div>

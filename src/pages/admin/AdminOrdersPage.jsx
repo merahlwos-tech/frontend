@@ -1,6 +1,3 @@
-// src/pages/admin/AdminOrdersPage.jsx
-// Gestion des commandes admin avec filtres par statut
-
 import { useState, useEffect } from 'react'
 import { Loader2, ChevronDown, ChevronUp, Search, X } from 'lucide-react'
 import api from '../../utils/api'
@@ -8,24 +5,9 @@ import AdminOrderRow from '../../Components/admin/AdminOrderRow'
 import toast from 'react-hot-toast'
 
 const STATUS_FILTERS = ['Tous', 'en attente', 'confirmé', 'en livraison', 'livré', 'retour', 'annulé']
-
-const STATUS_LABELS = {
-  'en attente': 'En attente',
-  confirmé: 'Confirmé',
-  'en livraison': 'En livraison',
-  livré: 'Livré',
-  retour: 'Retour',
-  annulé: 'Annulé',
-}
-
-const STATUS_COLORS = {
-  'en attente': 'text-gray-400',
-  confirmé: 'text-blue-400',
-  'en livraison': 'text-yellow-400',
-  livré: 'text-emerald-400',
-  retour: 'text-orange-400',
-  annulé: 'text-red-400',
-}
+const STATUS_LABELS  = { 'en attente': 'En attente', confirmé: 'Confirmé', 'en livraison': 'En livraison', livré: 'Livré', retour: 'Retour', annulé: 'Annulé' }
+const STATUS_COLORS  = { 'en attente': '#B8A8C8', confirmé: '#7BC8E8', 'en livraison': '#F4C94A', livré: '#7BC8A0', retour: '#F4A460', annulé: '#E8A0A0' }
+const STATUS_BG      = { 'en attente': 'rgba(184,168,200,0.15)', confirmé: 'rgba(123,200,232,0.15)', 'en livraison': 'rgba(244,201,74,0.15)', livré: 'rgba(123,200,160,0.15)', retour: 'rgba(244,164,96,0.15)', annulé: 'rgba(232,160,160,0.15)' }
 
 function AdminOrdersPage() {
   const [orders, setOrders] = useState([])
@@ -37,172 +19,134 @@ function AdminOrdersPage() {
 
   const fetchOrders = async () => {
     setLoading(true)
-    try {
-      const res = await api.get('/orders')
-      setOrders(res.data || [])
-    } catch {
-      toast.error('Erreur lors du chargement des commandes')
-    } finally {
-      setLoading(false)
-    }
+    try { const res = await api.get('/orders'); setOrders(res.data || []) }
+    catch { toast.error('Erreur chargement commandes') }
+    finally { setLoading(false) }
   }
 
   useEffect(() => { fetchOrders() }, [])
 
-  const handleUpdated = (updated) => {
-    setOrders((prev) => prev.map((o) => (o._id === updated._id ? updated : o)))
-  }
+  const handleUpdated = (updated) => setOrders(prev => prev.map(o => o._id === updated._id ? updated : o))
 
   const toggleSort = (field) => {
-    if (sortField === field) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
     else { setSortField(field); setSortDir('desc') }
   }
 
-  // Filtrage + tri
   const filtered = orders
-    .filter((o) => {
+    .filter(o => {
       const matchStatus = statusFilter === 'Tous' || o.status === statusFilter
-      const matchSearch =
-        !search ||
-        `${o.customerInfo.firstName} ${o.customerInfo.lastName}`
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
+      const matchSearch = !search ||
+        `${o.customerInfo.firstName} ${o.customerInfo.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
         o.customerInfo.phone.includes(search) ||
         o.customerInfo.wilaya.toLowerCase().includes(search.toLowerCase())
       return matchStatus && matchSearch
     })
     .sort((a, b) => {
-      let va, vb
-      if (sortField === 'total') { va = a.total; vb = b.total }
-      else { va = new Date(a.createdAt); vb = new Date(b.createdAt) }
+      const va = sortField === 'total' ? a.total : new Date(a.createdAt)
+      const vb = sortField === 'total' ? b.total : new Date(b.createdAt)
       return sortDir === 'asc' ? va - vb : vb - va
     })
 
-  const SortIcon = ({ field }) => {
-    if (sortField !== field) return <ChevronDown size={12} className="opacity-30" />
-    return sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />
-  }
-
-  // Compteurs par statut
-  const counts = orders.reduce((acc, o) => {
-    acc[o.status] = (acc[o.status] || 0) + 1
-    return acc
-  }, {})
+  const counts = orders.reduce((acc, o) => { acc[o.status] = (acc[o.status] || 0) + 1; return acc }, {})
+  const SortIcon = ({ field }) => sortField !== field
+    ? <ChevronDown size={12} style={{ opacity: 0.3 }} />
+    : sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
 
-      {/* En-tête */}
+      {/* Header */}
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <p className="section-label">Suivi</p>
-          <h1 className="font-display text-4xl text-brand-white tracking-wide">COMMANDES</h1>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#9B5FC0', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 4 }}>
+            Suivi
+          </p>
+          <h1 style={{ fontFamily: 'Dancing Script, cursive', fontSize: '2.2rem', fontWeight: 700, color: '#2D2340' }}>
+            Commandes 📦
+          </h1>
         </div>
-        <p className="text-brand-gray-500 font-body text-sm">
+        <p style={{ fontSize: '13px', color: '#C4B0D8' }}>
           {filtered.length} / {orders.length} commande{orders.length !== 1 ? 's' : ''}
         </p>
       </div>
 
       {/* Filtres statut */}
       <div className="flex flex-wrap gap-2">
-        {STATUS_FILTERS.map((s) => (
-          <button
-            key={s}
-            onClick={() => setStatusFilter(s)}
-            className={`px-4 py-2 text-xs font-heading font-bold tracking-widest uppercase
-                         transition-all duration-200 border flex items-center gap-2
-                         ${statusFilter === s
-                           ? 'bg-brand-red border-brand-red text-white'
-                           : 'bg-transparent border-brand-gray-700 text-brand-gray-400 hover:border-brand-gray-400'
-                         }`}
-          >
-            {s === 'Tous' ? `Tous (${orders.length})` : (
-              <>
-                <span className={s !== statusFilter ? STATUS_COLORS[s] : ''}>
-                  {STATUS_LABELS[s]}
-                </span>
-                <span className="opacity-60">({counts[s] || 0})</span>
-              </>
-            )}
-          </button>
-        ))}
+        {STATUS_FILTERS.map(s => {
+          const isActive = statusFilter === s
+          return (
+            <button key={s} onClick={() => setStatusFilter(s)}
+              className="px-4 py-2 rounded-full text-xs font-body font-bold transition-all"
+              style={{
+                background: isActive ? '#9B5FC0' : 'rgba(255,255,255,0.8)',
+                color: isActive ? 'white' : (s === 'Tous' ? '#7B6B8A' : STATUS_COLORS[s]),
+                border: isActive ? '1.5px solid #9B5FC0' : `1.5px solid ${s === 'Tous' ? 'rgba(249,200,212,0.4)' : STATUS_COLORS[s] + '40'}`,
+                boxShadow: isActive ? '0 4px 12px rgba(155,95,192,0.25)' : 'none',
+              }}>
+              {s === 'Tous' ? `Tous (${orders.length})` : `${STATUS_LABELS[s]} (${counts[s] || 0})`}
+            </button>
+          )
+        })}
       </div>
 
       {/* Recherche */}
       <div className="relative max-w-sm">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-gray-500" />
-        <input
-          type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+        <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: '#C4B0D8' }} />
+        <input type="text" value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Nom, téléphone, wilaya..."
-          className="input-field pl-9 text-sm"
-        />
+          className="w-full rounded-2xl pl-11 pr-4 py-3 text-sm outline-none"
+          style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(249,200,212,0.4)', color: '#2D2340', fontFamily: 'Nunito, sans-serif' }} />
         {search && (
-          <button onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-gray-500 hover:text-white">
-            <X size={12} />
+          <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#C4B0D8' }}>
+            <X size={13} />
           </button>
         )}
       </div>
 
       {/* Tableau */}
       {loading ? (
-        <div className="flex justify-center py-16">
-          <Loader2 size={32} className="animate-spin text-brand-gray-600" />
-        </div>
+        <div className="flex justify-center py-16"><Loader2 size={28} className="animate-spin" style={{ color: '#C4B0D8' }} /></div>
       ) : filtered.length === 0 ? (
-        <div className="admin-card text-center py-16">
-          <p className="font-display text-5xl text-brand-gray-800 mb-3">VIDE</p>
-          <p className="text-brand-gray-500 font-body">Aucune commande trouvée</p>
+        <div className="rounded-3xl py-16 text-center"
+             style={{ background: 'rgba(255,255,255,0.7)', border: '1.5px solid rgba(249,200,212,0.3)' }}>
+          <p style={{ fontSize: '3rem', marginBottom: 8 }}>📭</p>
+          <p style={{ color: '#B8A8C8', fontSize: '14px' }}>Aucune commande trouvée</p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-brand-gray-700">
-                <th className="text-left px-4 py-3 text-brand-gray-500 text-xs font-heading
-                               font-bold tracking-widest uppercase">
-                  Client
-                </th>
-                <th className="text-left px-4 py-3 text-brand-gray-500 text-xs font-heading
-                               font-bold tracking-widest uppercase hidden md:table-cell">
-                  Localisation
-                </th>
-                <th className="text-left px-4 py-3 text-brand-gray-500 text-xs font-heading
-                               font-bold tracking-widest uppercase hidden lg:table-cell">
-                  Articles
-                </th>
-                <th
-                  className="text-right px-4 py-3 text-brand-gray-500 text-xs font-heading
-                             font-bold tracking-widest uppercase cursor-pointer hover:text-brand-white
-                             transition-colors select-none"
-                  onClick={() => toggleSort('total')}
-                >
-                  <span className="flex items-center justify-end gap-1">
-                    Total <SortIcon field="total" />
-                  </span>
-                </th>
-                <th
-                  className="text-left px-4 py-3 text-brand-gray-500 text-xs font-heading
-                             font-bold tracking-widest uppercase cursor-pointer hover:text-brand-white
-                             transition-colors hidden sm:table-cell select-none"
-                  onClick={() => toggleSort('createdAt')}
-                >
-                  <span className="flex items-center gap-1">
-                    Date <SortIcon field="createdAt" />
-                  </span>
-                </th>
-                <th className="text-left px-4 py-3 text-brand-gray-500 text-xs font-heading
-                               font-bold tracking-widest uppercase">
-                  Statut
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((order) => (
-                <AdminOrderRow key={order._id} order={order} onUpdated={handleUpdated} />
-              ))}
-            </tbody>
-          </table>
+        <div className="rounded-3xl overflow-hidden"
+             style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(249,200,212,0.3)', boxShadow: '0 2px 16px rgba(155,95,192,0.06)' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(249,200,212,0.3)' }}>
+                  {[
+                    { label: 'Client', field: null, cls: '' },
+                    { label: 'Localisation', field: null, cls: 'hidden md:table-cell' },
+                    { label: 'Articles', field: null, cls: 'hidden lg:table-cell' },
+                    { label: 'Total', field: 'total', cls: 'text-right' },
+                    { label: 'Date', field: 'createdAt', cls: 'hidden sm:table-cell' },
+                    { label: 'Statut', field: null, cls: '' },
+                  ].map(({ label, field, cls }) => (
+                    <th key={label}
+                      className={`px-4 py-3 text-left ${cls} ${field ? 'cursor-pointer select-none' : ''}`}
+                      style={{ fontSize: '11px', fontWeight: 700, color: '#C4B0D8', letterSpacing: '0.08em', textTransform: 'uppercase' }}
+                      onClick={field ? () => toggleSort(field) : undefined}>
+                      <span className="flex items-center gap-1">
+                        {label} {field && <SortIcon field={field} />}
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(order => (
+                  <AdminOrderRow key={order._id} order={order} onUpdated={handleUpdated}
+                    statusColors={STATUS_COLORS} statusBg={STATUS_BG} statusLabels={STATUS_LABELS} />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

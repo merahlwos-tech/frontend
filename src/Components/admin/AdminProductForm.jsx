@@ -1,441 +1,240 @@
-// src/components/admin/AdminProductForm.jsx
-// Formulaire produit admin : création et modification avec tailles dynamiques et upload images
-
 import { useState } from 'react'
-import { Plus, Trash2, Upload, X, ImageIcon, Loader2 } from 'lucide-react'
+import { Plus, Trash2, Upload, X, Loader2 } from 'lucide-react'
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
 
-const CATEGORIES = ['Bébé', 'Enfants', 'Femme', 'Homme', 'Lingerie', 'Accessoires']
-const TAGS = ['Look bébé printemps', 'Look Femme Casual', 'Idées de cadeaux']
+const CATEGORIES = ['Skincare', 'Makeup', 'Body Care', 'Hair Care', 'Accessoires']
 
-const EMPTY_PRODUCT = {
-  name: '',
-  brand: '',
-  category: 'Homme',
-  price: '',
-  description: '',
-  sizes: [{ size: '', stock: '' }],
-  images: [],
-  tags: [],
+const EMPTY = { name: '', brand: '', category: 'Skincare', price: '', description: '', sizes: [{ size: '', stock: '' }], images: [], tags: [] }
+
+const inputStyle = (err) => ({
+  width: '100%', padding: '10px 14px', borderRadius: 14, outline: 'none',
+  border: `1.5px solid ${err ? '#E8A0A0' : 'rgba(249,200,212,0.5)'}`,
+  background: err ? '#FFF5F5' : '#FDF8FC', color: '#2D2340',
+  fontFamily: 'Nunito, sans-serif', fontSize: '13px', transition: 'all .2s',
+})
+
+function Field({ label, error, children }) {
+  return (
+    <div>
+      <label style={{ fontSize: '12px', fontWeight: 700, color: '#7B6B8A', display: 'block', marginBottom: 6 }}>{label}</label>
+      {children}
+      {error && <p style={{ fontSize: '11px', color: '#E8A0A0', marginTop: 4 }}>{error}</p>}
+    </div>
+  )
+}
+
+function Section({ num, title, color = '#F9C8D4', children }) {
+  return (
+    <div className="space-y-4 pt-6" style={{ borderTop: '1px solid rgba(249,200,212,0.3)' }}>
+      <div className="flex items-center gap-2">
+        <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-white text-xs font-bold"
+             style={{ background: color }}>
+          {num}
+        </div>
+        <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#2D2340' }}>{title}</h3>
+      </div>
+      {children}
+    </div>
+  )
 }
 
 function AdminProductForm({ initialData, onSuccess, onCancel }) {
   const isEditing = !!initialData
-  const [form, setForm] = useState(
-    initialData
-      ? {
-          ...initialData,
-          price: initialData.price.toString(),
-          sizes: initialData.sizes?.length > 0
-            ? initialData.sizes.map((s) => ({ size: s.size.toString(), stock: s.stock.toString() }))
-            : [{ size: '', stock: '' }],
-          images: initialData.images || [],
-          tags: initialData.tags || [],
-        }
-      : EMPTY_PRODUCT
-  )
+  const [form, setForm] = useState(initialData ? {
+    ...initialData, price: initialData.price.toString(),
+    sizes: initialData.sizes?.length > 0 ? initialData.sizes.map(s => ({ size: s.size.toString(), stock: s.stock.toString() })) : [{ size: '', stock: '' }],
+    images: initialData.images || [], tags: initialData.tags || [],
+  } : EMPTY)
   const [errors, setErrors] = useState({})
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [dragOver, setDragOver] = useState(false)
 
-  // ── Champs texte ─────────────────────────────────────────────────────────
   const handleChange = (e) => {
     const { name, value } = e.target
-    setForm((p) => ({ ...p, [name]: value }))
-    if (errors[name]) setErrors((p) => ({ ...p, [name]: '' }))
+    setForm(p => ({ ...p, [name]: value }))
+    if (errors[name]) setErrors(p => ({ ...p, [name]: '' }))
   }
 
-  // ── Gestion des tailles ───────────────────────────────────────────────────
-  const addSize = () =>
-    setForm((p) => ({ ...p, sizes: [...p.sizes, { size: '', stock: '' }] }))
+  const addSize = () => setForm(p => ({ ...p, sizes: [...p.sizes, { size: '', stock: '' }] }))
+  const removeSize = (i) => setForm(p => ({ ...p, sizes: p.sizes.filter((_, idx) => idx !== i) }))
+  const updateSize = (i, field, value) => setForm(p => ({ ...p, sizes: p.sizes.map((s, idx) => idx === i ? { ...s, [field]: value } : s) }))
 
-  const removeSize = (i) =>
-    setForm((p) => ({ ...p, sizes: p.sizes.filter((_, idx) => idx !== i) }))
-
-  const updateSize = (i, field, value) =>
-    setForm((p) => ({
-      ...p,
-      sizes: p.sizes.map((s, idx) => (idx === i ? { ...s, [field]: value } : s)),
-    }))
-
-  // ── Gestion des tags ──────────────────────────────────────────────────────
-  const toggleTag = (tag) => {
-    setForm((p) => ({
-      ...p,
-      tags: p.tags.includes(tag) 
-        ? p.tags.filter(t => t !== tag)
-        : [...p.tags, tag]
-    }))
-  }
-
-  // ── Upload d'images ───────────────────────────────────────────────────────
   const uploadFiles = async (files) => {
-    if (!files || files.length === 0) return
+    if (!files?.length) return
     setUploading(true)
     try {
       const formData = new FormData()
-      Array.from(files).forEach((f) => formData.append('images', f))
-      const res = await api.post('/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+      Array.from(files).forEach(f => formData.append('images', f))
+      const res = await api.post('/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
       const urls = res.data.urls || res.data
-      setForm((p) => ({ ...p, images: [...p.images, ...(Array.isArray(urls) ? urls : [urls])] }))
-      toast.success(`${Array.isArray(urls) ? urls.length : 1} image(s) uploadée(s)`)
-    } catch {
-      toast.error("Erreur lors de l'upload des images")
-    } finally {
-      setUploading(false)
-    }
+      setForm(p => ({ ...p, images: [...p.images, ...(Array.isArray(urls) ? urls : [urls])] }))
+      toast.success('Image(s) uploadée(s) ✨')
+    } catch { toast.error("Erreur upload") }
+    finally { setUploading(false) }
   }
 
-  const removeImage = (url) =>
-    setForm((p) => ({ ...p, images: p.images.filter((i) => i !== url) }))
+  const removeImage = (url) => setForm(p => ({ ...p, images: p.images.filter(i => i !== url) }))
 
-  // ── Validation ────────────────────────────────────────────────────────────
   const validate = () => {
     const e = {}
     if (!form.name.trim()) e.name = 'Nom requis'
     if (!form.brand.trim()) e.brand = 'Marque requise'
-    if (!form.price || isNaN(Number(form.price)) || Number(form.price) <= 0)
-      e.price = 'Prix invalide'
+    if (!form.price || isNaN(Number(form.price)) || Number(form.price) <= 0) e.price = 'Prix invalide'
     if (form.images.length === 0 && !isEditing) e.images = 'Au moins une image requise'
-    const sizesValid = form.sizes.every(
-      (s) => s.size.toString().trim() !== '' && !isNaN(Number(s.stock)) && Number(s.stock) >= 0
-    )
-    if (!sizesValid) e.sizes = 'Toutes les pointures doivent avoir un stock valide'
+    if (!form.sizes.every(s => s.size.toString().trim() !== '' && !isNaN(Number(s.stock)) && Number(s.stock) >= 0))
+      e.sizes = 'Tailles & stocks invalides'
     return e
   }
 
-  // ── Soumission ────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault()
     const errs = validate()
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs)
-      return
-    }
+    if (Object.keys(errs).length > 0) { setErrors(errs); return }
     setSaving(true)
     try {
-      const payload = {
-        ...form,
-        price: Number(form.price),
-        sizes: form.sizes
-          .filter((s) => s.size.toString().trim() !== '')
-          .map((s) => ({ size: s.size, stock: Number(s.stock) })),
-      }
-      if (isEditing) {
-        await api.put(`/products/${initialData._id}`, payload)
-        toast.success('Produit mis à jour')
-      } else {
-        await api.post('/products', payload)
-        toast.success('Produit créé')
-      }
+      const payload = { ...form, price: Number(form.price), sizes: form.sizes.filter(s => s.size.toString().trim() !== '').map(s => ({ size: s.size, stock: Number(s.stock) })) }
+      if (isEditing) { await api.put(`/products/${initialData._id}`, payload); toast.success('Produit mis à jour ✨') }
+      else { await api.post('/products', payload); toast.success('Produit créé 🌸') }
       onSuccess?.()
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Erreur lors de la sauvegarde')
-    } finally {
-      setSaving(false)
-    }
+    } catch (err) { toast.error(err.response?.data?.message || 'Erreur sauvegarde') }
+    finally { setSaving(false) }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 bg-white rounded-2xl p-8 shadow-lg" noValidate>
-      
-      {/* Header */}
-      <div className="border-b border-gray-200 pb-6">
-        <h2 className="text-2xl font-display text-sf-text mb-2">
-          {isEditing ? 'Modifier le produit' : 'Nouveau produit'}
-        </h2>
-        <p className="text-sm text-sf-text-soft font-body">
-          Les champs marqués d'un * sont obligatoires
-        </p>
-      </div>
+    <form onSubmit={handleSubmit} className="space-y-0" noValidate>
 
-      {/* Infos de base */}
-      <div className="space-y-6">
-        <h3 className="text-lg font-display text-sf-text flex items-center gap-2">
-          <span className="w-8 h-8 bg-sf-rose-soft rounded-full flex items-center justify-center text-sf-rose-dark text-sm">1</span>
-          Informations générales
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sf-text text-sm font-semibold mb-2">
-              Nom du produit *
-            </label>
-            <input
-              name="name" value={form.name} onChange={handleChange}
-              placeholder="Ex: Robe d'été fleurie..."
-              className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200
-                         font-body text-sf-text placeholder:text-sf-text-soft/50
-                         ${errors.name 
-                           ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100' 
-                           : 'border-gray-200 bg-white hover:border-sf-sage focus:border-sf-sage focus:ring-sf-sage-soft'
-                         } focus:outline-none focus:ring-4`}
-            />
-            {errors.name && <p className="text-red-600 text-xs mt-2 font-medium">{errors.name}</p>}
-          </div>
-          
-          <div>
-            <label className="block text-sf-text text-sm font-semibold mb-2">
-              Marque *
-            </label>
-            <input
-              name="brand" value={form.brand} onChange={handleChange}
-              placeholder="Ex: Zara, H&M..."
-              className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200
-                         font-body text-sf-text placeholder:text-sf-text-soft/50
-                         ${errors.brand 
-                           ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100' 
-                           : 'border-gray-200 bg-white hover:border-sf-sage focus:border-sf-sage focus:ring-sf-sage-soft'
-                         } focus:outline-none focus:ring-4`}
-            />
-            {errors.brand && <p className="text-red-600 text-xs mt-2 font-medium">{errors.brand}</p>}
-          </div>
-          
-          <div>
-            <label className="block text-sf-text text-sm font-semibold mb-2">
-              Catégorie *
-            </label>
-            <select
-              name="category" value={form.category} onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white
-                       hover:border-sf-sage focus:border-sf-sage focus:ring-4 focus:ring-sf-sage-soft
-                       font-body text-sf-text transition-all duration-200 focus:outline-none
-                       cursor-pointer"
-            >
-              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+      {/* Section 1 — Infos */}
+      <div className="space-y-4 pb-2">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: '#F9C8D4' }}>1</div>
+          <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#2D2340' }}>Informations générales</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field label="Nom du produit *" error={errors.name}>
+            <input name="name" value={form.name} onChange={handleChange} placeholder="Ex: Sérum visage..."
+              style={inputStyle(errors.name)}
+              onFocus={e => e.target.style.borderColor = '#9B5FC0'}
+              onBlur={e => e.target.style.borderColor = errors.name ? '#E8A0A0' : 'rgba(249,200,212,0.5)'} />
+          </Field>
+          <Field label="Marque *" error={errors.brand}>
+            <input name="brand" value={form.brand} onChange={handleChange} placeholder="Ex: Shiseido..."
+              style={inputStyle(errors.brand)}
+              onFocus={e => e.target.style.borderColor = '#9B5FC0'}
+              onBlur={e => e.target.style.borderColor = errors.brand ? '#E8A0A0' : 'rgba(249,200,212,0.5)'} />
+          </Field>
+          <Field label="Catégorie">
+            <select name="category" value={form.category} onChange={handleChange} style={{ ...inputStyle(false), cursor: 'pointer' }}>
+              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
-          </div>
-          
-          <div>
-            <label className="block text-sf-text text-sm font-semibold mb-2">
-              Prix (DA) *
-            </label>
-            <input
-              name="price" value={form.price} onChange={handleChange}
-              type="number" min="0" placeholder="Ex: 4500"
-              className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200
-                         font-body text-sf-text placeholder:text-sf-text-soft/50
-                         ${errors.price 
-                           ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100' 
-                           : 'border-gray-200 bg-white hover:border-sf-sage focus:border-sf-sage focus:ring-sf-sage-soft'
-                         } focus:outline-none focus:ring-4`}
-            />
-            {errors.price && <p className="text-red-600 text-xs mt-2 font-medium">{errors.price}</p>}
-          </div>
+          </Field>
+          <Field label="Prix ($) *" error={errors.price}>
+            <input name="price" value={form.price} onChange={handleChange} type="number" min="0" placeholder="Ex: 29.90"
+              style={inputStyle(errors.price)}
+              onFocus={e => e.target.style.borderColor = '#9B5FC0'}
+              onBlur={e => e.target.style.borderColor = errors.price ? '#E8A0A0' : 'rgba(249,200,212,0.5)'} />
+          </Field>
         </div>
-
-        <div>
-          <label className="block text-sf-text text-sm font-semibold mb-2">
-            Description
-          </label>
-          <textarea
-            name="description" value={form.description} onChange={handleChange}
-            rows={4} placeholder="Décrivez le produit en quelques mots..."
-            className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white
-                     hover:border-sf-sage focus:border-sf-sage focus:ring-4 focus:ring-sf-sage-soft
-                     font-body text-sf-text placeholder:text-sf-text-soft/50
-                     transition-all duration-200 focus:outline-none resize-none"
-          />
-        </div>
+        <Field label="Description">
+          <textarea name="description" value={form.description} onChange={handleChange} rows={3}
+            placeholder="Décrivez le produit..." style={{ ...inputStyle(false), resize: 'none' }}
+            onFocus={e => e.target.style.borderColor = '#9B5FC0'}
+            onBlur={e => e.target.style.borderColor = 'rgba(249,200,212,0.5)'} />
+        </Field>
       </div>
 
-      {/* Tags section */}
-      <div className="space-y-4 pt-6 border-t border-gray-200">
-        <h3 className="text-lg font-display text-sf-text flex items-center gap-2">
-          <span className="w-8 h-8 bg-sf-sage-soft rounded-full flex items-center justify-center text-sf-sage-dark text-sm">2</span>
-          Collections spéciales (optionnel)
-        </h3>
-        
-        <p className="text-sm text-sf-text-soft font-body">
-          Sélectionnez une ou plusieurs collections auxquelles ce produit appartient
-        </p>
-        
-        <div className="flex flex-wrap gap-3">
-          {TAGS.map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              onClick={() => toggleTag(tag)}
-              className={`px-6 py-3 rounded-full font-body font-semibold text-sm
-                         transition-all duration-200 border-2
-                         ${form.tags.includes(tag)
-                           ? 'bg-sf-sage text-white border-sf-sage shadow-md scale-105'
-                           : 'bg-white text-sf-text-soft border-gray-200 hover:border-sf-sage hover:text-sf-sage'
-                         }`}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Tailles & stocks */}
-      <div className="space-y-4 pt-6 border-t border-gray-200">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-display text-sf-text flex items-center gap-2">
-            <span className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-sm">3</span>
-            Tailles & Stocks *
-          </h3>
-          <button 
-            type="button" 
-            onClick={addSize}
-            className="flex items-center gap-2 px-4 py-2 bg-sf-sage text-white rounded-lg
-                     font-body font-semibold text-sm hover:bg-sf-sage-dark transition-colors"
-          >
-            <Plus size={16} /> Ajouter une taille
-          </button>
-        </div>
-        
+      {/* Section 2 — Tailles */}
+      <Section num="2" title="Tailles & Stocks *" color="#C9ADE8">
         <div className="space-y-3">
           {form.sizes.map((s, i) => (
-            <div key={i} className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl">
+            <div key={i} className="flex items-center gap-3 rounded-2xl p-3"
+                 style={{ background: 'rgba(249,200,212,0.1)', border: '1px solid rgba(249,200,212,0.3)' }}>
               <div className="flex-1">
-                <label className="block text-xs font-semibold text-sf-text-soft mb-1">Taille</label>
-                <input
-                  value={s.size} 
-                  onChange={(e) => updateSize(i, 'size', e.target.value)}
-                  placeholder="Ex: 36, M, 6 mois..."
-                  className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 bg-white
-                           hover:border-sf-sage focus:border-sf-sage focus:ring-2 focus:ring-sf-sage-soft
-                           font-body text-sf-text transition-all duration-200 focus:outline-none"
-                />
+                <label style={{ fontSize: '10px', fontWeight: 700, color: '#C4B0D8', display: 'block', marginBottom: 4 }}>Taille</label>
+                <input value={s.size} onChange={e => updateSize(i, 'size', e.target.value)} placeholder="Ex: S, M, L..."
+                  style={{ ...inputStyle(false), padding: '8px 12px' }}
+                  onFocus={e => e.target.style.borderColor = '#9B5FC0'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(249,200,212,0.5)'} />
               </div>
               <div className="flex-1">
-                <label className="block text-xs font-semibold text-sf-text-soft mb-1">Stock</label>
-                <input
-                  type="number" min="0" value={s.stock}
-                  onChange={(e) => updateSize(i, 'stock', e.target.value)}
-                  placeholder="Quantité"
-                  className="w-full px-3 py-2 rounded-lg border-2 border-gray-200 bg-white
-                           hover:border-sf-sage focus:border-sf-sage focus:ring-2 focus:ring-sf-sage-soft
-                           font-body text-sf-text transition-all duration-200 focus:outline-none"
-                />
+                <label style={{ fontSize: '10px', fontWeight: 700, color: '#C4B0D8', display: 'block', marginBottom: 4 }}>Stock</label>
+                <input type="number" min="0" value={s.stock} onChange={e => updateSize(i, 'stock', e.target.value)} placeholder="0"
+                  style={{ ...inputStyle(false), padding: '8px 12px' }}
+                  onFocus={e => e.target.style.borderColor = '#9B5FC0'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(249,200,212,0.5)'} />
               </div>
-              <button
-                type="button" 
-                onClick={() => removeSize(i)}
-                className="mt-6 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 
-                         rounded-lg transition-all duration-200"
-                aria-label="Supprimer cette taille"
-              >
-                <Trash2 size={18} />
+              <button type="button" onClick={() => removeSize(i)} className="mt-5 w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                style={{ background: 'rgba(232,160,160,0.15)', color: '#E8A0A0' }}>
+                <Trash2 size={14} />
               </button>
             </div>
           ))}
         </div>
-        {errors.sizes && <p className="text-red-600 text-sm mt-2 font-medium">{errors.sizes}</p>}
-      </div>
+        {errors.sizes && <p style={{ fontSize: '11px', color: '#E8A0A0' }}>{errors.sizes}</p>}
+        <button type="button" onClick={addSize}
+          className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-body font-bold transition-all"
+          style={{ background: 'rgba(155,95,192,0.1)', color: '#9B5FC0', border: '1.5px dashed rgba(155,95,192,0.3)' }}>
+          <Plus size={14} /> Ajouter une taille
+        </button>
+      </Section>
 
-      {/* Upload images */}
-      <div className="space-y-4 pt-6 border-t border-gray-200">
-        <h3 className="text-lg font-display text-sf-text flex items-center gap-2 mb-4">
-          <span className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 text-sm">4</span>
-          Images du produit {!isEditing && '*'}
-        </h3>
-
-        {/* Zone de drop */}
+      {/* Section 3 — Images */}
+      <Section num="3" title={`Images ${!isEditing ? '*' : ''}`} color="#C8EDE0">
         <label
-          className={`relative flex flex-col items-center justify-center gap-4 border-2 border-dashed
-                     rounded-2xl p-12 cursor-pointer transition-all duration-300 group
-                     ${dragOver
-                       ? 'border-sf-sage bg-sf-sage-soft scale-[1.02]'
-                       : 'border-gray-300 hover:border-sf-sage bg-gray-50 hover:bg-sf-sage-soft/30'
-                     }
-                     ${errors.images ? 'border-red-300 bg-red-50' : ''}
-                     ${uploading ? 'pointer-events-none opacity-60' : ''}`}
-          onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={(e) => {
-            e.preventDefault()
-            setDragOver(false)
-            uploadFiles(e.dataTransfer.files)
+          className="flex flex-col items-center justify-center gap-3 rounded-3xl cursor-pointer transition-all"
+          style={{
+            border: `2px dashed ${dragOver ? '#9B5FC0' : errors.images ? '#E8A0A0' : 'rgba(249,200,212,0.6)'}`,
+            background: dragOver ? 'rgba(155,95,192,0.05)' : errors.images ? '#FFF5F5' : 'rgba(249,200,212,0.08)',
+            padding: '32px 20px', opacity: uploading ? 0.6 : 1, pointerEvents: uploading ? 'none' : 'auto',
           }}
-        >
-          <input
-            type="file" accept="image/*" multiple className="hidden"
-            onChange={(e) => uploadFiles(e.target.files)}
-          />
-          
-          <div className={`w-20 h-20 rounded-full flex items-center justify-center transition-all
-                         ${dragOver ? 'bg-sf-sage scale-110' : 'bg-gray-200 group-hover:bg-sf-sage-soft'}`}>
-            {uploading ? (
-              <Loader2 size={32} className="text-sf-sage animate-spin" />
-            ) : (
-              <Upload size={32} className={`transition-all ${dragOver ? 'text-white' : 'text-gray-400 group-hover:text-sf-sage'}`} />
-            )}
+          onDragOver={e => { e.preventDefault(); setDragOver(true) }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={e => { e.preventDefault(); setDragOver(false); uploadFiles(e.dataTransfer.files) }}>
+          <input type="file" accept="image/*" multiple className="hidden" onChange={e => uploadFiles(e.target.files)} />
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center"
+               style={{ background: dragOver ? '#9B5FC0' : 'rgba(249,200,212,0.3)' }}>
+            {uploading ? <Loader2 size={24} className="animate-spin" style={{ color: '#9B5FC0' }} />
+              : <Upload size={24} style={{ color: dragOver ? 'white' : '#E8A0B4' }} />}
           </div>
-          
           <div className="text-center">
-            <p className="text-sf-text font-body font-semibold text-lg mb-1">
-              {uploading ? 'Upload en cours...' : 'Glisser-déposer vos images ici'}
+            <p style={{ fontSize: '14px', fontWeight: 700, color: '#2D2340', marginBottom: 2 }}>
+              {uploading ? 'Upload en cours...' : 'Glisser-déposer vos images'}
             </p>
-            <p className="text-sf-text-soft text-sm">
-              ou cliquez pour sélectionner · JPG, PNG, WebP
-            </p>
+            <p style={{ fontSize: '12px', color: '#C4B0D8' }}>ou cliquez pour sélectionner · JPG, PNG, WebP</p>
           </div>
         </label>
-        {errors.images && <p className="text-red-600 text-sm mt-2 font-medium">{errors.images}</p>}
-
-        {/* Aperçu des images */}
+        {errors.images && <p style={{ fontSize: '11px', color: '#E8A0A0' }}>{errors.images}</p>}
         {form.images.length > 0 && (
-          <div>
-            <p className="text-sm font-semibold text-sf-text mb-3">
-              {form.images.length} image{form.images.length > 1 ? 's' : ''} uploadée{form.images.length > 1 ? 's' : ''}
-            </p>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-              {form.images.map((url, i) => (
-                <div key={i} className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden group">
-                  <img src={url} alt={`Image ${i + 1}`} className="w-full h-full object-cover" />
-                  <button
-                    type="button" 
-                    onClick={() => removeImage(url)}
-                    className="absolute inset-0 bg-black/60 flex items-center justify-center
-                             opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    aria-label="Supprimer l'image"
-                  >
-                    <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
-                      <X size={20} className="text-white" />
-                    </div>
-                  </button>
-                </div>
-              ))}
-            </div>
+          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+            {form.images.map((url, i) => (
+              <div key={i} className="relative rounded-2xl overflow-hidden group" style={{ aspectRatio: '1/1', background: '#F8F3FC' }}>
+                <img src={url} alt={`img ${i+1}`} className="w-full h-full object-cover" />
+                <button type="button" onClick={() => removeImage(url)}
+                  className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ background: 'rgba(45,35,64,0.5)' }}>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#E8A0A0' }}>
+                    <X size={14} className="text-white" />
+                  </div>
+                </button>
+              </div>
+            ))}
           </div>
         )}
-      </div>
+      </Section>
 
       {/* Actions */}
-      <div className="flex items-center gap-4 pt-8 border-t border-gray-200">
-        <button 
-          type="submit" 
-          disabled={saving || uploading} 
-          className="flex-1 sm:flex-none bg-sf-sage text-white px-8 py-4 rounded-xl
-                   font-body font-bold text-base hover:bg-sf-sage-dark
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   transition-all duration-200 hover:shadow-lg hover:scale-[1.02]
-                   flex items-center justify-center gap-2"
-        >
-          {saving ? (
-            <>
-              <Loader2 size={18} className="animate-spin" />
-              Enregistrement...
-            </>
-          ) : (
-            isEditing ? 'Mettre à jour le produit' : 'Créer le produit'
-          )}
+      <div className="flex gap-3 pt-6" style={{ borderTop: '1px solid rgba(249,200,212,0.3)', marginTop: 24 }}>
+        <button type="submit" disabled={saving || uploading}
+          className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-full px-8 py-3 text-white font-body font-bold"
+          style={{ background: '#9B5FC0', boxShadow: '0 4px 16px rgba(155,95,192,0.3)', opacity: saving || uploading ? 0.7 : 1 }}>
+          {saving && <Loader2 size={15} className="animate-spin" />}
+          {isEditing ? 'Mettre à jour ✨' : 'Créer le produit 🌸'}
         </button>
         {onCancel && (
-          <button 
-            type="button" 
-            onClick={onCancel} 
-            className="px-6 py-4 rounded-xl border-2 border-gray-200 text-sf-text-soft
-                     font-body font-semibold hover:border-gray-300 hover:bg-gray-50
-                     transition-all duration-200"
-          >
+          <button type="button" onClick={onCancel}
+            className="px-6 py-3 rounded-full font-body font-bold text-sm"
+            style={{ background: 'rgba(249,200,212,0.3)', color: '#7B6B8A' }}>
             Annuler
           </button>
         )}
