@@ -5,36 +5,66 @@ import api from '../../utils/api'
 
 /* ══════════════════════════════════════════════════════
    BRANCHE FLORALE — exactement comme le design :
-   tige courbe avec 2 branches qui montent, fleur ronde
-   au bout de chaque branche + une 3ème à droite
+   tige qui part à gauche en courbe descendante,
+   petites feuilles ovales de chaque côté,
+   grande fleur 4 pétales au centre,
+   petit bouton floral à droite
 ══════════════════════════════════════════════════════ */
 function FloralBranch() {
   return (
-    <svg width="95" height="22" viewBox="0 0 115 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Tige principale courbe */}
-      <path d="M2 18 C18 18 30 15 44 16 C58 17 70 14 84 15 C95 16 105 14 113 15"
-            stroke="#C4A8CC" strokeWidth="1.0" fill="none" strokeLinecap="round"/>
+    <svg width="105" height="28" viewBox="0 0 130 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Tige principale — courbe douce qui descend légèrement */}
+      <path d="M4 14 C16 14 26 17 40 18 C54 19 68 16 82 17 C94 17 108 15 126 16"
+            stroke="#C4A8CC" strokeWidth="1.1" fill="none" strokeLinecap="round"/>
 
-      {/* Branche 1 montante gauche */}
-      <path d="M32 16 C33 12 36 9 38 8"
-            stroke="#C4A8CC" strokeWidth="0.9" fill="none" strokeLinecap="round"/>
-      {/* Fleur 1 */}
-      <circle cx="38" cy="7"  r="3" fill="none" stroke="#D4A8C4" strokeWidth="0.9"/>
-      <circle cx="38" cy="7"  r="1.1" fill="#D4A8C4"/>
+      {/* === Feuilles gauche === */}
+      {/* Feuille haut-gauche */}
+      <path d="M18 14 C19 10 24 8 25 11 C23 14 19 15 18 14Z"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.85" strokeLinejoin="round"/>
+      {/* Feuille bas-gauche */}
+      <path d="M22 17 C23 21 28 22 28 19 C26 16 22 16 22 17Z"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.85" strokeLinejoin="round"/>
 
-      {/* Branche 2 montante milieu */}
-      <path d="M62 15 C63 10 66 7 68 6"
-            stroke="#C4A8CC" strokeWidth="0.9" fill="none" strokeLinecap="round"/>
-      {/* Fleur 2 */}
-      <circle cx="68" cy="5"  r="3" fill="none" stroke="#D4A8C4" strokeWidth="0.9"/>
-      <circle cx="68" cy="5"  r="1.1" fill="#D4A8C4"/>
+      {/* === Grande fleur centrale 4 pétales === */}
+      {/* Pétale haut */}
+      <path d="M68 17 C68 13 70 10 72 10 C74 10 76 13 76 17"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.9" strokeLinecap="round"/>
+      {/* Pétale bas */}
+      <path d="M68 17 C68 21 70 24 72 24 C74 24 76 21 76 17"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.9" strokeLinecap="round"/>
+      {/* Pétale gauche */}
+      <path d="M72 17 C68 17 65 15 65 13 C65 11 68 10 72 10"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.9" strokeLinecap="round"/>
+      {/* Pétale droit */}
+      <path d="M72 17 C76 17 79 15 79 13 C79 11 76 10 72 10"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.9" strokeLinecap="round"/>
+      {/* Centre fleur */}
+      <circle cx="72" cy="17" r="2.2" fill="none" stroke="#C4A8CC" strokeWidth="0.9"/>
+      <circle cx="72" cy="17" r="1"   fill="#C4A8CC"/>
 
-      {/* Branche 3 montante droite */}
-      <path d="M90 14 C91 10 94 8 96 7"
-            stroke="#C4A8CC" strokeWidth="0.9" fill="none" strokeLinecap="round"/>
-      {/* Fleur 3 */}
-      <circle cx="96" cy="6"  r="3" fill="none" stroke="#D4A8C4" strokeWidth="0.9"/>
-      <circle cx="96" cy="6"  r="1.1" fill="#D4A8C4"/>
+      {/* === Feuilles milieu droite de la fleur === */}
+      {/* Feuille haut-droite fleur */}
+      <path d="M80 15 C82 11 87 10 87 13 C85 16 80 16 80 15Z"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.85" strokeLinejoin="round"/>
+      {/* Feuille bas-droite fleur */}
+      <path d="M80 19 C82 23 87 23 87 20 C85 17 80 18 80 19Z"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.85" strokeLinejoin="round"/>
+
+      {/* === Petit bouton floral droite === */}
+      {/* Tige courte bouton */}
+      <path d="M108 16 C109 13 111 11 113 10"
+            stroke="#C4A8CC" strokeWidth="0.85" fill="none" strokeLinecap="round"/>
+      {/* Pétale gauche bouton */}
+      <path d="M113 10 C111 8 110 6 112 5 C114 5 115 7 113 10Z"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.85" strokeLinejoin="round"/>
+      {/* Pétale droit bouton */}
+      <path d="M113 10 C115 8 116 6 118 6 C120 7 119 9 113 10Z"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.85" strokeLinejoin="round"/>
+      {/* Feuilles bouton */}
+      <path d="M109 14 C107 12 105 13 106 15 C107 16 109 15 109 14Z"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.8" strokeLinejoin="round"/>
+      <path d="M111 16 C113 18 115 17 114 15 C113 14 111 15 111 16Z"
+            fill="none" stroke="#C4A8CC" strokeWidth="0.8" strokeLinejoin="round"/>
     </svg>
   )
 }
