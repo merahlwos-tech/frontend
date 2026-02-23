@@ -109,7 +109,7 @@ function AdminProductsPage() {
                   </h3>
                   <div className="flex items-center justify-between mb-4">
                     <span style={{ fontSize: '15px', fontWeight: 800, color: '#2D2340' }}>
-                      {(product.price ?? 0).toFixed(2)} $
+                      {(product.price ?? 0).toLocaleString('fr-DZ')} DA
                     </span>
                     <span style={{ fontSize: '11px', color: totalStock === 0 ? '#E8A0A0' : totalStock <= 5 ? '#F4C94A' : '#B8A8C8' }}>
                       {totalStock === 0 ? 'Épuisé' : `${totalStock} stock`}

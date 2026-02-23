@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 
 const CATEGORIES = ['Skincare', 'Makeup', 'Body Care', 'Hair Care']
 
-const EMPTY = { name: '', brand: '', category: 'Skincare', price: '', description: '', images: [], tags: [] }
+const EMPTY = { name: '', brand: '', category: 'Skincare', price: '', stock: '', description: '', images: [], tags: [] }
 
 const inputStyle = (err) => ({
   width: '100%', padding: '10px 14px', borderRadius: 14, outline: 'none',
@@ -44,6 +44,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
   const [form, setForm] = useState(initialData ? {
     ...initialData,
     price: initialData.price.toString(),
+    stock: initialData.stock?.toString() ?? '',
     images: initialData.images || [],
     tags: initialData.tags || [],
   } : EMPTY)
@@ -79,6 +80,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     if (!form.name.trim()) e.name = 'Nom requis'
     if (!form.brand.trim()) e.brand = 'Marque requise'
     if (!form.price || isNaN(Number(form.price)) || Number(form.price) <= 0) e.price = 'Prix invalide'
+    if (form.stock === '' || isNaN(Number(form.stock)) || Number(form.stock) < 0) e.stock = 'Stock requis (0 ou plus)'
     if (form.images.length === 0 && !isEditing) e.images = 'Au moins une image requise'
     return e
   }
@@ -92,6 +94,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
       const payload = {
         ...form,
         price: Number(form.price),
+        stock: Number(form.stock),
         sizes: [],
       }
       if (isEditing) {
@@ -141,6 +144,12 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
               style={inputStyle(errors.price)}
               onFocus={e => e.target.style.borderColor = '#9B5FC0'}
               onBlur={e => e.target.style.borderColor = errors.price ? '#E8A0A0' : 'rgba(249,200,212,0.5)'} />
+          </Field>
+          <Field label="Stock *" error={errors.stock}>
+            <input name="stock" value={form.stock} onChange={handleChange} type="number" min="0" placeholder="Ex: 50"
+              style={inputStyle(errors.stock)}
+              onFocus={e => e.target.style.borderColor = '#9B5FC0'}
+              onBlur={e => e.target.style.borderColor = errors.stock ? '#E8A0A0' : 'rgba(249,200,212,0.5)'} />
           </Field>
         </div>
         <Field label="Description">
