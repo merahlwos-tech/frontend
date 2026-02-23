@@ -4,66 +4,15 @@ import { Heart, Star, Plus } from 'lucide-react'
 import api from '../../utils/api'
 
 /* ══════════════════════════════════════════════════════
-   BRANCHE FLORALE — exactement comme l'image fournie :
-   tige courbe ondulée, petites feuilles ovales sur tiges
-   courtes tout le long, fleur ouverte 2 pétales ronds
-   au centre, bouton floral à droite avec 2 feuilles
+   BRANCHE FLORALE — image exacte encodée en base64
 ══════════════════════════════════════════════════════ */
 function FloralBranch() {
   return (
-    <svg width="108" height="32" viewBox="0 0 135 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* ── Tige principale ondulée ── */}
-      <path d="M4 22 C12 20 20 25 30 24 C40 23 50 19 62 20 C72 21 80 18 90 19 C100 20 112 17 130 18"
-            stroke="#B8A0C8" strokeWidth="2" fill="none" strokeLinecap="round"/>
-
-      {/* ── Feuille 1 haut-gauche sur tige ── */}
-      <path d="M15 22 L12 16" stroke="#B8A0C8" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M12 16 C10 12 15 10 17 13 C16 17 12 16 12 16Z"
-            fill="none" stroke="#B8A0C8" strokeWidth="1.8" strokeLinejoin="round"/>
-
-      {/* ── Feuille 2 bas-gauche ── */}
-      <path d="M24 23 L22 29" stroke="#B8A0C8" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M22 29 C19 33 14 32 15 28 C17 25 22 29 22 29Z"
-            fill="none" stroke="#B8A0C8" strokeWidth="1.8" strokeLinejoin="round"/>
-
-      {/* ── Feuille 3 haut-milieu ── */}
-      <path d="M45 21 L43 15" stroke="#B8A0C8" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M43 15 C41 11 46 9 48 12 C47 16 43 15 43 15Z"
-            fill="none" stroke="#B8A0C8" strokeWidth="1.8" strokeLinejoin="round"/>
-
-      {/* ── Fleur ouverte centrale (2 pétales ronds) ── */}
-      <path d="M72 20 L72 13" stroke="#B8A0C8" strokeWidth="1.8" strokeLinecap="round"/>
-      {/* Pétale gauche rond */}
-      <path d="M72 13 C69 10 65 11 65 14 C65 17 69 17 72 13Z"
-            fill="none" stroke="#B8A0C8" strokeWidth="1.8" strokeLinejoin="round"/>
-      {/* Pétale droit rond */}
-      <path d="M72 13 C75 10 79 11 79 14 C79 17 75 17 72 13Z"
-            fill="none" stroke="#B8A0C8" strokeWidth="1.8" strokeLinejoin="round"/>
-      {/* Petit cercle centre fleur */}
-      <circle cx="72" cy="13" r="2" fill="#B8A0C8"/>
-
-      {/* ── Feuille 4 droite fleur ── */}
-      <path d="M82 19 L85 13" stroke="#B8A0C8" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M85 13 C86 9 91 9 91 13 C89 16 85 13 85 13Z"
-            fill="none" stroke="#B8A0C8" strokeWidth="1.8" strokeLinejoin="round"/>
-
-      {/* ── Bouton floral droite ── */}
-      <path d="M105 18 L105 11" stroke="#B8A0C8" strokeWidth="1.8" strokeLinecap="round"/>
-      {/* Pétale gauche bouton */}
-      <path d="M105 11 C103 8 100 9 100 12 C100 14 103 13 105 11Z"
-            fill="none" stroke="#B8A0C8" strokeWidth="1.8" strokeLinejoin="round"/>
-      {/* Pétale droit bouton */}
-      <path d="M105 11 C107 8 110 9 110 12 C110 14 107 13 105 11Z"
-            fill="none" stroke="#B8A0C8" strokeWidth="1.8" strokeLinejoin="round"/>
-      {/* Feuille gauche bouton */}
-      <path d="M102 16 L98 20" stroke="#B8A0C8" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M98 20 C95 23 91 22 92 19 C94 17 98 20 98 20Z"
-            fill="none" stroke="#B8A0C8" strokeWidth="1.8" strokeLinejoin="round"/>
-      {/* Feuille droite bouton */}
-      <path d="M108 17 L112 20" stroke="#B8A0C8" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M112 20 C115 22 118 20 117 17 C115 15 112 20 112 20Z"
-            fill="none" stroke="#B8A0C8" strokeWidth="1.8" strokeLinejoin="round"/>
-    </svg>
+    <img
+      src="data:image/png;base64,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"
+      alt=""
+      style={{ width: 110, height: 32, objectFit: 'contain', opacity: 0.85 }}
+    />
   )
 }
 
