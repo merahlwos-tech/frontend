@@ -5,49 +5,48 @@ import api from '../../utils/api'
 
 /* ══════════════════════════════════════════════════════
    BRANCHE FLORALE — exactement comme le design :
-   tige courbe fine, petites feuilles ovales, petites
-   fleurs rondes à 3 endroits
+   tige courbe avec 2 branches qui montent, fleur ronde
+   au bout de chaque branche + une 3ème à droite
 ══════════════════════════════════════════════════════ */
 function FloralBranch() {
   return (
-    <svg width="100" height="20" viewBox="0 0 120 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Tige principale */}
-      <path d="M4 14 C20 14 32 9 48 12 C62 15 74 9 88 12 C100 14 110 12 118 13"
-            stroke="#C8B0D8" strokeWidth="1.1" fill="none" strokeLinecap="round"/>
-      {/* Feuille gauche */}
-      <path d="M28 12 C30 7 36 6 37 10 C35 13 29 14 28 12Z"
-            fill="none" stroke="#C8B0D8" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round"/>
-      {/* Tige feuille gauche */}
-      <path d="M28 12 C29 11 33 10 37 10" stroke="#C8B0D8" strokeWidth="0.8" fill="none" strokeLinecap="round"/>
-      {/* Feuille milieu */}
-      <path d="M60 11 C62 6 68 5 69 9 C67 12 61 13 60 11Z"
-            fill="none" stroke="#C8B0D8" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M60 11 C61 10 65 9 69 9" stroke="#C8B0D8" strokeWidth="0.8" fill="none" strokeLinecap="round"/>
-      {/* Feuille droite */}
-      <path d="M90 11 C92 7 97 6 98 10 C96 13 91 13 90 11Z"
-            fill="none" stroke="#C8B0D8" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M90 11 C91 10 95 9 98 10" stroke="#C8B0D8" strokeWidth="0.8" fill="none" strokeLinecap="round"/>
-      {/* Petite fleur 1 */}
-      <circle cx="37" cy="10" r="2.2" fill="none" stroke="#D4B0C8" strokeWidth="0.9"/>
-      <circle cx="37" cy="10" r="0.9" fill="#D4B0C8"/>
-      {/* Petite fleur 2 */}
-      <circle cx="69" cy="9"  r="2.2" fill="none" stroke="#D4B0C8" strokeWidth="0.9"/>
-      <circle cx="69" cy="9"  r="0.9" fill="#D4B0C8"/>
-      {/* Petite fleur 3 */}
-      <circle cx="98" cy="10" r="2.2" fill="none" stroke="#D4B0C8" strokeWidth="0.9"/>
-      <circle cx="98" cy="10" r="0.9" fill="#D4B0C8"/>
+    <svg width="95" height="22" viewBox="0 0 115 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Tige principale courbe */}
+      <path d="M2 18 C18 18 30 15 44 16 C58 17 70 14 84 15 C95 16 105 14 113 15"
+            stroke="#C4A8CC" strokeWidth="1.0" fill="none" strokeLinecap="round"/>
+
+      {/* Branche 1 montante gauche */}
+      <path d="M32 16 C33 12 36 9 38 8"
+            stroke="#C4A8CC" strokeWidth="0.9" fill="none" strokeLinecap="round"/>
+      {/* Fleur 1 */}
+      <circle cx="38" cy="7"  r="3" fill="none" stroke="#D4A8C4" strokeWidth="0.9"/>
+      <circle cx="38" cy="7"  r="1.1" fill="#D4A8C4"/>
+
+      {/* Branche 2 montante milieu */}
+      <path d="M62 15 C63 10 66 7 68 6"
+            stroke="#C4A8CC" strokeWidth="0.9" fill="none" strokeLinecap="round"/>
+      {/* Fleur 2 */}
+      <circle cx="68" cy="5"  r="3" fill="none" stroke="#D4A8C4" strokeWidth="0.9"/>
+      <circle cx="68" cy="5"  r="1.1" fill="#D4A8C4"/>
+
+      {/* Branche 3 montante droite */}
+      <path d="M90 14 C91 10 94 8 96 7"
+            stroke="#C4A8CC" strokeWidth="0.9" fill="none" strokeLinecap="round"/>
+      {/* Fleur 3 */}
+      <circle cx="96" cy="6"  r="3" fill="none" stroke="#D4A8C4" strokeWidth="0.9"/>
+      <circle cx="96" cy="6"  r="1.1" fill="#D4A8C4"/>
     </svg>
   )
 }
 
 /* ══════════════════════════════════════════════════════
-   ICÔNE +✦ exacte du design (croix rose avec point)
+   ICÔNE +✦ exacte du design
 ══════════════════════════════════════════════════════ */
 function MagicStar() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-      <path d="M9 2v14M2 9h14" stroke="#E8A0B4" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="#E8A0B4" strokeWidth="1.2" strokeLinecap="round"/>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M8 2v12M2 8h12" stroke="#E8A0B4" strokeWidth="2.2" strokeLinecap="round"/>
+      <path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="#E8A0B4" strokeWidth="1.1" strokeLinecap="round"/>
     </svg>
   )
 }
@@ -63,7 +62,7 @@ const CATEGORIES = [
 ]
 
 /* ══════════════════════════════════════════════════════
-   CARTE PRODUIT — 15% plus petite
+   CARTE PRODUIT
 ══════════════════════════════════════════════════════ */
 function ProductCard({ product }) {
   const [liked, setLiked] = useState(false)
@@ -109,7 +108,7 @@ function ProductCard({ product }) {
 }
 
 /* ══════════════════════════════════════════════════════
-   EN-TÊTE DE SECTION avec branche florale
+   EN-TÊTE DE SECTION
 ══════════════════════════════════════════════════════ */
 function SectionHeader({ title, to }) {
   return (
@@ -153,39 +152,47 @@ function HomePage() {
   )
 
   return (
-    /* ── Background : rose très pâle uni comme le design ── */
     <div className="min-h-screen pb-4" style={{ background: '#FEF0F8' }}>
 
       {/* ════════════════════════════════════════
-          HERO — photo plein container + overlay texte
+          HERO — photo plein container, texte par-dessus
       ════════════════════════════════════════ */}
       <section className="px-4 pt-4 pb-5 animate-fade-up">
         <div className="relative rounded-3xl overflow-hidden" style={{ height: 248 }}>
 
-          {/* Photo qui prend TOUT le container */}
+          {/* Photo plein container — AUCUN texte alternatif visible */}
           <img
             src="/hero-banner.jpg"
-            alt="Fairy Glow collection"
+            alt=""
             className="absolute inset-0 w-full h-full object-cover object-center"
+            style={{ display: 'block' }}
+            onError={(e) => {
+              // Si l'image ne charge pas, fond dégradé de remplacement
+              e.target.style.display = 'none'
+              e.target.parentElement.style.background =
+                'linear-gradient(135deg, #8B6AAE 0%, #B896D4 40%, #C8A87E 80%, #D4B896 100%)'
+            }}
           />
 
-          {/* Overlay sombre léger pour lisibilité */}
+          {/* Overlay gauche pour lisibilité du texte */}
           <div className="absolute inset-0"
-               style={{ background: 'linear-gradient(120deg, rgba(90,50,140,0.52) 0%, rgba(90,50,140,0.28) 55%, rgba(90,50,140,0.05) 100%)' }} />
+               style={{ background: 'linear-gradient(110deg, rgba(80,40,130,0.55) 0%, rgba(80,40,130,0.25) 52%, transparent 100%)' }} />
 
-          {/* Bloc texte glassmorphism posé DESSUS la photo */}
+          {/* Bloc texte glassmorphism — posé par-dessus la photo */}
           <div className="absolute"
                style={{
-                 left: 16, top: '50%', transform: 'translateY(-50%)',
-                 background: 'rgba(255,255,255,0.14)',
+                 left: 16,
+                 top: '50%',
+                 transform: 'translateY(-50%)',
+                 background: 'rgba(255,255,255,0.13)',
                  backdropFilter: 'blur(10px)',
                  WebkitBackdropFilter: 'blur(10px)',
                  borderRadius: 18,
-                 border: '1px solid rgba(255,255,255,0.28)',
+                 border: '1px solid rgba(255,255,255,0.30)',
                  padding: '16px 18px',
-                 maxWidth: '56%',
+                 maxWidth: '57%',
                }}>
-            <p style={{ fontSize: '9px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.82)', marginBottom: 4 }}>
+            <p style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.80)', marginBottom: 4 }}>
               New Collection
             </p>
             <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '2rem', fontWeight: 700, color: 'white', lineHeight: 1.05, marginBottom: 6 }}>
@@ -262,18 +269,15 @@ function HomePage() {
           </div>
         )}
 
-        {/* ── Clean Japanese Beauty banner ── */}
+        {/* ── Clean Japanese Beauty ── */}
         <div className="mx-5 mt-4 rounded-3xl overflow-hidden relative text-center"
              style={{
-               background: 'linear-gradient(135deg, #FFD6E8 0%, #E8D6FF 28%, #D6F0FF 55%, #D6FFE8 78%, #FFF0D6 100%)',
+               background: 'linear-gradient(135deg, #FFD6E8 0%, #E8D6FF 28%, #D6EEFF 55%, #D6FFE8 78%, #FFF0D6 100%)',
                padding: '32px 20px 28px',
              }}>
-          {/* Étoiles coins */}
-          <span className="absolute top-3 left-5" style={{ fontSize: 12, color: '#C9ADE8', opacity: 0.7 }}>✦</span>
-          <span className="absolute top-3 right-6" style={{ fontSize: 10, color: '#F9C8D4', opacity: 0.7 }}>✦</span>
-          <span className="absolute bottom-4 left-8" style={{ fontSize: 9, color: '#C9ADE8', opacity: 0.5 }}>✦</span>
-          {/* Lotus violet */}
-          <svg className="mx-auto mb-3" width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <span className="absolute top-3 left-5" style={{ fontSize: 11, color: '#C9ADE8', opacity: 0.7 }}>✦</span>
+          <span className="absolute top-3 right-6" style={{ fontSize: 9, color: '#F9C8D4', opacity: 0.7 }}>✦</span>
+          <svg className="mx-auto mb-3" width="34" height="34" viewBox="0 0 36 36" fill="none">
             <path d="M18 30 C18 30 6 22 6 14 C6 9 10 6 14 8 C15.5 8.5 17 10 18 12 C19 10 20.5 8.5 22 8 C26 6 30 9 30 14 C30 22 18 30 18 30Z"
                   fill="#9B5FC0" opacity="0.85"/>
             <path d="M18 30 C18 30 11 24 10 18 C13 19 16 22 18 26 C20 22 23 19 26 18 C25 24 18 30 18 30Z"
