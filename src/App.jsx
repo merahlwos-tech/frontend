@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
+import { WishlistProvider } from './context/WishlistContext'
 import Navbar from './Components/ui/Navbar'
 import Footer from './Components/ui/Footer'
 import PrivateRoute from './Components/ui/PrivateRoute'
@@ -13,6 +14,7 @@ import CartPage from './pages/public/CartPage'
 import ConfirmationPage from './pages/public/ConfirmationPage'
 import AboutPage from './pages/public/AboutPage'
 import TagProductsPage from './pages/public/TagProductsPage'
+import WishlistPage from './pages/public/WishlistPage'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import AdminProductsPage from './pages/admin/AdminProductsPage'
@@ -33,6 +35,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
+          <WishlistProvider>
           <Toaster position="top-right"
             toastOptions={{
               style: {
@@ -60,6 +63,7 @@ function App() {
             <Route path="/cart" element={<PublicLayout><CartPage /></PublicLayout>} />
             <Route path="/confirmation" element={<PublicLayout><ConfirmationPage /></PublicLayout>} />
             <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
+            <Route path="/wishlist" element={<PublicLayout><WishlistPage /></PublicLayout>} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<PrivateRoute><AdminLayout /></PrivateRoute>}>
               <Route index element={<AdminDashboardPage />} />
@@ -68,6 +72,7 @@ function App() {
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+        </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>

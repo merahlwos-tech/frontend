@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Heart, Star, Plus } from 'lucide-react'
 import api from '../../utils/api'
+import { useWishlist } from '../../context/WishlistContext'
+import toast from 'react-hot-toast'
 
 /* ══════════════════════════════════════════════════════
    BRANCHE FLORALE — image exacte encodée en base64
@@ -42,20 +44,28 @@ const CATEGORIES = [
    CARTE PRODUIT
 ══════════════════════════════════════════════════════ */
 function ProductCard({ product }) {
-  const [liked, setLiked] = useState(false)
+  const { toggle, isWished } = useWishlist()
+  const liked    = isWished(product._id)
   const img     = product.images?.[0] || '/placeholder.jpg'
   const rating  = product.rating  || (4 + Math.random()).toFixed(1)
   const reviews = product.reviews || Math.floor(40 + Math.random() * 30)
+
+  const handleWishlist = (e) => {
+    e.preventDefault()
+    toggle(product)
+    if (!isWished(product._id)) toast.success('💜 Ajouté à ta wishlist !', { duration: 2000 })
+    else toast('🤍 Retiré de ta wishlist', { duration: 1500 })
+  }
 
   return (
     <Link to={`/products/${product._id}`} className="flex-shrink-0 block" style={{ width: 128 }}>
       <div style={{ background: 'white', borderRadius: 18, boxShadow: '0 2px 12px rgba(155,95,192,0.09)', overflow: 'hidden' }}>
         <div className="relative overflow-hidden" style={{ aspectRatio: '1/1', background: '#F8F3FC' }}>
           <img src={img} alt={product.name} className="w-full h-full object-cover" loading="lazy" />
-          <button onClick={(e) => { e.preventDefault(); setLiked(!liked) }}
+          <button onClick={handleWishlist}
             className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(255,255,255,0.88)' }}>
-            <Heart size={12} style={{ fill: liked ? '#E8A0B4' : 'none', color: liked ? '#E8A0B4' : '#C4B0D8', strokeWidth: 2 }} />
+            style={{ background: liked ? 'rgba(232,160,180,0.95)' : 'rgba(255,255,255,0.88)' }}>
+            <Heart size={12} style={{ fill: liked ? 'white' : 'none', color: liked ? 'white' : '#C4B0D8', strokeWidth: 2 }} />
           </button>
           <div className="absolute bottom-1.5 left-1.5 flex items-center gap-0.5 rounded-full px-1.5 py-0.5"
                style={{ background: 'rgba(255,255,255,0.88)' }}>
