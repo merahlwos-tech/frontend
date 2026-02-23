@@ -142,12 +142,12 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
   const handleConfirm = async () => {
     setSubmitting(true)
     try {
-      await api.post('/orders', {
+      const res = await api.post('/orders', {
         customerInfo: form,
-        items: [{ product: product._id, name: product.name, size: null, quantity, price: product.price }],
+        items: [{ product: product._id, name: product.name, quantity, price: product.price }],
         total: product.price * quantity,
       })
-      onSuccess()
+      onSuccess(res.data?._id || res.data?.id)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de la commande.')
       setSubmitting(false)
@@ -269,10 +269,10 @@ function ProductDetailPage() {
     toast.success(`🛍️ ${product.name} ajouté au panier !`)
   }
 
-  const handleDirectBuySuccess = () => {
+  const handleDirectBuySuccess = (orderId) => {
     setShowDirectBuy(false)
-    navigate('/confirmation')
-    setTimeout(() => setShowCancelToast(true), 400)
+    sessionStorage.setItem('cancelOrderId', orderId || '')
+    navigate('/confirmation', { replace: true, state: { orderId } })
   }
 
   const handleCartOrder = async (customerInfo) => {
