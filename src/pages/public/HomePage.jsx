@@ -139,7 +139,7 @@ function HomePage() {
 
           {/* Photo plein container — AUCUN texte alternatif visible */}
           <img
-            src="/hero-banner.jpg"
+            src="/images.jpg"
             alt=""
             className="absolute inset-0 w-full h-full object-cover object-center"
             style={{ display: 'block' }}
