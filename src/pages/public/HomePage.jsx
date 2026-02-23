@@ -6,10 +6,10 @@ import { useCart } from '../../context/CartContext'
 import toast from 'react-hot-toast'
 
 const CATEGORIES = [
-  { label: 'Skincare',  img: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=160&h=160&fit=crop&q=80', bg: '#F0F7EE', border: '#C8E0C8' },
+  { label: 'Skincare',  img: '/images/skincare.png', bg: '#F0F7EE', border: '#C8E0C8' },
   { label: 'Makeup',    img: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=160&h=160&fit=crop&q=80', bg: '#FFF3F0', border: '#F0C8C0' },
-  { label: 'Body Care', img: 'https://images.unsplash.com/photo-1600857062241-98e5dba7f35f?w=160&h=160&fit=crop&q=80', bg: '#F0EEF7', border: '#C8C0E8' },
-  { label: 'Hair Care', img: 'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?w=160&h=160&fit=crop&q=80', bg: '#F0F5EE', border: '#C0D8C0' },
+  { label: 'Body Care', img: '/images/bodycare.png', bg: '#F0EEF7', border: '#C8C0E8' },
+  { label: 'Hair Care', img: '/images/haircare.png', bg: '#F0F5EE', border: '#C0D8C0' },
 ]
 
 function MiniProductCard({ product }) {
