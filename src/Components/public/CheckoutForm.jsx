@@ -1,62 +1,33 @@
 import { useState, useCallback } from 'react'
-import { ChevronDown, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react'
-import wilayas from '../../data/wilayas'
+import { ChevronDown, AlertTriangle, CheckCircle, Loader2, Truck } from 'lucide-react'
+import { useDeliveryFees } from '../../hooks/useDeliveryFees'
 
 /* ══════════════════════════════════════════════
    MODALE AVERTISSEMENT FRAUDE
 ══════════════════════════════════════════════ */
 function FraudWarningModal({ onConfirm, onCancel, loading }) {
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 1000,
-      background: 'rgba(45,35,64,0.55)', backdropFilter: 'blur(6px)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '20px',
-      animation: 'fadeIn 0.2s ease',
-    }}>
-      <div style={{
-        background: 'white', borderRadius: 24, padding: '28px 24px',
-        maxWidth: 380, width: '100%',
-        boxShadow: '0 20px 60px rgba(45,35,64,0.25)',
-        animation: 'slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-      }}>
-        {/* Icône */}
+    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(45,35,64,0.55)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', animation: 'fadeIn 0.2s ease' }}>
+      <div style={{ background: 'white', borderRadius: 24, padding: '28px 24px', maxWidth: 380, width: '100%', boxShadow: '0 20px 60px rgba(45,35,64,0.25)', animation: 'slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}>
         <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(249,200,212,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
           <AlertTriangle size={26} style={{ color: '#C4607A' }} />
         </div>
-
-        <h3 style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.4rem', fontWeight: 700, color: '#2D2340', textAlign: 'center', marginBottom: 12 }}>
-          Confirmer ta commande
-        </h3>
-
+        <h3 style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.4rem', fontWeight: 700, color: '#2D2340', textAlign: 'center', marginBottom: 12 }}>Confirmer ta commande</h3>
         <div style={{ background: 'rgba(249,200,212,0.15)', borderRadius: 14, padding: '14px', marginBottom: 16, border: '1px solid rgba(249,200,212,0.4)' }}>
-          <p style={{ fontSize: 13, color: '#5A4A6A', lineHeight: 1.7, textAlign: 'center' }}>
-            En confirmant, tu attestes que les informations fournies sont <strong>exactes et sincères</strong>.
-          </p>
+          <p style={{ fontSize: 13, color: '#5A4A6A', lineHeight: 1.7, textAlign: 'center' }}>En confirmant, tu attestes que les informations fournies sont <strong>exactes et sincères</strong>.</p>
         </div>
-
         <div style={{ background: 'rgba(232,160,160,0.1)', borderRadius: 14, padding: '12px 14px', marginBottom: 20, border: '1px solid rgba(232,160,160,0.3)' }}>
-          <p style={{ fontSize: 12, color: '#8B4A5A', lineHeight: 1.65, textAlign: 'center' }}>
-            ⚠️ Les commandes <strong>mensongères ou frauduleuses</strong> causent un préjudice réel au vendeur. Nous nous réservons le droit de signaler tout abus.
-          </p>
+          <p style={{ fontSize: 12, color: '#8B4A5A', lineHeight: 1.65, textAlign: 'center' }}>⚠️ Les commandes <strong>mensongères ou frauduleuses</strong> causent un préjudice réel au vendeur. Nous nous réservons le droit de signaler tout abus.</p>
         </div>
-
         <div className="flex flex-col gap-3">
-          <button onClick={onConfirm} disabled={loading}
-            style={{ background: '#9B5FC0', color: 'white', border: 'none', borderRadius: 50, padding: '13px', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer', boxShadow: '0 4px 16px rgba(155,95,192,0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: loading ? 0.7 : 1 }}>
+          <button onClick={onConfirm} disabled={loading} style={{ background: '#9B5FC0', color: 'white', border: 'none', borderRadius: 50, padding: '13px', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer', boxShadow: '0 4px 16px rgba(155,95,192,0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: loading ? 0.7 : 1 }}>
             {loading ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle size={15} />}
             {loading ? 'Traitement...' : 'Oui, confirmer ma commande'}
           </button>
-          <button onClick={onCancel} disabled={loading}
-            style={{ background: 'rgba(249,200,212,0.3)', color: '#7B6B8A', border: 'none', borderRadius: 50, padding: '12px', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer' }}>
-            Annuler
-          </button>
+          <button onClick={onCancel} disabled={loading} style={{ background: 'rgba(249,200,212,0.3)', color: '#7B6B8A', border: 'none', borderRadius: 50, padding: '12px', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer' }}>Annuler</button>
         </div>
       </div>
-      <style>{`
-        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
-      `}</style>
+      <style>{`@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
     </div>
   )
 }
@@ -64,21 +35,36 @@ function FraudWarningModal({ onConfirm, onCancel, loading }) {
 /* ══════════════════════════════════════════════
    FORMULAIRE DE LIVRAISON
 ══════════════════════════════════════════════ */
-function CheckoutForm({ onSubmit, loading }) {
-  const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', wilaya: '', commune: '' })
+function CheckoutForm({ onSubmit, loading, orderTotal }) {
+  const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', wilayaId: '', wilayaName: '', communeId: '', communeName: '' })
   const [errors, setErrors] = useState({})
   const [showModal, setShowModal] = useState(false)
+
+  const { wilayas, communes, deliveryFee, loadingFee, loadingCommunes, onWilayaChange, onCommuneChange } = useDeliveryFees()
 
   const validate = () => {
     const e = {}
     if (!form.firstName.trim()) e.firstName = 'Prénom requis'
     if (!form.lastName.trim()) e.lastName = 'Nom requis'
     if (!form.phone.trim()) e.phone = 'Téléphone requis'
-    else if (!/^(0)(5|6|7)\d{8}$/.test(form.phone.replace(/\s/g, '')))
-      e.phone = 'Numéro invalide (ex: 0551234567)'
-    if (!form.wilaya) e.wilaya = 'Wilaya requise'
-    if (!form.commune.trim()) e.commune = 'Commune requise'
+    else if (!/^(0)(5|6|7)\d{8}$/.test(form.phone.replace(/\s/g, ''))) e.phone = 'Numéro invalide (ex: 0551234567)'
+    if (!form.wilayaId) e.wilaya = 'Wilaya requise'
+    if (!form.communeId) e.commune = 'Commune requise'
     return e
+  }
+
+  const handleWilayaChange = (e) => {
+    const selected = wilayas.find(w => String(w.id) === e.target.value)
+    setForm(prev => ({ ...prev, wilayaId: e.target.value, wilayaName: selected?.name || '', communeId: '', communeName: '' }))
+    setErrors(prev => ({ ...prev, wilaya: '', commune: '' }))
+    onWilayaChange(e.target.value)
+  }
+
+  const handleCommuneChange = (e) => {
+    const selected = communes.find(c => String(c.id) === e.target.value)
+    setForm(prev => ({ ...prev, communeId: e.target.value, communeName: selected?.name || '' }))
+    setErrors(prev => ({ ...prev, commune: '' }))
+    onCommuneChange(e.target.value)
   }
 
   const handleChange = useCallback((e) => {
@@ -95,7 +81,13 @@ function CheckoutForm({ onSubmit, loading }) {
   }
 
   const handleConfirm = () => {
-    onSubmit(form)
+    onSubmit({
+      firstName: form.firstName,
+      lastName: form.lastName,
+      phone: form.phone,
+      wilaya: form.wilayaName,
+      commune: form.communeName,
+    }, deliveryFee)
   }
 
   const inputStyle = (hasErr) => ({
@@ -106,22 +98,22 @@ function CheckoutForm({ onSubmit, loading }) {
     boxShadow: '0 1px 6px rgba(155,95,192,0.06)',
   })
 
+  const totalWithDelivery = orderTotal != null && deliveryFee != null ? orderTotal + deliveryFee : null
+
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Prénom</label>
-            <input type="text" name="firstName" value={form.firstName} onChange={handleChange}
-              placeholder="Amina" style={inputStyle(errors.firstName)}
+            <input type="text" name="firstName" value={form.firstName} onChange={handleChange} placeholder="Amina" style={inputStyle(errors.firstName)}
               onFocus={e => e.target.style.borderColor = '#9B5FC0'}
               onBlur={e => e.target.style.borderColor = errors.firstName ? '#F9C8D4' : 'rgba(249,200,212,0.4)'} />
             {errors.firstName && <p style={{ fontSize: 11, color: '#C4607A', marginTop: 3 }}>{errors.firstName}</p>}
           </div>
           <div>
             <label style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Nom</label>
-            <input type="text" name="lastName" value={form.lastName} onChange={handleChange}
-              placeholder="Benali" style={inputStyle(errors.lastName)}
+            <input type="text" name="lastName" value={form.lastName} onChange={handleChange} placeholder="Benali" style={inputStyle(errors.lastName)}
               onFocus={e => e.target.style.borderColor = '#9B5FC0'}
               onBlur={e => e.target.style.borderColor = errors.lastName ? '#F9C8D4' : 'rgba(249,200,212,0.4)'} />
             {errors.lastName && <p style={{ fontSize: 11, color: '#C4607A', marginTop: 3 }}>{errors.lastName}</p>}
@@ -130,34 +122,75 @@ function CheckoutForm({ onSubmit, loading }) {
 
         <div>
           <label style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Téléphone</label>
-          <input type="tel" name="phone" value={form.phone} onChange={handleChange}
-            placeholder="0551234567" inputMode="numeric" style={inputStyle(errors.phone)}
+          <input type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="0551234567" inputMode="numeric" style={inputStyle(errors.phone)}
             onFocus={e => e.target.style.borderColor = '#9B5FC0'}
             onBlur={e => e.target.style.borderColor = errors.phone ? '#F9C8D4' : 'rgba(249,200,212,0.4)'} />
           {errors.phone && <p style={{ fontSize: 11, color: '#C4607A', marginTop: 3 }}>{errors.phone}</p>}
         </div>
 
+        {/* Wilaya */}
         <div>
           <label style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Wilaya</label>
           <div style={{ position: 'relative' }}>
-            <select name="wilaya" value={form.wilaya} onChange={handleChange}
+            <select value={form.wilayaId} onChange={handleWilayaChange}
               style={{ ...inputStyle(errors.wilaya), appearance: 'none', cursor: 'pointer', paddingRight: 36 }}>
               <option value="">Sélectionner une wilaya</option>
-              {wilayas.map(w => <option key={w.code} value={w.name}>{w.code} — {w.name}</option>)}
+              {wilayas.filter(w => w.is_deliverable).map(w => (
+                <option key={w.id} value={String(w.id)}>{String(w.id).padStart(2,'0')} — {w.name}</option>
+              ))}
             </select>
             <ChevronDown size={15} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: '#C4B0D8', pointerEvents: 'none' }} />
           </div>
           {errors.wilaya && <p style={{ fontSize: 11, color: '#C4607A', marginTop: 3 }}>{errors.wilaya}</p>}
         </div>
 
+        {/* Commune */}
         <div>
-          <label style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Commune</label>
-          <input type="text" name="commune" value={form.commune} onChange={handleChange}
-            placeholder="Votre commune" style={inputStyle(errors.commune)}
-            onFocus={e => e.target.style.borderColor = '#9B5FC0'}
-            onBlur={e => e.target.style.borderColor = errors.commune ? '#F9C8D4' : 'rgba(249,200,212,0.4)'} />
+          <label style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Commune {loadingCommunes && <Loader2 size={10} style={{ display: 'inline', animation: 'spin 1s linear infinite', marginLeft: 4 }} />}
+          </label>
+          <div style={{ position: 'relative' }}>
+            <select value={form.communeId} onChange={handleCommuneChange} disabled={!form.wilayaId || loadingCommunes}
+              style={{ ...inputStyle(errors.commune), appearance: 'none', cursor: form.wilayaId ? 'pointer' : 'not-allowed', paddingRight: 36, opacity: !form.wilayaId ? 0.5 : 1 }}>
+              <option value="">{loadingCommunes ? 'Chargement...' : 'Sélectionner une commune'}</option>
+              {communes.filter(c => c.is_deliverable).map(c => (
+                <option key={c.id} value={String(c.id)}>{c.name}</option>
+              ))}
+            </select>
+            <ChevronDown size={15} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: '#C4B0D8', pointerEvents: 'none' }} />
+          </div>
           {errors.commune && <p style={{ fontSize: 11, color: '#C4607A', marginTop: 3 }}>{errors.commune}</p>}
         </div>
+
+        {/* Résumé frais livraison */}
+        {form.wilayaId && (
+          <div style={{ background: 'rgba(155,95,192,0.06)', borderRadius: 14, padding: '12px 14px', border: '1px solid rgba(155,95,192,0.12)' }}>
+            {loadingFee ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#8B7A9B' }}>
+                <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> Calcul des frais de livraison...
+              </div>
+            ) : deliveryFee != null ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: form.communeId && orderTotal != null ? 8 : 0 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#8B7A9B', fontWeight: 600 }}>
+                    <Truck size={13} /> Livraison express à domicile
+                  </span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#9B5FC0' }}>{deliveryFee.toLocaleString('fr-DZ')} DA</span>
+                </div>
+                {totalWithDelivery != null && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed rgba(155,95,192,0.2)', paddingTop: 8 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#2D2340' }}>Total à payer</span>
+                    <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#2D2340', fontFamily: 'Nunito, sans-serif' }}>{totalWithDelivery.toLocaleString('fr-DZ')} DA</span>
+                  </div>
+                )}
+              </>
+            ) : form.communeId ? (
+              <p style={{ fontSize: 12, color: '#C4607A' }}>⚠️ Livraison non disponible dans cette commune</p>
+            ) : (
+              <p style={{ fontSize: 12, color: '#8B7A9B' }}>Sélectionne ta commune pour voir les frais</p>
+            )}
+          </div>
+        )}
 
         <button type="submit"
           style={{ width: '100%', background: 'linear-gradient(135deg, #9B5FC0, #B896D4)', color: 'white', border: 'none', borderRadius: 50, padding: '14px', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer', boxShadow: '0 4px 16px rgba(155,95,192,0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 8 }}>
@@ -166,12 +199,9 @@ function CheckoutForm({ onSubmit, loading }) {
       </form>
 
       {showModal && (
-        <FraudWarningModal
-          loading={loading}
-          onConfirm={handleConfirm}
-          onCancel={() => setShowModal(false)}
-        />
+        <FraudWarningModal loading={loading} onConfirm={handleConfirm} onCancel={() => setShowModal(false)} />
       )}
+      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
     </>
   )
 }

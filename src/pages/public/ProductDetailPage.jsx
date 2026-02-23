@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ShoppingBag, ArrowLeft, ChevronLeft, ChevronRight, Heart, Minus, Plus, Zap, AlertTriangle, CheckCircle, Loader2, X, RotateCcw } from 'lucide-react'
 import api from '../../utils/api'
+import { useDeliveryFees } from '../../hooks/useDeliveryFees'
 import { useCart } from '../../context/CartContext'
 import { useWishlist } from '../../context/WishlistContext'
 import { ChevronDown } from 'lucide-react'
@@ -110,10 +111,15 @@ function CancelToast({ onCancel, onDismiss }) {
    FORMULAIRE ACHAT DIRECT (bottom sheet)
 ══════════════════════════════════════════════ */
 function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
-  const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', wilaya: '', commune: '' })
+  const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', wilayaId: '', wilayaName: '', communeId: '', communeName: '' })
   const [errors, setErrors] = useState({})
   const [showModal, setShowModal] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+
+  const { wilayas, communes, deliveryFee, loadingFee, loadingCommunes, onWilayaChange, onCommuneChange } = useDeliveryFees()
+
+  const productTotal = product.price * quantity
+  const totalWithDelivery = deliveryFee != null ? productTotal + deliveryFee : null
 
   const validate = () => {
     const e = {}
@@ -121,8 +127,8 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
     if (!form.lastName.trim()) e.lastName = 'Nom requis'
     if (!form.phone.trim()) e.phone = 'Téléphone requis'
     else if (!/^(0)(5|6|7)\d{8}$/.test(form.phone.replace(/\s/g, ''))) e.phone = 'Numéro invalide'
-    if (!form.wilaya) e.wilaya = 'Wilaya requise'
-    if (!form.commune.trim()) e.commune = 'Commune requise'
+    if (!form.wilayaId) e.wilaya = 'Wilaya requise'
+    if (!form.communeId) e.commune = 'Commune requise'
     return e
   }
 
@@ -130,6 +136,20 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
     const { name, value } = e.target
     setForm(p => ({ ...p, [name]: value }))
     setErrors(p => ({ ...p, [name]: '' }))
+  }
+
+  const handleWilayaChange = (e) => {
+    const selected = wilayas.find(w => String(w.id) === e.target.value)
+    setForm(p => ({ ...p, wilayaId: e.target.value, wilayaName: selected?.name || '', communeId: '', communeName: '' }))
+    setErrors(p => ({ ...p, wilaya: '', commune: '' }))
+    onWilayaChange(e.target.value)
+  }
+
+  const handleCommuneChange = (e) => {
+    const selected = communes.find(c => String(c.id) === e.target.value)
+    setForm(p => ({ ...p, communeId: e.target.value, communeName: selected?.name || '' }))
+    setErrors(p => ({ ...p, commune: '' }))
+    onCommuneChange(e.target.value)
   }
 
   const handleSubmitForm = (e) => {
@@ -142,10 +162,12 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
   const handleConfirm = async () => {
     setSubmitting(true)
     try {
+      const finalTotal = productTotal + (deliveryFee || 0)
       const res = await api.post('/orders', {
-        customerInfo: form,
+        customerInfo: { firstName: form.firstName, lastName: form.lastName, phone: form.phone, wilaya: form.wilayaName, commune: form.communeName },
         items: [{ product: product._id, name: product.name, quantity, price: product.price }],
-        total: product.price * quantity,
+        total: finalTotal,
+        deliveryFee: deliveryFee || 0,
       })
       onSuccess(res.data?._id || res.data?.id)
     } catch (err) {
@@ -192,18 +214,54 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
             <input type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="Téléphone * (ex: 0551234567)" inputMode="numeric" style={iStyle(errors.phone)} />
             {errors.phone && <p style={{ fontSize: 10, color: '#C4607A', marginTop: 2 }}>{errors.phone}</p>}
           </div>
+          {/* Wilaya */}
           <div style={{ position: 'relative' }}>
-            <select name="wilaya" value={form.wilaya} onChange={handleChange} style={{ ...iStyle(errors.wilaya), appearance: 'none', paddingRight: 32, cursor: 'pointer' }}>
+            <select value={form.wilayaId} onChange={handleWilayaChange} style={{ ...iStyle(errors.wilaya), appearance: 'none', paddingRight: 32, cursor: 'pointer' }}>
               <option value="">Wilaya *</option>
-              {wilayas.map(w => <option key={w.code} value={w.name}>{w.code} — {w.name}</option>)}
+              {wilayas.filter(w => w.is_deliverable).map(w => (
+                <option key={w.id} value={String(w.id)}>{String(w.id).padStart(2,'0')} — {w.name}</option>
+              ))}
             </select>
             <ChevronDown size={14} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: '#C4B0D8', pointerEvents: 'none' }} />
             {errors.wilaya && <p style={{ fontSize: 10, color: '#C4607A', marginTop: 2 }}>{errors.wilaya}</p>}
           </div>
-          <div>
-            <input type="text" name="commune" value={form.commune} onChange={handleChange} placeholder="Commune *" style={iStyle(errors.commune)} />
+          {/* Commune */}
+          <div style={{ position: 'relative' }}>
+            <select value={form.communeId} onChange={handleCommuneChange} disabled={!form.wilayaId || loadingCommunes}
+              style={{ ...iStyle(errors.commune), appearance: 'none', paddingRight: 32, cursor: form.wilayaId ? 'pointer' : 'not-allowed', opacity: !form.wilayaId ? 0.5 : 1 }}>
+              <option value="">{loadingCommunes ? 'Chargement...' : 'Commune *'}</option>
+              {communes.filter(c => c.is_deliverable).map(c => (
+                <option key={c.id} value={String(c.id)}>{c.name}</option>
+              ))}
+            </select>
+            <ChevronDown size={14} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: '#C4B0D8', pointerEvents: 'none' }} />
             {errors.commune && <p style={{ fontSize: 10, color: '#C4607A', marginTop: 2 }}>{errors.commune}</p>}
           </div>
+          {/* Frais livraison */}
+          {form.wilayaId && (
+            <div style={{ background: 'rgba(155,95,192,0.06)', borderRadius: 12, padding: '10px 12px', border: '1px solid rgba(155,95,192,0.12)' }}>
+              {loadingFee ? (
+                <p style={{ fontSize: 11, color: '#8B7A9B' }}>Calcul des frais...</p>
+              ) : deliveryFee != null ? (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#8B7A9B', marginBottom: totalWithDelivery ? 6 : 0 }}>
+                    <span>🚚 Livraison express</span>
+                    <span style={{ fontWeight: 800, color: '#9B5FC0' }}>{deliveryFee.toLocaleString('fr-DZ')} DA</span>
+                  </div>
+                  {totalWithDelivery && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed rgba(155,95,192,0.2)', paddingTop: 6 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#2D2340' }}>Total à payer</span>
+                      <span style={{ fontSize: 14, fontWeight: 900, color: '#2D2340' }}>{totalWithDelivery.toLocaleString('fr-DZ')} DA</span>
+                    </div>
+                  )}
+                </>
+              ) : form.communeId ? (
+                <p style={{ fontSize: 11, color: '#C4607A' }}>⚠️ Livraison non disponible ici</p>
+              ) : (
+                <p style={{ fontSize: 11, color: '#8B7A9B' }}>Choisissez votre commune pour voir les frais</p>
+              )}
+            </div>
+          )}
           <button type="submit"
             style={{ width: '100%', background: 'linear-gradient(135deg, #9B5FC0, #B896D4)', color: 'white', border: 'none', borderRadius: 50, padding: '14px', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer', boxShadow: '0 4px 16px rgba(155,95,192,0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 8 }}>
             <Zap size={15} /> Commander maintenant
@@ -217,7 +275,9 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
           <div style={{ background: 'rgba(155,95,192,0.06)', borderRadius: 14, padding: '10px 14px', border: '1px solid rgba(155,95,192,0.15)', marginBottom: 4 }}>
             <p style={{ fontSize: 12, color: '#5A4A6A', textAlign: 'center' }}>
               📦 <strong>{product.name}</strong> × {quantity}<br />
-              <span style={{ color: '#9B5FC0', fontWeight: 700 }}>{(product.price * quantity).toFixed(0)} DA</span> · Paiement à la livraison
+              <span style={{ color: '#9B5FC0', fontWeight: 700 }}>Produit : {productTotal.toLocaleString('fr-DZ')} DA</span><br/>
+              {deliveryFee != null && <><span style={{ color: '#8B7A9B' }}>Livraison : {deliveryFee.toLocaleString('fr-DZ')} DA</span><br/></>}
+              <span style={{ color: '#2D2340', fontWeight: 900, fontSize: 14 }}>Total : {(totalWithDelivery ?? productTotal).toLocaleString('fr-DZ')} DA</span>
             </p>
           </div>
         </FraudWarningModal>
