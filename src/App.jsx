@@ -19,6 +19,7 @@ import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import AdminProductsPage from './pages/admin/AdminProductsPage'
 import AdminOrdersPage from './pages/admin/AdminOrdersPage'
+import AdminOrderDetailPage from './pages/admin/AdminOrderDetailPage'
 
 function PublicLayout({ children }) {
   return (
@@ -41,15 +42,15 @@ function App() {
               toastOptions={{
                 style: {
                   background: '#FFFFFF',
-                  color: '#3D3530',
-                  border: '1px solid #F0EAE0',
+                  color: '#1A1A2E',
+                  border: '1px solid #F0EDF5',
                   borderRadius: '12px',
                   fontFamily: 'Nunito, sans-serif',
                   fontSize: '14px',
-                  boxShadow: '0 4px 24px rgba(139,111,94,0.12)',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
                 },
-                success: { iconTheme: { primary: '#A8BBA8', secondary: '#fff' } },
-                error: { iconTheme: { primary: '#F2C4CE', secondary: '#3D3530' } },
+                success: { iconTheme: { primary: '#4A8C6A', secondary: '#fff' } },
+                error: { iconTheme: { primary: '#CC5555', secondary: '#fff' } },
               }}
             />
             <Routes>
@@ -63,9 +64,10 @@ function App() {
               <Route path="/wishlist"     element={<PublicLayout><WishlistPage /></PublicLayout>} />
               <Route path="/admin/login"  element={<AdminLoginPage />} />
               <Route path="/admin" element={<PrivateRoute><AdminLayout /></PrivateRoute>}>
-                <Route index           element={<AdminDashboardPage />} />
-                <Route path="products" element={<AdminProductsPage />} />
-                <Route path="orders"   element={<AdminOrdersPage />} />
+                <Route index             element={<AdminDashboardPage />} />
+                <Route path="products"   element={<AdminProductsPage />} />
+                <Route path="orders"     element={<AdminOrdersPage />} />
+                <Route path="orders/:id" element={<AdminOrderDetailPage />} />
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

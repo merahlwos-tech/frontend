@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Loader2, ChevronDown, ChevronUp, Search, X } from 'lucide-react'
+import { Loader2, ChevronDown, ChevronUp, Search, X, Trash2, Download } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import api from '../../utils/api'
 import AdminOrderRow from '../../Components/admin/AdminOrderRow'
 import toast from 'react-hot-toast'
@@ -16,6 +17,10 @@ function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState('Tous')
   const [sortField, setSortField] = useState('createdAt')
   const [sortDir, setSortDir] = useState('desc')
+  const [selected, setSelected] = useState(new Set())
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const navigate = useNavigate()
 
   const fetchOrders = async () => {
     setLoading(true)
@@ -53,22 +58,83 @@ function AdminOrdersPage() {
     ? <ChevronDown size={12} style={{ opacity: 0.3 }} />
     : sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />
 
+  // Sélection
+  const allIds = filtered.map(o => o._id)
+  const allSelected = allIds.length > 0 && allIds.every(id => selected.has(id))
+  const toggleAll = () => {
+    if (allSelected) setSelected(new Set())
+    else setSelected(new Set(allIds))
+  }
+  const toggleOne = (id) => {
+    const s = new Set(selected)
+    if (s.has(id)) s.delete(id)
+    else s.add(id)
+    setSelected(s)
+  }
+
+  // Supprimer la sélection
+  const handleDeleteSelected = async () => {
+    setDeleting(true)
+    try {
+      await Promise.all([...selected].map(id => api.delete(`/orders/${id}`)))
+      setOrders(prev => prev.filter(o => !selected.has(o._id)))
+      setSelected(new Set())
+      toast.success(`${selected.size} commande(s) supprimée(s)`)
+    } catch { toast.error('Erreur suppression') }
+    finally { setDeleting(false); setDeleteConfirm(false) }
+  }
+
+  // Télécharger sélection CSV
+  const downloadSelected = () => {
+    const rows = orders.filter(o => selected.has(o._id))
+    if (!rows.length) return
+    const headers = ['Date', 'Client', 'Téléphone', 'Wilaya', 'Commune', 'Articles', 'Total', 'Statut']
+    const lines = rows.map(o => [
+      new Date(o.createdAt).toLocaleDateString('fr-FR'),
+      `${o.customerInfo.firstName} ${o.customerInfo.lastName}`,
+      o.customerInfo.phone,
+      o.customerInfo.wilaya,
+      o.customerInfo.commune,
+      o.items.map(i => `${i.quantity}x ${i.name}${i.size ? ` (${i.size})` : ''}`).join(' | '),
+      `${o.total} DA`,
+      STATUS_LABELS[o.status] || o.status,
+    ])
+    const csv = [headers, ...lines].map(row => row.map(v => `"${v}"`).join(',')).join('\n')
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url; a.download = `commandes_${new Date().toISOString().slice(0,10)}.csv`
+    a.click(); URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
 
       {/* Header */}
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <p style={{ fontSize: '11px', fontWeight: 700, color: '#9B5FC0', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 4 }}>
-            Suivi
-          </p>
-          <h1 style={{ fontFamily: 'Dancing Script, cursive', fontSize: '2.2rem', fontWeight: 700, color: '#2D2340' }}>
-            Commandes 📦
-          </h1>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#9B5FC0', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 4 }}>Suivi</p>
+          <h1 style={{ fontFamily: 'Dancing Script, cursive', fontSize: '2.2rem', fontWeight: 700, color: '#2D2340' }}>Commandes 📦</h1>
         </div>
-        <p style={{ fontSize: '13px', color: '#C4B0D8' }}>
-          {filtered.length} / {orders.length} commande{orders.length !== 1 ? 's' : ''}
-        </p>
+        <div className="flex items-center gap-3">
+          {selected.size > 0 && (
+            <>
+              <button onClick={downloadSelected}
+                className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold"
+                style={{ background: 'rgba(123,200,160,0.15)', color: '#3A8A60', border: '1.5px solid rgba(123,200,160,0.4)' }}>
+                <Download size={13} /> Télécharger ({selected.size})
+              </button>
+              <button onClick={() => setDeleteConfirm(true)}
+                className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold"
+                style={{ background: 'rgba(232,160,160,0.15)', color: '#C44A4A', border: '1.5px solid rgba(232,160,160,0.4)' }}>
+                <Trash2 size={13} /> Supprimer ({selected.size})
+              </button>
+            </>
+          )}
+          <p style={{ fontSize: '13px', color: '#C4B0D8' }}>
+            {filtered.length} / {orders.length} commande{orders.length !== 1 ? 's' : ''}
+          </p>
+        </div>
       </div>
 
       {/* Filtres statut */}
@@ -109,17 +175,22 @@ function AdminOrdersPage() {
         <div className="flex justify-center py-16"><Loader2 size={28} className="animate-spin" style={{ color: '#C4B0D8' }} /></div>
       ) : filtered.length === 0 ? (
         <div className="rounded-3xl py-16 text-center"
-             style={{ background: 'rgba(255,255,255,0.7)', border: '1.5px solid rgba(249,200,212,0.3)' }}>
+          style={{ background: 'rgba(255,255,255,0.7)', border: '1.5px solid rgba(249,200,212,0.3)' }}>
           <p style={{ fontSize: '3rem', marginBottom: 8 }}>📭</p>
           <p style={{ color: '#B8A8C8', fontSize: '14px' }}>Aucune commande trouvée</p>
         </div>
       ) : (
         <div className="rounded-3xl overflow-hidden"
-             style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(249,200,212,0.3)', boxShadow: '0 2px 16px rgba(155,95,192,0.06)' }}>
+          style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(249,200,212,0.3)', boxShadow: '0 2px 16px rgba(155,95,192,0.06)' }}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(249,200,212,0.3)' }}>
+                  {/* Checkbox tout sélectionner */}
+                  <th className="px-4 py-3 w-10">
+                    <input type="checkbox" checked={allSelected} onChange={toggleAll}
+                      style={{ accentColor: '#9B5FC0', width: 15, height: 15, cursor: 'pointer' }} />
+                  </th>
                   {[
                     { label: 'Client', field: null, cls: '' },
                     { label: 'Localisation', field: null, cls: 'hidden md:table-cell' },
@@ -132,9 +203,7 @@ function AdminOrdersPage() {
                       className={`px-4 py-3 text-left ${cls} ${field ? 'cursor-pointer select-none' : ''}`}
                       style={{ fontSize: '11px', fontWeight: 700, color: '#C4B0D8', letterSpacing: '0.08em', textTransform: 'uppercase' }}
                       onClick={field ? () => toggleSort(field) : undefined}>
-                      <span className="flex items-center gap-1">
-                        {label} {field && <SortIcon field={field} />}
-                      </span>
+                      <span className="flex items-center gap-1">{label} {field && <SortIcon field={field} />}</span>
                     </th>
                   ))}
                 </tr>
@@ -142,10 +211,38 @@ function AdminOrdersPage() {
               <tbody>
                 {filtered.map(order => (
                   <AdminOrderRow key={order._id} order={order} onUpdated={handleUpdated}
-                    statusColors={STATUS_COLORS} statusBg={STATUS_BG} statusLabels={STATUS_LABELS} />
+                    statusColors={STATUS_COLORS} statusBg={STATUS_BG} statusLabels={STATUS_LABELS}
+                    selected={selected.has(order._id)}
+                    onToggleSelect={() => toggleOne(order._id)}
+                    onRowClick={() => navigate(`/admin/orders/${order._id}`)}
+                  />
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmation de suppression */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(45,35,64,0.4)', backdropFilter: 'blur(8px)' }}>
+          <div className="rounded-3xl p-6 w-full max-w-sm"
+            style={{ background: 'white', boxShadow: '0 20px 60px rgba(155,95,192,0.2)' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#2D2340', marginBottom: 8 }}>Supprimer {selected.size} commande(s) ?</h3>
+            <p style={{ fontSize: '13px', color: '#7B6B8A', marginBottom: 20 }}>Cette action est irréversible.</p>
+            <div className="flex gap-3">
+              <button onClick={handleDeleteSelected} disabled={deleting}
+                className="flex-1 flex items-center justify-center gap-2 rounded-full py-3 text-white text-sm font-bold"
+                style={{ background: '#E8A0A0', opacity: deleting ? 0.7 : 1, fontFamily: 'Nunito, sans-serif' }}>
+                {deleting && <Loader2 size={13} className="animate-spin" />} Supprimer
+              </button>
+              <button onClick={() => setDeleteConfirm(false)}
+                className="flex-1 rounded-full py-3 text-sm font-bold"
+                style={{ background: 'rgba(249,200,212,0.3)', color: '#7B6B8A', fontFamily: 'Nunito, sans-serif' }}>
+                Annuler
+              </button>
+            </div>
           </div>
         </div>
       )}

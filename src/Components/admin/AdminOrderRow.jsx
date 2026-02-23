@@ -4,25 +4,30 @@ import api from '../../utils/api'
 import toast from 'react-hot-toast'
 
 const STATUS_OPTIONS = [
-  { value: 'en attente',  label: 'En attente'  },
-  { value: 'confirmé',    label: 'Confirmé'    },
-  { value: 'en livraison',label: 'En livraison'},
-  { value: 'livré',       label: 'Livré'       },
-  { value: 'retour',      label: 'Retour'      },
-  { value: 'annulé',      label: 'Annulé'      },
+  { value: 'en attente',   label: 'En attente'   },
+  { value: 'confirmé',     label: 'Confirmé'     },
+  { value: 'en livraison', label: 'En livraison' },
+  { value: 'livré',        label: 'Livré'        },
+  { value: 'retour',       label: 'Retour'       },
+  { value: 'annulé',       label: 'Annulé'       },
 ]
 
 const STATUS_COLORS = { 'en attente': '#B8A8C8', confirmé: '#7BC8E8', 'en livraison': '#F4C94A', livré: '#7BC8A0', retour: '#F4A460', annulé: '#E8A0A0' }
 const STATUS_BG     = { 'en attente': 'rgba(184,168,200,0.15)', confirmé: 'rgba(123,200,232,0.15)', 'en livraison': 'rgba(244,201,74,0.15)', livré: 'rgba(123,200,160,0.15)', retour: 'rgba(244,164,96,0.15)', annulé: 'rgba(232,160,160,0.15)' }
 
-function AdminOrderRow({ order, onUpdated }) {
+function AdminOrderRow({ order, onUpdated, selected, onToggleSelect, onRowClick }) {
   const [status, setStatus] = useState(order.status || 'en attente')
   const [saving, setSaving] = useState(false)
   const [dirty, setDirty] = useState(false)
 
-  const handleStatusChange = (e) => { setStatus(e.target.value); setDirty(e.target.value !== order.status) }
+  const handleStatusChange = (e) => {
+    e.stopPropagation()
+    setStatus(e.target.value)
+    setDirty(e.target.value !== order.status)
+  }
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    e.stopPropagation()
     setSaving(true)
     try {
       await api.put(`/orders/${order._id}`, { status })
@@ -38,9 +43,17 @@ function AdminOrderRow({ order, onUpdated }) {
   })
 
   return (
-    <tr style={{ borderBottom: '1px solid rgba(249,200,212,0.2)' }}
-        onMouseEnter={e => e.currentTarget.style.background = 'rgba(249,200,212,0.06)'}
-        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+    <tr
+      style={{ borderBottom: '1px solid rgba(249,200,212,0.2)', cursor: 'pointer', background: selected ? 'rgba(155,95,192,0.05)' : 'transparent', transition: 'background 0.15s' }}
+      onMouseEnter={e => { if (!selected) e.currentTarget.style.background = 'rgba(249,200,212,0.06)' }}
+      onMouseLeave={e => { if (!selected) e.currentTarget.style.background = 'transparent' }}
+      onClick={onRowClick}
+    >
+      {/* Checkbox */}
+      <td className="px-4 py-3" onClick={e => { e.stopPropagation(); onToggleSelect?.() }}>
+        <input type="checkbox" checked={!!selected} onChange={() => {}}
+          style={{ accentColor: '#9B5FC0', width: 15, height: 15, cursor: 'pointer' }} />
+      </td>
 
       {/* Client */}
       <td className="px-4 py-3">
@@ -61,7 +74,8 @@ function AdminOrderRow({ order, onUpdated }) {
         <div className="space-y-0.5 max-w-[180px]">
           {order.items.map((item, i) => (
             <p key={i} style={{ fontSize: '11px', color: '#B8A8C8' }} className="truncate">
-              {item.quantity}× {item.name} <span style={{ color: '#D4C0E0' }}>T{item.size}</span>
+              {item.quantity}× {item.name}
+              {item.size && item.size !== 'null' && <span style={{ color: '#D4C0E0' }}> T{item.size}</span>}
             </p>
           ))}
         </div>
@@ -76,13 +90,12 @@ function AdminOrderRow({ order, onUpdated }) {
       </td>
 
       {/* Date */}
-      <td className="px-4 py-3 hidden sm:table-cell whitespace-nowrap"
-          style={{ fontSize: '11px', color: '#C4B0D8' }}>
+      <td className="px-4 py-3 hidden sm:table-cell whitespace-nowrap" style={{ fontSize: '11px', color: '#C4B0D8' }}>
         {createdAt}
       </td>
 
       {/* Statut */}
-      <td className="px-4 py-3">
+      <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
         <div className="flex items-center gap-2">
           <select value={status} onChange={handleStatusChange}
             className="rounded-full px-3 py-1.5 text-xs font-body font-bold outline-none cursor-pointer appearance-none"

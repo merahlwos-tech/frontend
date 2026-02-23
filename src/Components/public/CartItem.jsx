@@ -1,36 +1,72 @@
-import { Trash2 } from 'lucide-react'
-import QuantitySelector from './QuantitySelector'
+import { Minus, Plus, Trash2 } from 'lucide-react'
 import { useCart } from '../../context/CartContext'
 
 function CartItem({ item }) {
   const { updateQuantity, removeFromCart } = useCart()
+
   return (
-    <div className="flex gap-4 p-4 bg-white rounded-2xl shadow-soft">
-      <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden bg-sf-beige flex-shrink-0">
+    <div style={{
+      display: 'flex', gap: 14, padding: '14px 16px',
+      background: 'white', borderRadius: 16,
+      border: '1px solid #F0EDF5',
+      boxShadow: '0 1px 8px rgba(0,0,0,0.05)',
+    }}>
+      {/* Image */}
+      <div style={{ width: 76, height: 90, borderRadius: 12, overflow: 'hidden', background: '#FAFAFA', flexShrink: 0 }}>
         {item.image
-          ? <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-          : <div className="w-full h-full" />}
+          ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          : <div style={{ width: '100%', height: '100%' }} />}
       </div>
-      <div className="flex-1 flex flex-col justify-between">
+
+      {/* Infos */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div>
-          <p className="font-body text-sf-text-light text-xs mb-0.5">{item.brand}</p>
-          <h4 className="font-display text-sf-text text-lg leading-tight">{item.name}</h4>
-          <span className="inline-block mt-1 bg-sf-rose-soft text-sf-rose-dark
-                           text-xs font-body font-600 px-2 py-0.5 rounded-full">
-            Taille {item.size}
-          </span>
+          <p style={{ fontSize: '10px', color: '#AAA', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 3 }}>
+            {item.brand}
+          </p>
+          <p style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A2E', lineHeight: 1.3, marginBottom: 5 }}>
+            {item.name}
+          </p>
+          {item.size && (
+            <span style={{ display: 'inline-block', fontSize: '11px', fontWeight: 600, color: '#6A5A8C', background: '#F5F0FF', padding: '2px 10px', borderRadius: 50, marginBottom: 4 }}>
+              Taille : {item.size}
+            </span>
+          )}
         </div>
-        <div className="flex items-center justify-between mt-3">
-          <QuantitySelector value={item.quantity} min={1} max={item.maxStock}
-            onChange={(qty) => updateQuantity(item.key, qty)} />
-          <div className="flex items-center gap-4">
-            <span className="font-body font-700 text-sf-text">
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
+          {/* Quantité */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0, background: '#F5F5F5', borderRadius: 50, padding: '2px' }}>
+            <button
+              onClick={() => updateQuantity(item.key, item.quantity - 1)}
+              disabled={item.quantity <= 1}
+              style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: item.quantity <= 1 ? 'transparent' : 'white', cursor: item.quantity <= 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: item.quantity <= 1 ? 'none' : '0 1px 4px rgba(0,0,0,0.10)', transition: 'all 0.15s' }}
+            >
+              <Minus size={11} color={item.quantity <= 1 ? '#CCC' : '#1A1A2E'} />
+            </button>
+            <span style={{ minWidth: 28, textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#1A1A2E' }}>
+              {item.quantity}
+            </span>
+            <button
+              onClick={() => updateQuantity(item.key, item.quantity + 1)}
+              disabled={item.quantity >= item.maxStock}
+              style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: item.quantity >= item.maxStock ? 'transparent' : 'white', cursor: item.quantity >= item.maxStock ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: item.quantity >= item.maxStock ? 'none' : '0 1px 4px rgba(0,0,0,0.10)', transition: 'all 0.15s' }}
+            >
+              <Plus size={11} color={item.quantity >= item.maxStock ? '#CCC' : '#1A1A2E'} />
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: '14px', fontWeight: 800, color: '#1A1A2E' }}>
               {(item.price * item.quantity).toLocaleString('fr-DZ')} DA
             </span>
-            <button onClick={() => removeFromCart(item.key)}
-              className="p-1.5 text-sf-text-light hover:text-red-400 transition-colors
-                         hover:bg-red-50 rounded-lg">
-              <Trash2 size={15} />
+            <button
+              onClick={() => removeFromCart(item.key)}
+              style={{ padding: 6, border: 'none', background: '#FFF0F0', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#FFE0E0'}
+              onMouseLeave={e => e.currentTarget.style.background = '#FFF0F0'}
+            >
+              <Trash2 size={13} color="#CC5555" />
             </button>
           </div>
         </div>
