@@ -21,7 +21,7 @@ function CartPage() {
         items: items.map(item => ({
           product: item.productId,
           name: item.name,
-          size: item.size,
+
           quantity: item.quantity,
           price: item.price,
         })),
