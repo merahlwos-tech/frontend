@@ -33,7 +33,7 @@ function MiniProductCard({ product }) {
   }
 
   return (
-    <Link to={`/products/${product._id}`} style={{ flexShrink: 0, width: 130, textDecoration: 'none', display: 'block' }}>
+    <Link to={`/products/${product._id}`} className="pc-mini-card" style={{ flexShrink: 0, width: 130, textDecoration: 'none', display: 'block' }}>
       <div style={{ background: 'white', borderRadius: 16, overflow: 'hidden', border: '1px solid #F0EDF5', boxShadow: '0 1px 8px rgba(0,0,0,0.05)' }}>
         <div style={{ position: 'relative', aspectRatio: '1/1', background: '#FAFAFA', overflow: 'hidden' }}>
           <img src={product.images?.[0] || '/placeholder.jpg'} alt={product.name}
@@ -102,10 +102,11 @@ function HomePage() {
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: 16, background: '#F9F8FC' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
 
       {/* HERO */}
       <section style={{ padding: '16px 16px 20px' }}>
-        <div style={{ position: 'relative', borderRadius: 24, overflow: 'hidden', height: 240, background: 'linear-gradient(135deg, #1A1A2E 0%, #2D2D4E 100%)' }}>
+        <div className="pc-hero" style={{ position: 'relative', borderRadius: 24, overflow: 'hidden', height: 240, background: 'linear-gradient(135deg, #1A1A2E 0%, #2D2D4E 100%)' }}>
           <img
             src="/images/images.jpg"
             alt=""
@@ -138,7 +139,7 @@ function HomePage() {
           {CATEGORIES.map(({ label, img, bg, border }) => (
             <Link key={label} to={`/products?category=${label}`}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
-              <div style={{ width: 64, height: 64, borderRadius: '50%', overflow: 'hidden', background: bg, border: `2px solid ${border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+              <div className="pc-category-icon" style={{ width: 64, height: 64, borderRadius: '50%', overflow: 'hidden', background: bg, border: `2px solid ${border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                 <img src={img} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <span style={{ fontSize: '11px', fontWeight: 600, color: '#444', textAlign: 'center' }}>{label}</span>
@@ -188,6 +189,7 @@ function HomePage() {
         </div>
       </section>
 
+      </div>
       <style>{`
         @keyframes pulse { 0%,100% { opacity: 0.6 } 50% { opacity: 1 } }
         ::-webkit-scrollbar { display: none }

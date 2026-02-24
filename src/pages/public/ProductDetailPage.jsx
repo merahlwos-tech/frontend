@@ -355,13 +355,13 @@ function ProductDetailPage() {
 
   return (
     <div className="min-h-screen pb-12" style={{ background: '#FEF0F8' }}>
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '16px 16px 0' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 16px 0' }}>
         <button onClick={() => navigate(-1)} style={{ fontSize: 13, fontWeight: 700, color: '#8B7A9B', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Nunito, sans-serif', display: 'flex', alignItems: 'center', gap: 6 }}>
           <ArrowLeft size={15} /> Retour
         </button>
       </div>
 
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '16px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px' }}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
           {/* Galerie */}

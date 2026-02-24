@@ -161,7 +161,7 @@ function ProductsPage() {
       </div>
 
       {/* GRILLE */}
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 16px 0' }}>
+      <div className="pc-products-page" style={{ maxWidth: 900, margin: '0 auto', padding: '24px 16px 0' }}>
 
         {activeCategory !== 'Tous' && (
           <div className="flex items-center gap-3 mb-5 animate-fade-up"
@@ -193,7 +193,7 @@ function ProductsPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
             {filtered.map((product, i) => (
               <div key={product._id} className="animate-fade-up" style={{ animationDelay: `${i * 45}ms` }}>
                 <ProductCard product={product} />

@@ -108,3 +108,81 @@
 .animate-fade-in  { animation: fadeIn 0.4s ease-out both; }
 .animate-float    { animation: float 3s ease-in-out infinite; }
 .animate-marquee  { animation: marquee 35s linear infinite; }
+/* ══════════════════════════════════════════════
+   AJUSTEMENTS PC (≥1024px) — mobile inchangé
+══════════════════════════════════════════════ */
+@media (min-width: 1024px) {
+
+  /* Conteneurs centrés avec max-width confortable */
+  .pc-container {
+    max-width: 1200px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+  }
+
+  /* Hero HomePage — plus haut sur grand écran */
+  .pc-hero {
+    height: 380px !important;
+    border-radius: 28px !important;
+  }
+
+  /* Cartes produits — grille plus dense */
+  .pc-products-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  /* MiniProductCard — plus large sur PC */
+  .pc-mini-card {
+    width: 160px !important;
+  }
+
+  /* Catégories — icônes plus grandes */
+  .pc-category-icon {
+    width: 80px !important;
+    height: 80px !important;
+  }
+
+  /* CartPage — limiter la largeur */
+  .pc-cart-wrapper {
+    max-width: 1100px !important;
+    margin: 0 auto !important;
+    padding: 32px 40px !important;
+  }
+
+  /* ConfirmationPage — centré et plus aéré */
+  .pc-confirmation {
+    max-width: 520px !important;
+  }
+
+  /* ProductsPage — grille élargie */
+  .pc-products-page {
+    max-width: 1200px !important;
+    padding: 32px 40px 0 !important;
+  }
+
+  /* Header sticky plus compact sur PC */
+  .pc-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* Sections HomePage padding */
+  .pc-section-padding {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Banner Korean Beauty */
+  .pc-banner {
+    padding: 48px 80px !important;
+    text-align: left !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 40px !important;
+  }
+}

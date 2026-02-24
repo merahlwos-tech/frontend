@@ -57,7 +57,7 @@ function CartPage() {
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(160deg, #FFF0F6 0%, #F5EEFF 60%, #EEF9F5 100%)' }}>
       <div style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(249,200,212,0.3)', padding: '14px 20px' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px' }}>
           <button onClick={() => navigate('/products')}
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: '#8B7A9B', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Nunito, sans-serif', marginBottom: 10 }}>
             <ArrowLeft size={14} /> Continuer mes achats
@@ -66,7 +66,7 @@ function CartPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '20px 16px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 16px' }}>
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           <div className="lg:col-span-3 space-y-3">
             <div className="flex items-center justify-between" style={{ marginBottom: 4 }}>
