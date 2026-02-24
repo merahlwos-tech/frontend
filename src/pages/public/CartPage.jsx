@@ -12,9 +12,10 @@ function CartPage() {
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
 
-  const handleOrder = async (customerInfo) => {
+  const handleOrder = async (customerInfo, deliveryFee, deliveryType) => {
     if (items.length === 0) { toast.error('Votre panier est vide'); return }
     setSubmitting(true)
+    const finalTotal = total + (deliveryFee || 0)
     try {
       const res = await api.post('/orders', {
         customerInfo,
@@ -24,11 +25,14 @@ function CartPage() {
           quantity: item.quantity,
           price: item.price,
         })),
-        total,
+        total: finalTotal,
+        deliveryFee: deliveryFee || 0,
+        deliveryType: deliveryType || 'home',
       })
       clearCart()
-      // Passer l'orderId à la page de confirmation
-      navigate('/confirmation', { replace: true, state: { orderId: res.data._id } })
+      const newOrderId = res.data?._id || res.data?.id
+      sessionStorage.setItem('cancelOrderId', newOrderId || '')
+      navigate('/confirmation', { replace: true, state: { orderId: newOrderId } })
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de la commande.')
     } finally {
@@ -96,7 +100,7 @@ function CartPage() {
 
               <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 2px 16px rgba(155,95,192,0.08)' }}>
                 <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 16 }}>Informations de livraison</p>
-                <CheckoutForm onSubmit={handleOrder} loading={submitting} />
+                <CheckoutForm onSubmit={handleOrder} loading={submitting} orderTotal={total} />
               </div>
             </div>
           </div>

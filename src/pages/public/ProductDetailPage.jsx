@@ -116,7 +116,7 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
   const [showModal, setShowModal] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  const { wilayas, communes, deliveryFee, loadingFee, loadingCommunes, onWilayaChange, onCommuneChange } = useDeliveryFees()
+  const { wilayas, communes, deliveryFee, deliveryType, loadingFee, loadingCommunes, onWilayaChange, onCommuneChange, onDeliveryTypeChange, currentCommuneFees } = useDeliveryFees()
 
   const productTotal = product.price * quantity
   const totalWithDelivery = deliveryFee != null ? productTotal + deliveryFee : null
@@ -168,6 +168,7 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
         items: [{ product: product._id, name: product.name, quantity, price: product.price }],
         total: finalTotal,
         deliveryFee: deliveryFee || 0,
+        deliveryType: deliveryType || 'home',
       })
       onSuccess(res.data?._id || res.data?.id)
     } catch (err) {
@@ -237,30 +238,43 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
             <ChevronDown size={14} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: '#C4B0D8', pointerEvents: 'none' }} />
             {errors.commune && <p style={{ fontSize: 10, color: '#C4607A', marginTop: 2 }}>{errors.commune}</p>}
           </div>
-          {/* Frais livraison */}
-          {form.wilayaId && (
-            <div style={{ background: 'rgba(155,95,192,0.06)', borderRadius: 12, padding: '10px 12px', border: '1px solid rgba(155,95,192,0.12)' }}>
-              {loadingFee ? (
-                <p style={{ fontSize: 11, color: '#8B7A9B' }}>Calcul des frais...</p>
-              ) : deliveryFee != null ? (
-                <>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#8B7A9B', marginBottom: totalWithDelivery ? 6 : 0 }}>
-                    <span>🚚 Livraison express</span>
-                    <span style={{ fontWeight: 800, color: '#9B5FC0' }}>{deliveryFee.toLocaleString('fr-DZ')} DA</span>
-                  </div>
-                  {totalWithDelivery && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed rgba(155,95,192,0.2)', paddingTop: 6 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#2D2340' }}>Total à payer</span>
-                      <span style={{ fontSize: 14, fontWeight: 900, color: '#2D2340' }}>{totalWithDelivery.toLocaleString('fr-DZ')} DA</span>
-                    </div>
-                  )}
-                </>
-              ) : form.communeId ? (
-                <p style={{ fontSize: 11, color: '#C4607A' }}>⚠️ Livraison non disponible ici</p>
+          {/* Mode livraison + frais */}
+          {form.communeId && !loadingFee && (
+            <div style={{ background: 'rgba(155,95,192,0.06)', borderRadius: 12, padding: '12px', border: '1px solid rgba(155,95,192,0.12)' }}>
+              <p style={{ fontSize: 10, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Mode de livraison</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 10 }}>
+                <button type="button" onClick={() => onDeliveryTypeChange('home')}
+                  style={{ padding: '8px 6px', borderRadius: 10, border: `2px solid ${deliveryType === 'home' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliveryType === 'home' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center' }}>
+                  <div style={{ fontSize: 16, marginBottom: 2 }}>🏠</div>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: deliveryType === 'home' ? '#9B5FC0' : '#5A4A6A', marginBottom: 1 }}>Domicile</p>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: '#2D2340' }}>
+                    {currentCommuneFees?.express_home != null ? `${currentCommuneFees.express_home.toLocaleString('fr-DZ')} DA` : '—'}
+                  </p>
+                </button>
+                <button type="button" onClick={() => onDeliveryTypeChange('desk')}
+                  style={{ padding: '8px 6px', borderRadius: 10, border: `2px solid ${deliveryType === 'desk' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliveryType === 'desk' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center' }}>
+                  <div style={{ fontSize: 16, marginBottom: 2 }}>🏢</div>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: deliveryType === 'desk' ? '#9B5FC0' : '#5A4A6A', marginBottom: 1 }}>Bureau</p>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: '#2D2340' }}>
+                    {currentCommuneFees?.express_desk != null ? `${currentCommuneFees.express_desk.toLocaleString('fr-DZ')} DA` : '—'}
+                  </p>
+                </button>
+              </div>
+              {deliveryFee != null ? (
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed rgba(155,95,192,0.2)', paddingTop: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#2D2340' }}>Total à payer</span>
+                  <span style={{ fontSize: 13, fontWeight: 900, color: '#2D2340' }}>{(totalWithDelivery ?? productTotal).toLocaleString('fr-DZ')} DA</span>
+                </div>
               ) : (
-                <p style={{ fontSize: 11, color: '#8B7A9B' }}>Choisissez votre commune pour voir les frais</p>
+                <p style={{ fontSize: 11, color: '#C4607A' }}>⚠️ Non disponible dans cette commune</p>
               )}
             </div>
+          )}
+          {form.wilayaId && !form.communeId && !loadingFee && (
+            <p style={{ fontSize: 11, color: '#8B7A9B', textAlign: 'center' }}>Choisissez votre commune pour voir les frais 🚚</p>
+          )}
+          {form.wilayaId && loadingFee && (
+            <p style={{ fontSize: 11, color: '#8B7A9B' }}>Calcul des frais...</p>
           )}
           <button type="submit"
             style={{ width: '100%', background: 'linear-gradient(135deg, #9B5FC0, #B896D4)', color: 'white', border: 'none', borderRadius: 50, padding: '14px', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer', boxShadow: '0 4px 16px rgba(155,95,192,0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 8 }}>

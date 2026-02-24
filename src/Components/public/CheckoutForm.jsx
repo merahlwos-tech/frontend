@@ -40,7 +40,7 @@ function CheckoutForm({ onSubmit, loading, orderTotal }) {
   const [errors, setErrors] = useState({})
   const [showModal, setShowModal] = useState(false)
 
-  const { wilayas, communes, deliveryFee, loadingFee, loadingCommunes, onWilayaChange, onCommuneChange } = useDeliveryFees()
+  const { wilayas, communes, deliveryFee, deliveryType, loadingFee, loadingCommunes, onWilayaChange, onCommuneChange, onDeliveryTypeChange, currentCommuneFees } = useDeliveryFees()
 
   const validate = () => {
     const e = {}
@@ -87,7 +87,7 @@ function CheckoutForm({ onSubmit, loading, orderTotal }) {
       phone: form.phone,
       wilaya: form.wilayaName,
       commune: form.communeName,
-    }, deliveryFee)
+    }, deliveryFee, deliveryType)
   }
 
   const inputStyle = (hasErr) => ({
@@ -162,33 +162,56 @@ function CheckoutForm({ onSubmit, loading, orderTotal }) {
           {errors.commune && <p style={{ fontSize: 11, color: '#C4607A', marginTop: 3 }}>{errors.commune}</p>}
         </div>
 
-        {/* Résumé frais livraison */}
-        {form.wilayaId && (
-          <div style={{ background: 'rgba(155,95,192,0.06)', borderRadius: 14, padding: '12px 14px', border: '1px solid rgba(155,95,192,0.12)' }}>
-            {loadingFee ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#8B7A9B' }}>
-                <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> Calcul des frais de livraison...
+        {/* Type de livraison + frais */}
+        {form.communeId && !loadingFee && (
+          <div style={{ background: 'rgba(155,95,192,0.06)', borderRadius: 14, padding: '14px', border: '1px solid rgba(155,95,192,0.12)' }}>
+
+            {/* Sélecteur domicile / bureau */}
+            <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Mode de livraison</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+              {/* Domicile */}
+              <button type="button" onClick={() => onDeliveryTypeChange('home')}
+                style={{ padding: '10px 8px', borderRadius: 12, border: `2px solid ${deliveryType === 'home' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliveryType === 'home' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center', transition: 'all .15s' }}>
+                <div style={{ fontSize: 20, marginBottom: 4 }}>🏠</div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: deliveryType === 'home' ? '#9B5FC0' : '#5A4A6A', marginBottom: 2 }}>Domicile</p>
+                <p style={{ fontSize: 12, fontWeight: 800, color: '#2D2340' }}>
+                  {currentCommuneFees?.express_home != null ? `${currentCommuneFees.express_home.toLocaleString('fr-DZ')} DA` : '—'}
+                </p>
+              </button>
+              {/* Bureau / Stop desk */}
+              <button type="button" onClick={() => onDeliveryTypeChange('desk')}
+                style={{ padding: '10px 8px', borderRadius: 12, border: `2px solid ${deliveryType === 'desk' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliveryType === 'desk' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center', transition: 'all .15s' }}>
+                <div style={{ fontSize: 20, marginBottom: 4 }}>🏢</div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: deliveryType === 'desk' ? '#9B5FC0' : '#5A4A6A', marginBottom: 2 }}>Bureau</p>
+                <p style={{ fontSize: 12, fontWeight: 800, color: '#2D2340' }}>
+                  {currentCommuneFees?.express_desk != null ? `${currentCommuneFees.express_desk.toLocaleString('fr-DZ')} DA` : '—'}
+                </p>
+              </button>
+            </div>
+
+            {/* Total */}
+            {deliveryFee != null ? (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed rgba(155,95,192,0.2)', paddingTop: 10 }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: '#2D2340' }}>
+                  <Truck size={13} /> Total à payer
+                </span>
+                <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#2D2340', fontFamily: 'Nunito, sans-serif' }}>
+                  {totalWithDelivery != null ? totalWithDelivery.toLocaleString('fr-DZ') : deliveryFee.toLocaleString('fr-DZ')} DA
+                </span>
               </div>
-            ) : deliveryFee != null ? (
-              <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: form.communeId && orderTotal != null ? 8 : 0 }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#8B7A9B', fontWeight: 600 }}>
-                    <Truck size={13} /> Livraison express à domicile
-                  </span>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: '#9B5FC0' }}>{deliveryFee.toLocaleString('fr-DZ')} DA</span>
-                </div>
-                {totalWithDelivery != null && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed rgba(155,95,192,0.2)', paddingTop: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#2D2340' }}>Total à payer</span>
-                    <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#2D2340', fontFamily: 'Nunito, sans-serif' }}>{totalWithDelivery.toLocaleString('fr-DZ')} DA</span>
-                  </div>
-                )}
-              </>
-            ) : form.communeId ? (
-              <p style={{ fontSize: 12, color: '#C4607A' }}>⚠️ Livraison non disponible dans cette commune</p>
             ) : (
-              <p style={{ fontSize: 12, color: '#8B7A9B' }}>Sélectionne ta commune pour voir les frais</p>
+              <p style={{ fontSize: 12, color: '#C4607A' }}>⚠️ Livraison non disponible dans cette commune</p>
             )}
+          </div>
+        )}
+        {form.wilayaId && !form.communeId && !loadingFee && (
+          <div style={{ background: 'rgba(155,95,192,0.04)', borderRadius: 14, padding: '12px 14px', border: '1px solid rgba(155,95,192,0.10)' }}>
+            <p style={{ fontSize: 12, color: '#8B7A9B', textAlign: 'center' }}>Sélectionne ta commune pour voir les frais 🚚</p>
+          </div>
+        )}
+        {form.wilayaId && loadingFee && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#8B7A9B', padding: '4px 0' }}>
+            <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> Calcul des frais...
           </div>
         )}
 
