@@ -23,7 +23,7 @@ function FraudWarningModal({ onConfirm, onCancel, loading }) {
         <div className="flex flex-col gap-3">
           <button onClick={onConfirm} disabled={loading} style={{ background: '#9B5FC0', color: 'white', border: 'none', borderRadius: 50, padding: '13px', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer', boxShadow: '0 4px 16px rgba(155,95,192,0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: loading ? 0.7 : 1 }}>
             {loading ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle size={15} />}
-            {loading ? '{t('fraud_loading')}' : '{t('fraud_ok')}'}
+            {loading ? t('fraud_loading') : t('fraud_ok')}
           </button>
           <button onClick={onCancel} disabled={loading} style={{ background: 'rgba(249,200,212,0.3)', color: '#7B6B8A', border: 'none', borderRadius: 50, padding: '12px', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer' }}>{t('fraud_cancel')}</button>
         </div>
