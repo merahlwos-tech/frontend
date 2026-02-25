@@ -7,6 +7,7 @@ import { useLang } from '../../context/LanguageContext'
    MODALE AVERTISSEMENT FRAUDE
 ══════════════════════════════════════════════ */
 function FraudWarningModal({ onConfirm, onCancel, loading }) {
+  const { t } = useLang()
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(45,35,64,0.55)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', animation: 'fadeIn 0.2s ease' }}>
       <div style={{ background: 'white', borderRadius: 24, padding: '28px 24px', maxWidth: 380, width: '100%', boxShadow: '0 20px 60px rgba(45,35,64,0.25)', animation: 'slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}>
