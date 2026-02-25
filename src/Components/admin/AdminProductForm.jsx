@@ -190,7 +190,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
             {form.images.map((url, i) => (
               <div key={i} className="relative rounded-2xl overflow-hidden group" style={{ aspectRatio: '1/1', background: '#F8F3FC' }}>
-                <img src={url} alt={`img ${i+1}`} className="w-full h-full object-cover" /> loading="lazy"
+                <img src={url} alt={`img ${i+1}`} className="w-full h-full object-cover" loading="lazy" />
                 <button type="button" onClick={() => removeImage(url)}
                   className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   style={{ background: 'rgba(45,35,64,0.5)' }}>

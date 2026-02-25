@@ -139,7 +139,7 @@ function HomePage() {
             <Link key={label} to={`/products?category=${label}`}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
               <div className="pc-category-icon" style={{ width: 64, height: 64, borderRadius: '50%', overflow: 'hidden', background: bg, border: `2px solid ${border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-                <img src={img} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> loading="lazy"
+                <img src={img} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
               </div>
               <span style={{ fontSize: '11px', fontWeight: 600, color: '#444', textAlign: 'center' }}>{label}</span>
             </Link>

@@ -210,7 +210,7 @@ function AdminOrderDetailPage() {
                 {/* Image */}
                 <div style={{ width: 60, height: 60, borderRadius: 12, overflow: 'hidden', background: '#F0EDF5', flexShrink: 0 }}>
                   {img
-                    ? <img src={img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ? <img src={img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
                     : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Package size={20} style={{ color: '#C4B0D8' }} /></div>}
                 </div>
                 {/* Infos */}

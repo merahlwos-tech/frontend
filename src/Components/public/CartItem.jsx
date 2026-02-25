@@ -14,7 +14,7 @@ function CartItem({ item }) {
       {/* Image */}
       <div style={{ width: 76, height: 90, borderRadius: 12, overflow: 'hidden', background: '#FAFAFA', flexShrink: 0 }}>
         {item.image
-          ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> loading="lazy"
+          ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
           : <div style={{ width: '100%', height: '100%' }} />}
       </div>
 
