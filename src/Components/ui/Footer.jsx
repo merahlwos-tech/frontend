@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Home, Info, Instagram, MapPin, Heart } from 'lucide-react'
+import { useLang } from '../../context/LanguageContext'
 
 function AdminSecretAccess() {
   const [clicks, setClicks] = useState(0)
@@ -46,15 +47,16 @@ function IconHeart() {
 }
 
 function Footer() {
+  const { t } = useLang()
   const location = useLocation()
   const navigate = useNavigate()
   const path = location.pathname
 
   const navItems = [
-    { label: 'Home',     to: '/',         icon: () => <Home size={22} strokeWidth={1.8} />, exact: true  },
-    { label: 'Shop',     to: '/products', icon: IconWand,                                   exact: false },
-    { label: 'Wishlist', to: '/wishlist', icon: IconHeart,                                  exact: true  },
-    { label: 'Info',     to: '/about',    icon: () => <Info size={22} strokeWidth={1.8} />, exact: true  },
+    { label: t('nav_home'),     to: '/',         icon: () => <Home size={22} strokeWidth={1.8} />, exact: true  },
+    { label: t('nav_shop'),     to: '/products', icon: IconWand,                                   exact: false },
+    { label: t('nav_wishlist'), to: '/wishlist', icon: IconHeart,                                  exact: true  },
+    { label: t('nav_info'),     to: '/about',    icon: () => <Info size={22} strokeWidth={1.8} />, exact: true  },
   ]
 
   return (
@@ -76,7 +78,7 @@ function Footer() {
           </p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 12 }}>
             <MapPin size={13} style={{ color: '#C9ADE8' }} />
-            <span style={{ fontSize: 12, color: '#C9ADE8', fontWeight: 600 }}>Livraison dans toute l'Algérie 🇩🇿</span>
+            <span style={{ fontSize: 12, color: '#C9ADE8', fontWeight: 600 }}>{t('footer_delivery')}</span>
           </div>
         </div>
 
@@ -86,14 +88,14 @@ function Footer() {
           {/* Catégories */}
           <div>
             <p style={{ fontSize: 11, fontWeight: 800, color: '#F9C8D4', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 14 }}>
-              Catégories
+              {t('footer_categories')}
             </p>
             {[
               { label: '🌸 Skincare',  to: '/products?category=Skincare' },
               { label: '💄 Makeup',    to: '/products?category=Makeup' },
               { label: '🛁 Body Care', to: '/products?category=Body Care' },
               { label: '💆 Hair Care', to: '/products?category=Hair Care' },
-              { label: '✨ Tout voir', to: '/products' },
+              { label: '✨ ' + t('see_all'), to: '/products' },
             ].map(({ label, to }) => (
               <Link key={to} to={to}
                 style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.65)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.2s' }}
@@ -107,13 +109,13 @@ function Footer() {
           {/* Informations */}
           <div>
             <p style={{ fontSize: 11, fontWeight: 800, color: '#F9C8D4', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 14 }}>
-              Informations
+              {t('footer_info')}
             </p>
             {[
-              { label: 'À propos de nous', to: '/about' },
-              { label: 'Notre boutique',   to: '/products' },
-              { label: 'Ma wishlist',      to: '/wishlist' },
-              { label: 'Mon panier',       to: '/cart' },
+              { label: t('footer_about'), to: '/about' },
+              { label: t('footer_shop'), to: '/products' },
+              { label: t('footer_wishlist'), to: '/wishlist' },
+              { label: t('footer_cart'), to: '/cart' },
             ].map(({ label, to }) => (
               <Link key={to} to={to}
                 style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.65)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.2s' }}
@@ -136,7 +138,7 @@ function Footer() {
         {/* Bas de footer */}
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '16px 24px 0', paddingTop: 16, textAlign: 'center' }}>
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>
-            <AdminSecretAccess /> {new Date().getFullYear()} Tinkerbells — Tous droits réservés
+            <AdminSecretAccess /> {new Date().getFullYear()} Tinkerbells — {t('footer_rights')}
           </p>
           <a href="https://www.instagram.com/cvkdev/"
             target="_blank" rel="noopener noreferrer"

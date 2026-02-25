@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { CartProvider } from './context/CartContext'
+import { LanguageProvider } from './context/LanguageContext'
 import { AuthProvider } from './context/AuthContext'
 import { WishlistProvider } from './context/WishlistContext'
 import Navbar from './Components/ui/Navbar'
@@ -34,6 +35,7 @@ function PublicLayout({ children }) {
 function App() {
   return (
     <BrowserRouter>
+      <LanguageProvider>
       <AuthProvider>
         <WishlistProvider>
           <CartProvider>
@@ -74,6 +76,7 @@ function App() {
           </CartProvider>
         </WishlistProvider>
       </AuthProvider>
+      </LanguageProvider>
     </BrowserRouter>
   )
 }

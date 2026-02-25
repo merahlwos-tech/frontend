@@ -4,6 +4,7 @@ import { Search, X, Heart, Sparkles } from 'lucide-react'
 import api from '../../utils/api'
 import ProductCard from '../../Components/public/ProductCard'
 import { useWishlist } from '../../context/WishlistContext'
+import { useLang } from '../../context/LanguageContext'
 
 const CATEGORIES = [
   { label: 'Tous',      emoji: '✨', bg: '#F8F3FC', border: '#C9ADE8' },
@@ -13,12 +14,13 @@ const CATEGORIES = [
   { label: 'Hair Care', emoji: '💆', bg: '#D6FFEE', border: '#A0D8C4' },
 ]
 
-const SORT_OPTIONS = [
-  { value: 'default', label: 'Pertinence' },
-  { value: 'price_asc', label: 'Prix ↑' },
-  { value: 'price_desc', label: 'Prix ↓' },
-  { value: 'name', label: 'A → Z' },
+const SORT_OPTIONS = (t) => [
+  { value: 'default', label: t('sort_default') },
+  { value: 'price_asc', label: t('sort_price_asc') },
+  { value: 'price_desc', label: t('sort_price_desc') },
+  { value: 'name', label: t('sort_name') },
 ]
+
 
 function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -28,6 +30,13 @@ function ProductsPage() {
   const [sortBy, setSortBy]             = useState('default')
   const activeCategory = searchParams.get('category') || 'Tous'
   const { count: wishCount } = useWishlist()
+  const { t } = useLang()
+  const SORT_OPTIONS_T = [
+    { value: 'default', label: t('sort_default') },
+    { value: 'price_asc', label: t('sort_price_asc') },
+    { value: 'price_desc', label: t('sort_price_desc') },
+    { value: 'name', label: t('sort_name') },
+  ]
 
   useEffect(() => { window.scrollTo(0, 0) }, [])
 
@@ -152,7 +161,7 @@ function ProductsPage() {
                   className="flex-shrink-0 flex items-center gap-1.5 transition-all duration-200"
                   style={{ padding: '7px 14px', borderRadius: 50, fontSize: 12, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer', background: isActive ? '#9B5FC0' : 'white', color: isActive ? 'white' : '#5A4A6A', border: isActive ? '1.5px solid #9B5FC0' : `1.5px solid ${cat.border}`, boxShadow: isActive ? '0 4px 16px rgba(155,95,192,0.30)' : '0 1px 6px rgba(155,95,192,0.06)', transform: isActive ? 'scale(1.03)' : 'scale(1)' }}>
                   <span>{cat.emoji}</span>
-                  <span>{cat.label}</span>
+                  <span>{cat.label === 'Tous' ? t('cat_all') : cat.label}</span>
                 </button>
               )
             })}
@@ -168,7 +177,7 @@ function ProductsPage() {
             style={{ background: activeCat.bg, borderRadius: 16, padding: '12px 16px', border: `1.5px solid ${activeCat.border}` }}>
             <span style={{ fontSize: 22 }}>{activeCat.emoji}</span>
             <div>
-              <p style={{ fontSize: 10, fontWeight: 700, color: '#9B5FC0', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Catégorie</p>
+              <p style={{ fontSize: 10, fontWeight: 700, color: '#9B5FC0', textTransform: 'uppercase', letterSpacing: '0.12em' }}>{t('products_cat_label')}</p>
               <p style={{ fontSize: 15, fontWeight: 800, color: '#2D2340' }}>{activeCategory}</p>
             </div>
             <button onClick={() => setCategory('Tous')}
@@ -184,12 +193,12 @@ function ProductsPage() {
               🌸
             </div>
             <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.6rem', fontWeight: 700, color: '#2D2340', marginBottom: 8 }}>
-              Rien ici pour l&apos;instant
+              {t('products_empty')}
             </p>
             <p style={{ fontSize: 14, color: '#8B7A9B' }}>Essaie une autre catégorie ou efface ta recherche.</p>
             <button onClick={() => { setSearch(''); setCategory('Tous') }}
               style={{ marginTop: 20, background: '#9B5FC0', color: 'white', border: 'none', borderRadius: 50, padding: '10px 24px', fontFamily: 'Nunito, sans-serif', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
-              Voir tout
+              {t('products_see_all')}
             </button>
           </div>
         ) : (

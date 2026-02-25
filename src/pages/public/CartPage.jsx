@@ -4,10 +4,12 @@ import { useCart } from '../../context/CartContext'
 import CartItem from '../../Components/public/CartItem'
 import CheckoutForm from '../../Components/public/CheckoutForm'
 import api from '../../utils/api'
+import { useLang } from '../../context/LanguageContext'
 import toast from 'react-hot-toast'
 import { useState } from 'react'
 
 function CartPage() {
+  const { t } = useLang()
   const { items, total, clearCart } = useCart()
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
@@ -46,10 +48,10 @@ function CartPage() {
          style={{ background: 'linear-gradient(160deg, #FFF0F6 0%, #F5EEFF 45%, #EEF9F5 100%)' }}>
       <div className="text-center">
         <div style={{ width: 90, height: 90, borderRadius: '50%', background: 'linear-gradient(135deg, #F9C8D4, #E8D6FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 40 }}>🛒</div>
-        <h2 style={{ fontFamily: 'Dancing Script, cursive', fontSize: '2rem', fontWeight: 700, color: '#2D2340', marginBottom: 8 }}>Panier vide</h2>
-        <p style={{ fontSize: 14, color: '#8B7A9B', marginBottom: 24 }}>Découvrez notre belle sélection ✨</p>
+        <h2 style={{ fontFamily: 'Dancing Script, cursive', fontSize: '2rem', fontWeight: 700, color: '#2D2340', marginBottom: 8 }}>{t('cart_empty')}</h2>
+        <p style={{ fontSize: 14, color: '#8B7A9B', marginBottom: 24 }}>{t('cart_empty_sub')}</p>
         <Link to="/products" style={{ background: '#9B5FC0', color: 'white', borderRadius: 50, padding: '12px 28px', textDecoration: 'none', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-          <ShoppingBag size={16} /> Découvrir la boutique
+          <ShoppingBag size={16} /> {t('cart_discover')}
         </Link>
       </div>
     </div>
@@ -61,9 +63,9 @@ function CartPage() {
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px' }}>
           <button onClick={() => navigate('/products')}
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: '#8B7A9B', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Nunito, sans-serif', marginBottom: 10 }}>
-            <ArrowLeft size={14} /> Continuer mes achats
+            <ArrowLeft size={14} /> {t('cart_continue')}
           </button>
-          <h1 style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.8rem', fontWeight: 700, color: '#2D2340' }}>Mon panier 🛍️</h1>
+          <h1 style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.8rem', fontWeight: 700, color: '#2D2340' }}>{t('cart_title')}</h1>
         </div>
       </div>
 
@@ -73,7 +75,7 @@ function CartPage() {
             <div className="flex items-center justify-between" style={{ marginBottom: 4 }}>
               <p style={{ fontSize: 13, color: '#8B7A9B', fontWeight: 600 }}>{items.length} article{items.length !== 1 ? 's' : ''}</p>
               <button onClick={clearCart} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#C4B0D8', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Nunito, sans-serif', fontWeight: 600 }}>
-                <Trash2 size={12} /> Vider le panier
+                <Trash2 size={12} /> {t('cart_clear')}
               </button>
             </div>
             {items.map(item => <CartItem key={item.key} item={item} />)}
@@ -82,7 +84,7 @@ function CartPage() {
           <div className="lg:col-span-2">
             <div style={{ position: 'sticky', top: 100 }}>
               <div style={{ background: 'white', borderRadius: 20, padding: '20px', marginBottom: 16, boxShadow: '0 2px 16px rgba(155,95,192,0.08)' }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 14 }}>Récapitulatif</p>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 14 }}>{t('cart_summary')}</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
                   {items.map(item => (
                     <div key={item.key} className="flex justify-between" style={{ fontSize: 13 }}>
@@ -96,11 +98,11 @@ function CartPage() {
                   <span style={{ fontSize: 13, color: '#8B7A9B', fontWeight: 600 }}>Total</span>
                   <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#2D2340', fontFamily: 'Nunito, sans-serif' }}>{total.toLocaleString('fr-DZ')} DA</span>
                 </div>
-                <p style={{ fontSize: 11, color: '#C4B0D8', textAlign: 'right', marginTop: 4 }}>Paiement à la livraison 🚚</p>
+                <p style={{ fontSize: 11, color: '#C4B0D8', textAlign: 'right', marginTop: 4 }}>{t('cart_cod')}</p>
               </div>
 
               <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 2px 16px rgba(155,95,192,0.08)' }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 16 }}>Informations de livraison</p>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 16 }}>{t('delivery_info')}</p>
                 <CheckoutForm onSubmit={handleOrder} loading={submitting} orderTotal={total} />
               </div>
             </div>

@@ -186,3 +186,11 @@
     gap: 40px !important;
   }
 }
+
+/* ══ RTL (Arabe) ══ */
+[dir="rtl"] body {
+  font-family: 'Noto Sans Arabic', 'Nunito', sans-serif;
+}
+[dir="rtl"] .animate-marquee {
+  animation-direction: reverse;
+}

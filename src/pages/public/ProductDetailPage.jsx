@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ShoppingBag, ArrowLeft, ChevronLeft, ChevronRight, Heart, Minus, Plus, Zap, AlertTriangle, CheckCircle, Loader2, X, RotateCcw } from 'lucide-react'
 import api from '../../utils/api'
 import { useDeliveryFees } from '../../hooks/useDeliveryFees'
+import { useLang } from '../../context/LanguageContext'
 import { useCart } from '../../context/CartContext'
 import { useWishlist } from '../../context/WishlistContext'
 import { ChevronDown } from 'lucide-react'
@@ -116,6 +117,7 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
   const [showModal, setShowModal] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
+  const { t } = useLang()
   const { wilayas, communes, deliveryFee, deliverySpeed, deliveryType, loadingFee, loadingCommunes, onWilayaChange, onCommuneChange, onDeliverySpeedChange, onDeliveryTypeChange, currentCommuneFees } = useDeliveryFees()
 
   const productTotal = product.price * quantity
@@ -195,11 +197,11 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
             <p style={{ fontSize: 12, color: '#9B5FC0', fontWeight: 700 }}>Qté : {quantity} · {(product.price * quantity).toFixed(0)} DA</p>
           </div>
           <div style={{ background: '#9B5FC0', color: 'white', borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 700 }}>
-            Achat direct
+            {t('direct_buy_label')}
           </div>
         </div>
 
-        <p style={{ fontSize: 12, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>Informations de livraison</p>
+        <p style={{ fontSize: 12, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>{t('delivery_info')}</p>
 
         <form onSubmit={handleSubmitForm} className="space-y-3" noValidate>
           <div className="grid grid-cols-2 gap-3">
@@ -243,31 +245,31 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
           {form.communeId && !loadingFee && (
             <div style={{ background: 'rgba(155,95,192,0.06)', borderRadius: 12, padding: '12px', border: '1px solid rgba(155,95,192,0.12)' }}>
 
-              {/* Vitesse */}
-              <p style={{ fontSize: 10, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Vitesse</p>
+              {/* {t('del_speed')} */}
+              <p style={{ fontSize: 10, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{t('del_speed')}</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 10 }}>
                 <button type="button" onClick={() => onDeliverySpeedChange('express')}
                   style={{ padding: '8px 6px', borderRadius: 10, border: `2px solid ${deliverySpeed === 'express' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliverySpeed === 'express' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center' }}>
                   <div style={{ fontSize: 14, marginBottom: 1 }}>⚡</div>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: deliverySpeed === 'express' ? '#9B5FC0' : '#5A4A6A' }}>Express</p>
-                  <p style={{ fontSize: 9, color: '#AAA' }}>1 jour</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: deliverySpeed === 'express' ? '#9B5FC0' : '#5A4A6A' }}>{t('del_express')}</p>
+                  <p style={{ fontSize: 9, color: '#AAA' }}>{t('del_express_time')}</p>
                 </button>
                 <button type="button" onClick={() => onDeliverySpeedChange('economic')}
                   disabled={currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null}
                   style={{ padding: '8px 6px', borderRadius: 10, border: `2px solid ${deliverySpeed === 'economic' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliverySpeed === 'economic' ? 'rgba(155,95,192,0.08)' : 'white', cursor: (currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? 'not-allowed' : 'pointer', textAlign: 'center', opacity: (currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? 0.4 : 1 }}>
                   <div style={{ fontSize: 14, marginBottom: 1 }}>🌿</div>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: deliverySpeed === 'economic' ? '#9B5FC0' : '#5A4A6A' }}>Éco</p>
-                  <p style={{ fontSize: 9, color: '#AAA' }}>{(currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? 'N/A' : '2 jours'}</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: deliverySpeed === 'economic' ? '#9B5FC0' : '#5A4A6A' }}>{t('del_eco')}</p>
+                  <p style={{ fontSize: 9, color: '#AAA' }}>{(currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? t('del_na').slice(0, 3) : t('del_eco_time')}</p>
                 </button>
               </div>
 
-              {/* Destination */}
-              <p style={{ fontSize: 10, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Destination</p>
+              {/* {t('del_dest')} */}
+              <p style={{ fontSize: 10, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{t('del_dest')}</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 10 }}>
                 <button type="button" onClick={() => onDeliveryTypeChange('home')}
                   style={{ padding: '8px 6px', borderRadius: 10, border: `2px solid ${deliveryType === 'home' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliveryType === 'home' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center' }}>
                   <div style={{ fontSize: 14, marginBottom: 1 }}>🏠</div>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: deliveryType === 'home' ? '#9B5FC0' : '#5A4A6A', marginBottom: 1 }}>Domicile</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: deliveryType === 'home' ? '#9B5FC0' : '#5A4A6A', marginBottom: 1 }}>{t('del_home')}</p>
                   <p style={{ fontSize: 10, fontWeight: 800, color: '#2D2340' }}>
                     {deliverySpeed === 'express'
                       ? (currentCommuneFees?.express_home != null ? `${currentCommuneFees.express_home.toLocaleString('fr-DZ')} DA` : '—')
@@ -277,7 +279,7 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
                 <button type="button" onClick={() => onDeliveryTypeChange('desk')}
                   style={{ padding: '8px 6px', borderRadius: 10, border: `2px solid ${deliveryType === 'desk' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliveryType === 'desk' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center' }}>
                   <div style={{ fontSize: 14, marginBottom: 1 }}>🏢</div>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: deliveryType === 'desk' ? '#9B5FC0' : '#5A4A6A', marginBottom: 1 }}>Bureau</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: deliveryType === 'desk' ? '#9B5FC0' : '#5A4A6A', marginBottom: 1 }}>{t('del_desk')}</p>
                   <p style={{ fontSize: 10, fontWeight: 800, color: '#2D2340' }}>
                     {deliverySpeed === 'express'
                       ? (currentCommuneFees?.express_desk != null ? `${currentCommuneFees.express_desk.toLocaleString('fr-DZ')} DA` : '—')
@@ -288,7 +290,7 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
 
               {deliveryFee != null ? (
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed rgba(155,95,192,0.2)', paddingTop: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#2D2340' }}>Total à payer</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#2D2340' }}>{t('del_total')}</span>
                   <span style={{ fontSize: 13, fontWeight: 900, color: '#2D2340' }}>{(totalWithDelivery ?? productTotal).toLocaleString('fr-DZ')} DA</span>
                 </div>
               ) : (
@@ -297,14 +299,14 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
             </div>
           )}
           {form.wilayaId && !form.communeId && !loadingFee && (
-            <p style={{ fontSize: 11, color: '#8B7A9B', textAlign: 'center' }}>Choisissez votre commune pour voir les frais 🚚</p>
+            <p style={{ fontSize: 11, color: '#8B7A9B', textAlign: 'center' }}>{t('del_pick_commune')}</p>
           )}
           {form.wilayaId && loadingFee && (
-            <p style={{ fontSize: 11, color: '#8B7A9B' }}>Calcul des frais...</p>
+            <p style={{ fontSize: 11, color: '#8B7A9B' }}>{t('del_calculating')}</p>
           )}
           <button type="submit"
             style={{ width: '100%', background: 'linear-gradient(135deg, #9B5FC0, #B896D4)', color: 'white', border: 'none', borderRadius: 50, padding: '14px', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer', boxShadow: '0 4px 16px rgba(155,95,192,0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 8 }}>
-            <Zap size={15} /> Commander maintenant
+            <Zap size={15} /> {t('direct_buy_btn')}
           </button>
         </form>
       </div>
@@ -337,6 +339,7 @@ function ProductDetailPage() {
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
+  const { t } = useLang()
   const [currentImage, setCurrentImage] = useState(0)
   const [showDirectBuy, setShowDirectBuy] = useState(false)
   const [showCancelToast, setShowCancelToast] = useState(false)
@@ -399,7 +402,7 @@ function ProductDetailPage() {
                 <button onClick={() => setCurrentImage(i => i === images.length - 1 ? 0 : i + 1)} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'rgba(255,255,255,0.90)', border: 'none', cursor: 'pointer' }}><ChevronRight size={16} style={{ color: '#5A4A6A' }} /></button>
               </>)}
               <div className="absolute top-3 left-3"><span className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: catStyle.bg, color: catStyle.color }}>{product.category}</span></div>
-              <button onClick={() => { const was = isWished(product._id); toggle(product); if (!was) toast.success('💜 Ajouté à ta wishlist !', { duration: 2000 }); else toast('🤍 Retiré', { duration: 1500 }) }} className="absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: liked ? 'rgba(232,160,180,0.95)' : 'rgba(255,255,255,0.90)', border: 'none', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.10)' }}>
+              <button onClick={() => { const was = isWished(product._id); toggle(product); if (!was) toast.success(t('toast_wish_add'), { duration: 2000 }); else toast(t('toast_wish_rm'), { duration: 1500 }) }} className="absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: liked ? 'rgba(232,160,180,0.95)' : 'rgba(255,255,255,0.90)', border: 'none', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.10)' }}>
                 <Heart size={17} style={{ fill: liked ? 'white' : 'none', color: liked ? 'white' : '#C4B0D8', strokeWidth: 2 }} />
               </button>
               {cartQty > 0 && (
@@ -435,7 +438,7 @@ function ProductDetailPage() {
 
             {/* Quantité */}
             <div>
-              <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>Quantité</p>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>{t('qty')}</p>
               <div className="flex items-center gap-4">
                 <div className="flex items-center" style={{ background: 'white', borderRadius: 50, border: '1.5px solid rgba(249,200,212,0.5)', boxShadow: '0 2px 10px rgba(155,95,192,0.07)' }}>
                   <button onClick={() => setQuantity(q => Math.max(1, q - 1))} style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: '#9B5FC0' }}><Minus size={14} /></button>
@@ -473,7 +476,7 @@ function ProductDetailPage() {
               <>
                 <div style={{ height: 1, background: 'rgba(249,200,212,0.4)' }} />
                 <div>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>Description</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>{t('description')}</p>
                   <p style={{ fontSize: 13, color: '#7B6B8A', lineHeight: 1.75 }}>{product.description}</p>
                 </div>
               </>

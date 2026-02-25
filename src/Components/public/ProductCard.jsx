@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ShoppingBag } from 'lucide-react'
 import { useCart } from '../../context/CartContext'
 import toast from 'react-hot-toast'
+import { useLang } from '../../context/LanguageContext'
 
 const CAT_COLORS = {
   'Skincare':  { bg: '#F0F7EE', color: '#4A8C6A' },
@@ -12,6 +13,7 @@ const CAT_COLORS = {
 
 function ProductCard({ product }) {
   const { addToCart } = useCart()
+  const { t } = useLang()
   const navigate = useNavigate()
 
   const imageUrl = product.images?.[0] || '/placeholder.jpg'
@@ -28,11 +30,11 @@ function ProductCard({ product }) {
     }
     const stock = product.stock ?? 0
     if (stock === 0) {
-      toast.error('Produit épuisé')
+      toast.error(t('toast_outofstock'))
       return
     }
     addToCart(product, null, 1)
-    toast.success('Ajouté au panier ✓', { duration: 1500 })
+    toast.success(t('toast_added'), { duration: 1500 })
   }
 
   const stockVal = product.sizes?.length > 0
@@ -71,7 +73,7 @@ function ProductCard({ product }) {
             <div className="absolute inset-0 flex items-center justify-center"
               style={{ background: 'rgba(255,255,255,0.7)' }}>
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#999', background: 'white', padding: '4px 12px', borderRadius: 50, border: '1px solid #eee' }}>
-                Épuisé
+                {t('out_of_stock')}
               </span>
             </div>
           )}
@@ -80,7 +82,7 @@ function ProductCard({ product }) {
           {(product.purchaseCount ?? 0) >= 5 && (
             <div className="absolute top-2 right-2">
               <span style={{ fontSize: '9px', fontWeight: 700, padding: '3px 8px', borderRadius: 50, background: '#FFF0E8', color: '#C46020' }}>
-                🔥 Trending
+                {t('trending_badge')}
               </span>
             </div>
           )}
