@@ -16,23 +16,21 @@ const NAV_LINKS = (t) => [
 
 function LangSwitcher() {
   const { lang, setLang } = useLang()
-  const LANGS = [
-    { code: 'fr', flag: '🇫🇷' },
-    { code: 'en', flag: '🇬🇧' },
-    { code: 'ar', flag: '🇩🇿' },
-  ]
+  const LANGS = ['fr', 'en', 'ar']
   return (
-    <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-      {LANGS.map(({ code, flag }) => (
+    <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+      {LANGS.map((code) => (
         <button key={code} onClick={() => setLang(code)}
-          title={code.toUpperCase()}
           style={{
-            width: 30, height: 30, borderRadius: '50%', border: lang === code ? '2px solid #9B5FC0' : '2px solid transparent',
+            padding: '3px 8px', borderRadius: 6,
+            border: lang === code ? '1.5px solid #9B5FC0' : '1.5px solid transparent',
             background: lang === code ? 'rgba(155,95,192,0.1)' : 'transparent',
-            cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'all .15s', padding: 0,
+            cursor: 'pointer', fontSize: 11, fontWeight: 700, fontFamily: 'Nunito, sans-serif',
+            color: lang === code ? '#9B5FC0' : '#8B7A9B',
+            textTransform: 'uppercase', letterSpacing: '0.05em',
+            transition: 'all .15s',
           }}>
-          {flag}
+          {code}
         </button>
       ))}
     </div>
@@ -61,6 +59,9 @@ function Navbar() {
 
         {/* ═══ MOBILE < 1024px ═══ */}
         <div className="lg:hidden" style={{ maxWidth: 600, margin: '0 auto', padding: '0 16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 6 }}>
+            <LangSwitcher />
+          </div>
           <div className="flex items-center justify-between h-14">
             <button onClick={() => setMenuOpen(!menuOpen)} className="p-1" style={{ color: '#8B7A9B' }}>
               {menuOpen ? <X size={22} strokeWidth={1.8} /> : <Menu size={22} strokeWidth={1.8} />}
@@ -132,12 +133,7 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* Sélecteur langue — mobile (bouton flottant) */}
-      <div className="lg:hidden" style={{ position: 'fixed', bottom: 80, right: 12, zIndex: 998 }}>
-        <div style={{ background: 'rgba(255,255,255,0.97)', borderRadius: 50, padding: '6px 8px', boxShadow: '0 4px 16px rgba(155,95,192,0.18)', border: '1px solid rgba(249,200,212,0.4)', display: 'flex', gap: 2 }}>
-          <LangSwitcher />
-        </div>
-      </div>
+
 
       {/* Menu slide mobile */}
       {menuOpen && (
