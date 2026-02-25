@@ -62,6 +62,7 @@ function MiniProductCard({ product }) {
 }
 
 function SectionHeader({ title, to, badge }) {
+  const { t } = useLang()
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, padding: '0 20px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
