@@ -176,7 +176,7 @@ function AdminProductsPage() {
                 <div className="overflow-hidden relative" style={{ height: 150, background: '#F8F3FC' }}>
                   {product.images?.[0] ? (
                     <img src={product.images[0]} alt={product.name}
-                      className="w-full h-full object-cover" />
+                      className="w-full h-full object-cover" /> loading="lazy"
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-4xl">🌸</div>
                   )}

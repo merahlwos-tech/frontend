@@ -191,7 +191,7 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
 
         {/* Résumé commande */}
         <div className="flex items-center gap-3" style={{ background: 'rgba(155,95,192,0.06)', borderRadius: 14, padding: '12px', marginBottom: 18 }}>
-          {product.images?.[0] && <img src={product.images[0]} alt="" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover' }} />}
+          {product.images?.[0] && <img src={product.images[0]} alt="" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover' }} /> loading="lazy"}
           <div style={{ flex: 1 }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: '#2D2340', marginBottom: 2 }}>{product.name}</p>
             <p style={{ fontSize: 12, color: '#9B5FC0', fontWeight: 700 }}>Qté : {quantity} · {(product.price * quantity).toFixed(0)} DA</p>
@@ -396,7 +396,7 @@ function ProductDetailPage() {
           {/* Galerie */}
           <div className="flex flex-col gap-3">
             <div className="relative overflow-hidden group" style={{ aspectRatio: '1/1', background: '#F8F3FC', borderRadius: 24 }}>
-              <img src={images[currentImage]} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <img src={images[currentImage]} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" /> loading="lazy"
               {images.length > 1 && (<>
                 <button onClick={() => setCurrentImage(i => i === 0 ? images.length - 1 : i - 1)} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'rgba(255,255,255,0.90)', border: 'none', cursor: 'pointer' }}><ChevronLeft size={16} style={{ color: '#5A4A6A' }} /></button>
                 <button onClick={() => setCurrentImage(i => i === images.length - 1 ? 0 : i + 1)} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'rgba(255,255,255,0.90)', border: 'none', cursor: 'pointer' }}><ChevronRight size={16} style={{ color: '#5A4A6A' }} /></button>
@@ -416,7 +416,7 @@ function ProductDetailPage() {
               <div className="grid grid-cols-5 gap-2">
                 {images.map((img, i) => (
                   <button key={i} onClick={() => setCurrentImage(i)} style={{ aspectRatio: '1/1', borderRadius: 12, overflow: 'hidden', border: `2px solid ${i === currentImage ? '#9B5FC0' : 'transparent'}`, padding: 0, background: 'none', cursor: 'pointer' }}>
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={img} alt="" className="w-full h-full object-cover" /> loading="lazy"
                   </button>
                 ))}
               </div>
