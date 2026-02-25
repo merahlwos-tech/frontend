@@ -14,13 +14,6 @@ const CATEGORIES = [
   { label: 'Hair Care', emoji: '💆', bg: '#D6FFEE', border: '#A0D8C4' },
 ]
 
-const SORT_OPTIONS = (t) => [
-  { value: 'default', label: t('sort_default') },
-  { value: 'price_asc', label: t('sort_price_asc') },
-  { value: 'price_desc', label: t('sort_price_desc') },
-  { value: 'name', label: t('sort_name') },
-]
-
 
 function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
