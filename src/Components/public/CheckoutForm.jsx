@@ -23,7 +23,7 @@ function FraudWarningModal({ onConfirm, onCancel, loading }) {
         <div className="flex flex-col gap-3">
           <button onClick={onConfirm} disabled={loading} style={{ background: '#9B5FC0', color: 'white', border: 'none', borderRadius: 50, padding: '13px', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer', boxShadow: '0 4px 16px rgba(155,95,192,0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: loading ? 0.7 : 1 }}>
             {loading ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle size={15} />}
-            {loading ? t('fraud_loading') : t('fraud_ok')}
+            {loading ? '{t('fraud_loading')}' : '{t('fraud_ok')}'}
           </button>
           <button onClick={onCancel} disabled={loading} style={{ background: 'rgba(249,200,212,0.3)', color: '#7B6B8A', border: 'none', borderRadius: 50, padding: '12px', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito, sans-serif', cursor: 'pointer' }}>{t('fraud_cancel')}</button>
         </div>
@@ -154,7 +154,7 @@ function CheckoutForm({ onSubmit, loading, orderTotal }) {
           <div style={{ position: 'relative' }}>
             <select value={form.communeId} onChange={handleCommuneChange} disabled={!form.wilayaId || loadingCommunes}
               style={{ ...inputStyle(errors.commune), appearance: 'none', cursor: form.wilayaId ? 'pointer' : 'not-allowed', paddingRight: 36, opacity: !form.wilayaId ? 0.5 : 1 }}>
-              <option value="">{loadingCommunes ? t('f_loading') : t('f_ph_commune')}</option>
+              <option value="">{loadingCommunes ? t('f_loading') : '{t('f_ph_commune')}'}</option>
               {communes.filter(c => c.is_deliverable).map(c => (
                 <option key={c.id} value={String(c.id)}>{c.name}</option>
               ))}
@@ -183,7 +183,7 @@ function CheckoutForm({ onSubmit, loading, orderTotal }) {
                 <div style={{ fontSize: 18, marginBottom: 3 }}>🌿</div>
                 <p style={{ fontSize: 12, fontWeight: 700, color: deliverySpeed === 'economic' ? '#9B5FC0' : '#5A4A6A', marginBottom: 1 }}>{t('del_eco')}</p>
                 <p style={{ fontSize: 10, color: '#AAA', marginBottom: 3 }}>
-                  {(currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? t('del_na') : `Livraison en ${t('del_eco_time')}`}
+                  {(currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? '{t('del_na')}' : 'Livraison en {t('del_eco_time')}'}
                 </p>
               </button>
             </div>
