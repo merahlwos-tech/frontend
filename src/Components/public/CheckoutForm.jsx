@@ -40,7 +40,7 @@ function CheckoutForm({ onSubmit, loading, orderTotal }) {
   const [errors, setErrors] = useState({})
   const [showModal, setShowModal] = useState(false)
 
-  const { wilayas, communes, deliveryFee, deliveryType, loadingFee, loadingCommunes, onWilayaChange, onCommuneChange, onDeliveryTypeChange, currentCommuneFees } = useDeliveryFees()
+  const { wilayas, communes, deliveryFee, deliverySpeed, deliveryType, loadingFee, loadingCommunes, onWilayaChange, onCommuneChange, onDeliverySpeedChange, onDeliveryTypeChange, currentCommuneFees } = useDeliveryFees()
 
   const validate = () => {
     const e = {}
@@ -87,7 +87,7 @@ function CheckoutForm({ onSubmit, loading, orderTotal }) {
       phone: form.phone,
       wilaya: form.wilayaName,
       commune: form.communeName,
-    }, deliveryFee, deliveryType)
+    }, deliveryFee, deliveryType, deliverySpeed)
   }
 
   const inputStyle = (hasErr) => ({
@@ -162,29 +162,51 @@ function CheckoutForm({ onSubmit, loading, orderTotal }) {
           {errors.commune && <p style={{ fontSize: 11, color: '#C4607A', marginTop: 3 }}>{errors.commune}</p>}
         </div>
 
-        {/* Type de livraison + frais */}
+        {/* Options livraison */}
         {form.communeId && !loadingFee && (
           <div style={{ background: 'rgba(155,95,192,0.06)', borderRadius: 14, padding: '14px', border: '1px solid rgba(155,95,192,0.12)' }}>
 
-            {/* Sélecteur domicile / bureau */}
-            <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Mode de livraison</p>
+            {/* Vitesse : Express / Économique */}
+            <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Vitesse</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-              {/* Domicile */}
-              <button type="button" onClick={() => onDeliveryTypeChange('home')}
-                style={{ padding: '10px 8px', borderRadius: 12, border: `2px solid ${deliveryType === 'home' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliveryType === 'home' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center', transition: 'all .15s' }}>
-                <div style={{ fontSize: 20, marginBottom: 4 }}>🏠</div>
-                <p style={{ fontSize: 12, fontWeight: 700, color: deliveryType === 'home' ? '#9B5FC0' : '#5A4A6A', marginBottom: 2 }}>Domicile</p>
-                <p style={{ fontSize: 12, fontWeight: 800, color: '#2D2340' }}>
-                  {currentCommuneFees?.express_home != null ? `${currentCommuneFees.express_home.toLocaleString('fr-DZ')} DA` : '—'}
+              <button type="button" onClick={() => onDeliverySpeedChange('express')}
+                style={{ padding: '10px 8px', borderRadius: 12, border: `2px solid ${deliverySpeed === 'express' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliverySpeed === 'express' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center', transition: 'all .15s' }}>
+                <div style={{ fontSize: 18, marginBottom: 3 }}>⚡</div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: deliverySpeed === 'express' ? '#9B5FC0' : '#5A4A6A', marginBottom: 1 }}>Express</p>
+                <p style={{ fontSize: 10, color: '#AAA', marginBottom: 3 }}>Livraison en 1 jour</p>
+              </button>
+              <button type="button" onClick={() => onDeliverySpeedChange('economic')}
+                disabled={currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null}
+                style={{ padding: '10px 8px', borderRadius: 12, border: `2px solid ${deliverySpeed === 'economic' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliverySpeed === 'economic' ? 'rgba(155,95,192,0.08)' : 'white', cursor: (currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? 'not-allowed' : 'pointer', textAlign: 'center', transition: 'all .15s', opacity: (currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? 0.4 : 1 }}>
+                <div style={{ fontSize: 18, marginBottom: 3 }}>🌿</div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: deliverySpeed === 'economic' ? '#9B5FC0' : '#5A4A6A', marginBottom: 1 }}>Économique</p>
+                <p style={{ fontSize: 10, color: '#AAA', marginBottom: 3 }}>
+                  {(currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? 'Non disponible' : 'Livraison en 2 jours'}
                 </p>
               </button>
-              {/* Bureau / Stop desk */}
+            </div>
+
+            {/* Destination : Domicile / Bureau */}
+            <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Destination</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+              <button type="button" onClick={() => onDeliveryTypeChange('home')}
+                style={{ padding: '10px 8px', borderRadius: 12, border: `2px solid ${deliveryType === 'home' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliveryType === 'home' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center', transition: 'all .15s' }}>
+                <div style={{ fontSize: 18, marginBottom: 3 }}>🏠</div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: deliveryType === 'home' ? '#9B5FC0' : '#5A4A6A', marginBottom: 2 }}>Domicile</p>
+                <p style={{ fontSize: 12, fontWeight: 800, color: '#2D2340' }}>
+                  {deliverySpeed === 'express'
+                    ? (currentCommuneFees?.express_home != null ? `${currentCommuneFees.express_home.toLocaleString('fr-DZ')} DA` : '—')
+                    : (currentCommuneFees?.economic_home != null ? `${currentCommuneFees.economic_home.toLocaleString('fr-DZ')} DA` : '—')}
+                </p>
+              </button>
               <button type="button" onClick={() => onDeliveryTypeChange('desk')}
                 style={{ padding: '10px 8px', borderRadius: 12, border: `2px solid ${deliveryType === 'desk' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliveryType === 'desk' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center', transition: 'all .15s' }}>
-                <div style={{ fontSize: 20, marginBottom: 4 }}>🏢</div>
+                <div style={{ fontSize: 18, marginBottom: 3 }}>🏢</div>
                 <p style={{ fontSize: 12, fontWeight: 700, color: deliveryType === 'desk' ? '#9B5FC0' : '#5A4A6A', marginBottom: 2 }}>Bureau</p>
                 <p style={{ fontSize: 12, fontWeight: 800, color: '#2D2340' }}>
-                  {currentCommuneFees?.express_desk != null ? `${currentCommuneFees.express_desk.toLocaleString('fr-DZ')} DA` : '—'}
+                  {deliverySpeed === 'express'
+                    ? (currentCommuneFees?.express_desk != null ? `${currentCommuneFees.express_desk.toLocaleString('fr-DZ')} DA` : '—')
+                    : (currentCommuneFees?.economic_desk != null ? `${currentCommuneFees.economic_desk.toLocaleString('fr-DZ')} DA` : '—')}
                 </p>
               </button>
             </div>
@@ -200,7 +222,7 @@ function CheckoutForm({ onSubmit, loading, orderTotal }) {
                 </span>
               </div>
             ) : (
-              <p style={{ fontSize: 12, color: '#C4607A' }}>⚠️ Livraison non disponible dans cette commune</p>
+              <p style={{ fontSize: 12, color: '#C4607A' }}>⚠️ Option non disponible dans cette commune</p>
             )}
           </div>
         )}

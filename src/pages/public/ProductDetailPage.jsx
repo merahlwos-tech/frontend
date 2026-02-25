@@ -116,7 +116,7 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
   const [showModal, setShowModal] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  const { wilayas, communes, deliveryFee, deliveryType, loadingFee, loadingCommunes, onWilayaChange, onCommuneChange, onDeliveryTypeChange, currentCommuneFees } = useDeliveryFees()
+  const { wilayas, communes, deliveryFee, deliverySpeed, deliveryType, loadingFee, loadingCommunes, onWilayaChange, onCommuneChange, onDeliverySpeedChange, onDeliveryTypeChange, currentCommuneFees } = useDeliveryFees()
 
   const productTotal = product.price * quantity
   const totalWithDelivery = deliveryFee != null ? productTotal + deliveryFee : null
@@ -169,6 +169,7 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
         total: finalTotal,
         deliveryFee: deliveryFee || 0,
         deliveryType: deliveryType || 'home',
+        deliverySpeed: deliverySpeed || 'express',
       })
       onSuccess(res.data?._id || res.data?.id)
     } catch (err) {
@@ -238,35 +239,60 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
             <ChevronDown size={14} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: '#C4B0D8', pointerEvents: 'none' }} />
             {errors.commune && <p style={{ fontSize: 10, color: '#C4607A', marginTop: 2 }}>{errors.commune}</p>}
           </div>
-          {/* Mode livraison + frais */}
+          {/* Options livraison */}
           {form.communeId && !loadingFee && (
             <div style={{ background: 'rgba(155,95,192,0.06)', borderRadius: 12, padding: '12px', border: '1px solid rgba(155,95,192,0.12)' }}>
-              <p style={{ fontSize: 10, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Mode de livraison</p>
+
+              {/* Vitesse */}
+              <p style={{ fontSize: 10, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Vitesse</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 10 }}>
+                <button type="button" onClick={() => onDeliverySpeedChange('express')}
+                  style={{ padding: '8px 6px', borderRadius: 10, border: `2px solid ${deliverySpeed === 'express' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliverySpeed === 'express' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center' }}>
+                  <div style={{ fontSize: 14, marginBottom: 1 }}>⚡</div>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: deliverySpeed === 'express' ? '#9B5FC0' : '#5A4A6A' }}>Express</p>
+                  <p style={{ fontSize: 9, color: '#AAA' }}>1 jour</p>
+                </button>
+                <button type="button" onClick={() => onDeliverySpeedChange('economic')}
+                  disabled={currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null}
+                  style={{ padding: '8px 6px', borderRadius: 10, border: `2px solid ${deliverySpeed === 'economic' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliverySpeed === 'economic' ? 'rgba(155,95,192,0.08)' : 'white', cursor: (currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? 'not-allowed' : 'pointer', textAlign: 'center', opacity: (currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? 0.4 : 1 }}>
+                  <div style={{ fontSize: 14, marginBottom: 1 }}>🌿</div>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: deliverySpeed === 'economic' ? '#9B5FC0' : '#5A4A6A' }}>Éco</p>
+                  <p style={{ fontSize: 9, color: '#AAA' }}>{(currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? 'N/A' : '2 jours'}</p>
+                </button>
+              </div>
+
+              {/* Destination */}
+              <p style={{ fontSize: 10, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Destination</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 10 }}>
                 <button type="button" onClick={() => onDeliveryTypeChange('home')}
                   style={{ padding: '8px 6px', borderRadius: 10, border: `2px solid ${deliveryType === 'home' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliveryType === 'home' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center' }}>
-                  <div style={{ fontSize: 16, marginBottom: 2 }}>🏠</div>
+                  <div style={{ fontSize: 14, marginBottom: 1 }}>🏠</div>
                   <p style={{ fontSize: 11, fontWeight: 700, color: deliveryType === 'home' ? '#9B5FC0' : '#5A4A6A', marginBottom: 1 }}>Domicile</p>
-                  <p style={{ fontSize: 11, fontWeight: 800, color: '#2D2340' }}>
-                    {currentCommuneFees?.express_home != null ? `${currentCommuneFees.express_home.toLocaleString('fr-DZ')} DA` : '—'}
+                  <p style={{ fontSize: 10, fontWeight: 800, color: '#2D2340' }}>
+                    {deliverySpeed === 'express'
+                      ? (currentCommuneFees?.express_home != null ? `${currentCommuneFees.express_home.toLocaleString('fr-DZ')} DA` : '—')
+                      : (currentCommuneFees?.economic_home != null ? `${currentCommuneFees.economic_home.toLocaleString('fr-DZ')} DA` : '—')}
                   </p>
                 </button>
                 <button type="button" onClick={() => onDeliveryTypeChange('desk')}
                   style={{ padding: '8px 6px', borderRadius: 10, border: `2px solid ${deliveryType === 'desk' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliveryType === 'desk' ? 'rgba(155,95,192,0.08)' : 'white', cursor: 'pointer', textAlign: 'center' }}>
-                  <div style={{ fontSize: 16, marginBottom: 2 }}>🏢</div>
+                  <div style={{ fontSize: 14, marginBottom: 1 }}>🏢</div>
                   <p style={{ fontSize: 11, fontWeight: 700, color: deliveryType === 'desk' ? '#9B5FC0' : '#5A4A6A', marginBottom: 1 }}>Bureau</p>
-                  <p style={{ fontSize: 11, fontWeight: 800, color: '#2D2340' }}>
-                    {currentCommuneFees?.express_desk != null ? `${currentCommuneFees.express_desk.toLocaleString('fr-DZ')} DA` : '—'}
+                  <p style={{ fontSize: 10, fontWeight: 800, color: '#2D2340' }}>
+                    {deliverySpeed === 'express'
+                      ? (currentCommuneFees?.express_desk != null ? `${currentCommuneFees.express_desk.toLocaleString('fr-DZ')} DA` : '—')
+                      : (currentCommuneFees?.economic_desk != null ? `${currentCommuneFees.economic_desk.toLocaleString('fr-DZ')} DA` : '—')}
                   </p>
                 </button>
               </div>
+
               {deliveryFee != null ? (
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed rgba(155,95,192,0.2)', paddingTop: 8 }}>
                   <span style={{ fontSize: 12, fontWeight: 700, color: '#2D2340' }}>Total à payer</span>
                   <span style={{ fontSize: 13, fontWeight: 900, color: '#2D2340' }}>{(totalWithDelivery ?? productTotal).toLocaleString('fr-DZ')} DA</span>
                 </div>
               ) : (
-                <p style={{ fontSize: 11, color: '#C4607A' }}>⚠️ Non disponible dans cette commune</p>
+                <p style={{ fontSize: 11, color: '#C4607A' }}>⚠️ Option non disponible ici</p>
               )}
             </div>
           )}

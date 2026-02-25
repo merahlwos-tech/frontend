@@ -12,7 +12,7 @@ function CartPage() {
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
 
-  const handleOrder = async (customerInfo, deliveryFee, deliveryType) => {
+  const handleOrder = async (customerInfo, deliveryFee, deliveryType, deliverySpeed) => {
     if (items.length === 0) { toast.error('Votre panier est vide'); return }
     setSubmitting(true)
     const finalTotal = total + (deliveryFee || 0)
@@ -28,6 +28,7 @@ function CartPage() {
         total: finalTotal,
         deliveryFee: deliveryFee || 0,
         deliveryType: deliveryType || 'home',
+        deliverySpeed: deliverySpeed || 'express',
       })
       clearCart()
       const newOrderId = res.data?._id || res.data?.id
