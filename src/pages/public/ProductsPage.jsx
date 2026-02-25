@@ -141,7 +141,7 @@ function ProductsPage() {
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               style={{ borderRadius: 50, padding: '9px 14px', fontSize: 12, fontFamily: 'Nunito, sans-serif', background: 'white', border: '1.5px solid rgba(249,200,212,0.5)', color: '#5A4A6A', outline: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 10px rgba(155,95,192,0.07)' }}>
-              {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              {SORT_OPTIONS_T.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           </div>
 
