@@ -259,7 +259,7 @@ function DirectBuySheet({ product, quantity, onClose, onSuccess }) {
                   style={{ padding: '8px 6px', borderRadius: 10, border: `2px solid ${deliverySpeed === 'economic' ? '#9B5FC0' : 'rgba(155,95,192,0.2)'}`, background: deliverySpeed === 'economic' ? 'rgba(155,95,192,0.08)' : 'white', cursor: (currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? 'not-allowed' : 'pointer', textAlign: 'center', opacity: (currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? 0.4 : 1 }}>
                   <div style={{ fontSize: 14, marginBottom: 1 }}>🌿</div>
                   <p style={{ fontSize: 11, fontWeight: 700, color: deliverySpeed === 'economic' ? '#9B5FC0' : '#5A4A6A' }}>{t('del_eco')}</p>
-                  <p style={{ fontSize: 9, color: '#AAA' }}>{(currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? '{t('del_na').slice(0,3)}' : '{t('del_eco_time')}'}</p>
+                  <p style={{ fontSize: 9, color: '#AAA' }}>{(currentCommuneFees?.economic_home == null && currentCommuneFees?.economic_desk == null) ? t('del_na') : t('del_eco_time')}</p>
                 </button>
               </div>
 
