@@ -8,7 +8,7 @@ export function LanguageProvider({ children }) {
 
   useEffect(() => {
     localStorage.setItem('lang', lang)
-    document.documentElement.dir  = lang === 'ar' ? 'rtl' : 'ltr'
+    // direction fixée en LTR
     document.documentElement.lang = lang
   }, [lang])
 
