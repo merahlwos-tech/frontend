@@ -52,6 +52,30 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+  const [translating, setTranslating] = useState(false)
+  const [translateLang, setTranslateLang] = useState('ar')
+
+  const handleTranslate = async () => {
+    if (!form.description.trim()) return
+    setTranslating(true)
+    try {
+      const langMap = { ar: 'ar', fr: 'fr', en: 'en' }
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(form.description)}&langpair=auto|${langMap[translateLang]}&de=yayamehdi715@gmail.com`
+      const res = await fetch(url)
+      const data = await res.json()
+      const translated = data.responseData?.translatedText
+      if (translated) {
+        setForm(f => ({ ...f, description: translated }))
+        toast.success('Description traduite !')
+      } else {
+        toast.error('Erreur de traduction')
+      }
+    } catch (e) {
+      toast.error('Erreur de traduction')
+    } finally {
+      setTranslating(false)
+    }
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -157,6 +181,19 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
             placeholder="Décrivez le produit..." style={{ ...inputStyle(false), resize: 'none' }}
             onFocus={e => e.target.style.borderColor = '#9B5FC0'}
             onBlur={e => e.target.style.borderColor = 'rgba(249,200,212,0.5)'} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+            <select value={translateLang} onChange={e => setTranslateLang(e.target.value)}
+              style={{ padding: '5px 10px', borderRadius: 10, border: '1.5px solid rgba(249,200,212,0.5)', background: '#FDF8FC', color: '#2D2340', fontFamily: 'Nunito, sans-serif', fontSize: 12, cursor: 'pointer', outline: 'none' }}>
+              <option value="ar">→ Arabe</option>
+              <option value="fr">→ Français</option>
+              <option value="en">→ Anglais</option>
+            </select>
+            <button type="button" onClick={handleTranslate} disabled={translating || !form.description.trim()}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 14px', borderRadius: 10, border: 'none', background: translating || !form.description.trim() ? 'rgba(155,95,192,0.2)' : '#9B5FC0', color: translating || !form.description.trim() ? '#9B5FC0' : 'white', fontFamily: 'Nunito, sans-serif', fontSize: 12, fontWeight: 700, cursor: translating || !form.description.trim() ? 'not-allowed' : 'pointer', transition: 'all .2s' }}>
+              {translating ? <Loader2 size={12} className="animate-spin" /> : '✨'}
+              {translating ? 'Traduction...' : 'Traduire'}
+            </button>
+          </div>
         </Field>
       </div>
 
