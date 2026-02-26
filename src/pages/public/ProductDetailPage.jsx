@@ -472,12 +472,12 @@ function ProductDetailPage() {
               </button>
             </div>
 
-            {(product.description?.fr || product.description) && (
+            {(product.description?.en || product.description) && (
               <>
                 <div style={{ height: 1, background: 'rgba(249,200,212,0.4)' }} />
                 <div>
                   <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>{t('description')}</p>
-                  <p style={{ fontSize: 13, color: '#7B6B8A', lineHeight: 1.75 }}>{typeof product.description === 'object' ? (product.description[lang] || product.description.fr) : product.description}</p>
+                  <p style={{ fontSize: 13, color: '#7B6B8A', lineHeight: 1.75 }}>{typeof product.description === 'object' ? (product.description[lang] || product.description.en) : product.description}</p>
                 </div>
               </>
             )}

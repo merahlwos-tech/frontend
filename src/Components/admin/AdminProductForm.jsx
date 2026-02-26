@@ -49,7 +49,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     tags: initialData.tags || [],
     description: typeof initialData.description === 'object'
       ? initialData.description
-      : { fr: initialData.description || '', ar: '', en: '' },
+      : { en: initialData.description || '', fr: '', ar: '' },
   } : EMPTY)
   const [errors, setErrors] = useState({})
   const [uploading, setUploading] = useState(false)
@@ -58,18 +58,18 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
   const [translating, setTranslating] = useState(false)
 
   const handleTranslate = async () => {
-    if (!form.description.fr.trim()) return
+    if (!form.description.en.trim()) return
     setTranslating(true)
     try {
       const translate = async (targetLang) => {
-        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(form.description.fr)}&langpair=fr|${targetLang}&de=yayamehdi715@gmail.com`
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(form.description.en)}&langpair=en|${targetLang}&de=yayamehdi715@gmail.com`
         const res = await fetch(url)
         const data = await res.json()
         return data.responseData?.translatedText || ''
       }
-      const [ar, en] = await Promise.all([translate('ar'), translate('en')])
-      setForm(f => ({ ...f, description: { ...f.description, ar, en } }))
-      toast.success('Traduit en arabe et anglais !')
+      const [fr, ar] = await Promise.all([translate('fr'), translate('ar')])
+      setForm(f => ({ ...f, description: { ...f.description, fr, ar } }))
+      toast.success('Traduit en français et arabe !')
     } catch (e) {
       toast.error('Erreur de traduction')
     } finally {
@@ -178,7 +178,7 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
         </div>
         <Field label="Description">
           <div style={{ display: 'flex', flex: 1, flexDirection: 'column', gap: 8 }}>
-            {[{ lang: 'fr', label: '🇫🇷 Français', placeholder: 'Décrivez le produit...' }, { lang: 'ar', label: '🇩🇿 Arabe', placeholder: 'وصف المنتج...' }, { lang: 'en', label: '🇬🇧 Anglais', placeholder: 'Describe the product...' }].map(({ lang, label, placeholder }) => (
+            {[{ lang: 'en', label: '🇬🇧 Anglais', placeholder: 'Describe the product...' }, { lang: 'fr', label: '🇫🇷 Français', placeholder: 'Décrivez le produit...' }, { lang: 'ar', label: '🇩🇿 Arabe', placeholder: 'وصف المنتج...' }].map(({ lang, label, placeholder }) => (
               <div key={lang}>
                 <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</p>
                 <textarea
@@ -190,10 +190,10 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
                   onBlur={e => e.target.style.borderColor = 'rgba(249,200,212,0.5)'} />
               </div>
             ))}
-            <button type="button" onClick={handleTranslate} disabled={translating || !form.description.fr.trim()}
-              style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 16px', borderRadius: 10, border: 'none', background: translating || !form.description.fr.trim() ? 'rgba(155,95,192,0.2)' : '#9B5FC0', color: translating || !form.description.fr.trim() ? '#9B5FC0' : 'white', fontFamily: 'Nunito, sans-serif', fontSize: 12, fontWeight: 700, cursor: translating || !form.description.fr.trim() ? 'not-allowed' : 'pointer', transition: 'all .2s' }}>
+            <button type="button" onClick={handleTranslate} disabled={translating || !form.description.en.trim()}
+              style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 16px', borderRadius: 10, border: 'none', background: translating || !form.description.en.trim() ? 'rgba(155,95,192,0.2)' : '#9B5FC0', color: translating || !form.description.en.trim() ? '#9B5FC0' : 'white', fontFamily: 'Nunito, sans-serif', fontSize: 12, fontWeight: 700, cursor: translating || !form.description.en.trim() ? 'not-allowed' : 'pointer', transition: 'all .2s' }}>
               {translating ? <Loader2 size={12} className="animate-spin" /> : '✨'}
-              {translating ? 'Traduction en cours...' : 'Traduire FR → AR + EN'}
+              {translating ? 'Traduction en cours...' : 'Traduire EN → FR + AR'}
             </button>
           </div>
         </Field>
