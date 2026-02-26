@@ -88,10 +88,37 @@ function AdminProductsPage() {
     a.click(); URL.revokeObjectURL(url)
   }
 
+  const outOfStockProducts = products.filter(p => {
+    const stock = p.sizes?.length > 0
+      ? p.sizes.reduce((s, x) => s + x.stock, 0)
+      : (p.stock ?? 0)
+    return stock === 0
+  })
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
-      {/* Header */}
+      {/* Notification épuisés */}
+      {!loading && outOfStockProducts.length > 0 && (
+        <div style={{ background: 'rgba(232,160,160,0.15)', border: '1.5px solid rgba(232,160,160,0.4)', borderRadius: 16, padding: '12px 16px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+          <span style={{ fontSize: 18 }}>⚠️</span>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: '13px', fontWeight: 800, color: '#C44A4A', marginBottom: 4 }}>
+              {outOfStockProducts.length} produit{outOfStockProducts.length > 1 ? 's' : ''} épuisé{outOfStockProducts.length > 1 ? 's' : ''} — masqué{outOfStockProducts.length > 1 ? 's' : ''} du site
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {outOfStockProducts.map(p => (
+                <span key={p._id}
+                  onClick={() => openEdit(p)}
+                  style={{ fontSize: '11px', fontWeight: 700, background: 'rgba(232,160,160,0.2)', color: '#C44A4A', padding: '3px 10px', borderRadius: 50, cursor: 'pointer', border: '1px solid rgba(232,160,160,0.3)' }}>
+                  {p.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <p style={{ fontSize: '11px', fontWeight: 700, color: '#9B5FC0', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 4 }}>Catalogue</p>

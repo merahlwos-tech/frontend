@@ -42,11 +42,14 @@ function ProductsPage() {
 
   const filtered = useMemo(() => {
     let list = products.filter((p) => {
+      const stockVal = p.sizes?.length > 0
+        ? p.sizes.reduce((s, x) => s + x.stock, 0)
+        : (p.stock ?? 0)
       const matchCat    = activeCategory === 'Tous' || p.category === activeCategory
       const matchSearch = !search ||
         p.name?.toLowerCase().includes(search.toLowerCase()) ||
         p.brand?.toLowerCase().includes(search.toLowerCase())
-      return matchCat && matchSearch
+      return stockVal > 0 && matchCat && matchSearch
     })
     if (sortBy === 'price_asc')  list = [...list].sort((a, b) => (a.price ?? 0) - (b.price ?? 0))
     if (sortBy === 'price_desc') list = [...list].sort((a, b) => (b.price ?? 0) - (a.price ?? 0))
