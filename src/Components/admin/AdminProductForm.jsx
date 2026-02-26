@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 
 const CATEGORIES = ['Skincare', 'Makeup', 'Body Care', 'Hair Care']
 
-const EMPTY = { name: '', brand: '', category: 'Skincare', price: '', stock: '', description: '', images: [], tags: [] }
+const EMPTY = { name: '', brand: '', category: 'Skincare', price: '', stock: '', description: { fr: '', ar: '', en: '' }, images: [], tags: [] }
 
 const inputStyle = (err) => ({
   width: '100%', padding: '10px 14px', borderRadius: 14, outline: 'none',
@@ -47,29 +47,29 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
     stock: initialData.stock?.toString() ?? '',
     images: initialData.images || [],
     tags: initialData.tags || [],
+    description: typeof initialData.description === 'object'
+      ? initialData.description
+      : { fr: initialData.description || '', ar: '', en: '' },
   } : EMPTY)
   const [errors, setErrors] = useState({})
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [translating, setTranslating] = useState(false)
-  const [translateLang, setTranslateLang] = useState('ar')
 
   const handleTranslate = async () => {
-    if (!form.description.trim()) return
+    if (!form.description.fr.trim()) return
     setTranslating(true)
     try {
-      const langMap = { ar: 'ar', fr: 'fr', en: 'en' }
-      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(form.description)}&langpair=auto|${langMap[translateLang]}&de=yayamehdi715@gmail.com`
-      const res = await fetch(url)
-      const data = await res.json()
-      const translated = data.responseData?.translatedText
-      if (translated) {
-        setForm(f => ({ ...f, description: translated }))
-        toast.success('Description traduite !')
-      } else {
-        toast.error('Erreur de traduction')
+      const translate = async (targetLang) => {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(form.description.fr)}&langpair=fr|${targetLang}&de=yayamehdi715@gmail.com`
+        const res = await fetch(url)
+        const data = await res.json()
+        return data.responseData?.translatedText || ''
       }
+      const [ar, en] = await Promise.all([translate('ar'), translate('en')])
+      setForm(f => ({ ...f, description: { ...f.description, ar, en } }))
+      toast.success('Traduit en arabe et anglais !')
     } catch (e) {
       toast.error('Erreur de traduction')
     } finally {
@@ -177,21 +177,23 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           </Field>
         </div>
         <Field label="Description">
-          <textarea name="description" value={form.description} onChange={handleChange} rows={3}
-            placeholder="Décrivez le produit..." style={{ ...inputStyle(false), resize: 'none' }}
-            onFocus={e => e.target.style.borderColor = '#9B5FC0'}
-            onBlur={e => e.target.style.borderColor = 'rgba(249,200,212,0.5)'} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
-            <select value={translateLang} onChange={e => setTranslateLang(e.target.value)}
-              style={{ padding: '5px 10px', borderRadius: 10, border: '1.5px solid rgba(249,200,212,0.5)', background: '#FDF8FC', color: '#2D2340', fontFamily: 'Nunito, sans-serif', fontSize: 12, cursor: 'pointer', outline: 'none' }}>
-              <option value="ar">→ Arabe</option>
-              <option value="fr">→ Français</option>
-              <option value="en">→ Anglais</option>
-            </select>
-            <button type="button" onClick={handleTranslate} disabled={translating || !form.description.trim()}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 14px', borderRadius: 10, border: 'none', background: translating || !form.description.trim() ? 'rgba(155,95,192,0.2)' : '#9B5FC0', color: translating || !form.description.trim() ? '#9B5FC0' : 'white', fontFamily: 'Nunito, sans-serif', fontSize: 12, fontWeight: 700, cursor: translating || !form.description.trim() ? 'not-allowed' : 'pointer', transition: 'all .2s' }}>
+          <div style={{ display: 'flex', flex: 1, flexDirection: 'column', gap: 8 }}>
+            {[{ lang: 'fr', label: '🇫🇷 Français', placeholder: 'Décrivez le produit...' }, { lang: 'ar', label: '🇩🇿 Arabe', placeholder: 'وصف المنتج...' }, { lang: 'en', label: '🇬🇧 Anglais', placeholder: 'Describe the product...' }].map(({ lang, label, placeholder }) => (
+              <div key={lang}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#8B7A9B', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</p>
+                <textarea
+                  value={form.description[lang] || ''}
+                  onChange={e => setForm(f => ({ ...f, description: { ...f.description, [lang]: e.target.value } }))}
+                  rows={3} placeholder={placeholder}
+                  style={{ ...inputStyle(false), resize: 'none', direction: lang === 'ar' ? 'rtl' : 'ltr' }}
+                  onFocus={e => e.target.style.borderColor = '#9B5FC0'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(249,200,212,0.5)'} />
+              </div>
+            ))}
+            <button type="button" onClick={handleTranslate} disabled={translating || !form.description.fr.trim()}
+              style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 16px', borderRadius: 10, border: 'none', background: translating || !form.description.fr.trim() ? 'rgba(155,95,192,0.2)' : '#9B5FC0', color: translating || !form.description.fr.trim() ? '#9B5FC0' : 'white', fontFamily: 'Nunito, sans-serif', fontSize: 12, fontWeight: 700, cursor: translating || !form.description.fr.trim() ? 'not-allowed' : 'pointer', transition: 'all .2s' }}>
               {translating ? <Loader2 size={12} className="animate-spin" /> : '✨'}
-              {translating ? 'Traduction...' : 'Traduire'}
+              {translating ? 'Traduction en cours...' : 'Traduire FR → AR + EN'}
             </button>
           </div>
         </Field>
