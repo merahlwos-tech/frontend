@@ -84,11 +84,18 @@ function HomePage() {
     api.get('/products')
       .then((res) => {
         const all = res.data || []
+        // Filtrer les produits épuisés
+        const inStock = all.filter(p => {
+          const stock = p.sizes?.length > 0
+            ? p.sizes.reduce((s, x) => s + x.stock, 0)
+            : (p.stock ?? 0)
+          return stock > 0
+        })
         // Trending = triés par purchaseCount desc (vrais achats)
-        const sortedByPurchase = [...all].sort((a, b) => (b.purchaseCount ?? 0) - (a.purchaseCount ?? 0))
+        const sortedByPurchase = [...inStock].sort((a, b) => (b.purchaseCount ?? 0) - (a.purchaseCount ?? 0))
         setTrending(sortedByPurchase.slice(0, 10))
         // New arrivals = triés par date de création desc
-        const sortedByDate = [...all].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        const sortedByDate = [...inStock].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         setArrivals(sortedByDate.slice(0, 10))
       })
       .catch(() => {})
@@ -120,7 +127,7 @@ function HomePage() {
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(110deg, rgba(10,10,30,0.7) 0%, rgba(10,10,30,0.3) 60%, transparent 100%)' }} />
           {/* Texte */}
           <div style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', maxWidth: '60%' }}>
-            <p style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>{t('hero_tag')}</p>
+            <p style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>{t('hero_subtitle')}</p>
             <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '2rem', fontWeight: 700, color: 'white', lineHeight: 1.05, marginBottom: 8 }}>{t('hero_title')}</p>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.55, marginBottom: 14 }}>{t('hero_desc')}</p>
             <Link to="/products"
@@ -133,7 +140,7 @@ function HomePage() {
 
       {/* CATÉGORIES */}
       <section style={{ paddingBottom: 20 }}>
-        <SectionHeader title={t("section_cats")} to="/products" />
+        <SectionHeader title={t("section_categories")} to="/products" />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, padding: '0 16px' }}>
           {CATEGORIES.map(({ label, img, bg, border }) => (
             <Link key={label} to={`/products?category=${label}`}
@@ -149,7 +156,7 @@ function HomePage() {
 
       {/* TRENDING NOW — basé sur les vrais achats */}
       <section style={{ paddingBottom: 20 }}>
-        <SectionHeader title={t("section_trending")} to="/products" badge={t("badge_trending")} />
+        <SectionHeader title={t("section_trending")} to="/products" badge={t("section_trending_badge")} />
         {loading ? <Skeleton /> : trending.length > 0 ? (
           <div style={{ display: 'flex', gap: 10, padding: '0 20px', overflowX: 'auto', paddingBottom: 4 }}>
             {trending.map(p => <MiniProductCard key={p._id} product={p} />)}
@@ -174,7 +181,7 @@ function HomePage() {
         <div style={{ borderRadius: 24, padding: '32px 24px', textAlign: 'center', background: '#1A1A2E', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 12, left: 16, fontSize: 10, color: 'rgba(255,255,255,0.15)' }}>✦</div>
           <div style={{ position: 'absolute', bottom: 12, right: 20, fontSize: 8, color: 'rgba(255,255,255,0.10)' }}>✦</div>
-          <p style={{ fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 10 }}>{t('banner_tag')}</p>
+          <p style={{ fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 10 }}>{t('banner_label')}</p>
           <p style={{ fontFamily: 'Dancing Script, cursive', fontSize: '1.6rem', fontWeight: 700, color: 'white', lineHeight: 1.1, marginBottom: 10 }}>{t('banner_title')}</p>
           <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: 20 }}>{t('banner_desc')}</p>
           <Link to="/about"
