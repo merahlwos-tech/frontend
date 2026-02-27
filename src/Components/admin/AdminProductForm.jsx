@@ -56,6 +56,12 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
   const [saving, setSaving] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [translating, setTranslating] = useState(false)
+  const [sessionImages, setSessionImages] = useState([])
+
+  const deleteFromR2 = async (urls) => {
+    if (!urls?.length) return
+    try { await api.delete('/upload', { data: { urls } }) } catch {}
+  }
 
   const handleTranslate = async () => {
     if (!form.description.en.trim()) return
@@ -91,13 +97,22 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
       Array.from(files).forEach(f => formData.append('images', f))
       const res = await api.post('/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
       const urls = res.data.urls || res.data
-      setForm(p => ({ ...p, images: [...p.images, ...(Array.isArray(urls) ? urls : [urls])] }))
+      const newUrls = Array.isArray(urls) ? urls : [urls]
+      setForm(p => ({ ...p, images: [...p.images, ...newUrls] }))
+      setSessionImages(p => [...p, ...newUrls])
       toast.success('Image(s) uploadée(s) ✨')
     } catch { toast.error("Erreur upload") }
     finally { setUploading(false) }
   }
 
-  const removeImage = (url) => setForm(p => ({ ...p, images: p.images.filter(i => i !== url) }))
+  const removeImage = (url) => {
+    setForm(p => ({ ...p, images: p.images.filter(i => i !== url) }))
+    // Supprimer de R2 si c'est une image uploadée dans cette session
+    if (sessionImages.includes(url)) {
+      deleteFromR2([url])
+      setSessionImages(p => p.filter(u => u !== url))
+    }
+  }
 
   const validate = () => {
     const e = {}
@@ -252,7 +267,12 @@ function AdminProductForm({ initialData, onSuccess, onCancel }) {
           {isEditing ? 'Mettre à jour ✨' : 'Créer le produit 🌸'}
         </button>
         {onCancel && (
-          <button type="button" onClick={onCancel}
+          <button type="button" onClick={async () => {
+            // Supprimer les images uploadées dans cette session si on annule sans sauvegarder
+            const toDelete = sessionImages.filter(url => !initialData?.images?.includes(url))
+            await deleteFromR2(toDelete)
+            onCancel()
+          }}
             className="px-6 py-3 rounded-full font-body font-bold text-sm"
             style={{ background: 'rgba(249,200,212,0.3)', color: '#7B6B8A' }}>
             Annuler
