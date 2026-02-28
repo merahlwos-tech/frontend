@@ -183,13 +183,6 @@ function SearchBox({ placeholder, onNavigate }) {
                 }}
                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(155,95,192,0.05)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'none'}>
-                {/* Miniature */}
-                <div style={{ width: 36, height: 36, borderRadius: 10, overflow: 'hidden', background: '#F8F3FC', flexShrink: 0 }}>
-                  {p.images?.[0]
-                    ? <img src={p.images[0]} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🌸</div>
-                  }
-                </div>
                 {/* Infos */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: 12, fontWeight: 700, color: '#2D2340', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</p>
