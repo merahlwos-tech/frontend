@@ -4,6 +4,7 @@ import { CartProvider } from './context/CartContext'
 import { LanguageProvider } from './context/LanguageContext'
 import { AuthProvider } from './context/AuthContext'
 import { WishlistProvider } from './context/WishlistContext'
+import { useState, useEffect, useCallback } from 'react'
 import Navbar from './Components/ui/Navbar'
 import Footer from './Components/ui/Footer'
 import PrivateRoute from './Components/ui/PrivateRoute'
@@ -21,6 +22,8 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import AdminProductsPage from './pages/admin/AdminProductsPage'
 import AdminOrdersPage from './pages/admin/AdminOrdersPage'
 import AdminOrderDetailPage from './pages/admin/AdminOrderDetailPage'
+import MaintenancePage from './pages/public/MaintenancePage'
+import api from './utils/api'
 
 function PublicLayout({ children }) {
   return (
@@ -32,7 +35,55 @@ function PublicLayout({ children }) {
   )
 }
 
+// Intercepteur global pour détecter les surcharges (503, 429, timeout)
+function useBackendStatus() {
+  const [isDown, setIsDown] = useState(false)
+
+  const check = useCallback(async () => {
+    try {
+      await api.get('/', { timeout: 8000 })
+      setIsDown(false)
+    } catch (err) {
+      const status = err?.response?.status
+      // 503 = surcharge, 429 = trop de requêtes, pas de réponse = timeout
+      if (status === 503 || status === 429 || !err.response) {
+        setIsDown(true)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    // Intercepter toutes les erreurs axios
+    const interceptor = api.interceptors.response.use(
+      (res) => { setIsDown(false); return res },
+      (err) => {
+        const status = err?.response?.status
+        if (status === 503 || status === 429 || !err.response) {
+          setIsDown(true)
+        }
+        return Promise.reject(err)
+      }
+    )
+    return () => api.interceptors.response.eject(interceptor)
+  }, [])
+
+  return { isDown, retry: check }
+}
+
 function App() {
+  const { isDown, retry } = useBackendStatus()
+
+  // Ne pas bloquer l'admin même en maintenance
+  const isAdminRoute = window.location.pathname.startsWith('/admin')
+
+  if (isDown && !isAdminRoute) {
+    return (
+      <LanguageProvider>
+        <MaintenancePage onRetry={retry} />
+      </LanguageProvider>
+    )
+  }
+
   return (
     <BrowserRouter>
       <LanguageProvider>
