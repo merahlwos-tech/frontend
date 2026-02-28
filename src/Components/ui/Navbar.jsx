@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ShoppingBag, Search, Menu, X, Heart } from 'lucide-react'
 import { useCart } from '../../context/CartContext'
 import { useWishlist } from '../../context/WishlistContext'
 import { useLang } from '../../context/LanguageContext'
+import api from '../../utils/api'
 
 const NAV_LINKS = (t) => [
   { to: '/products?category=Skincare',  label: t('cat_skincare') },
@@ -13,6 +14,27 @@ const NAV_LINKS = (t) => [
   { to: '/products',                    label: t('nav_all') },
   { to: '/about',                       label: t('nav_about') },
 ]
+
+// Recherche floue : tolère les fautes de frappe
+function fuzzyMatch(text, query) {
+  if (!query) return true
+  text = text.toLowerCase()
+  query = query.toLowerCase()
+  // Match exact
+  if (text.includes(query)) return true
+  // Match flou : chaque lettre du query doit apparaître dans l'ordre
+  let qi = 0
+  for (let i = 0; i < text.length && qi < query.length; i++) {
+    if (text[i] === query[qi]) qi++
+  }
+  if (qi === query.length) return true
+  // Tolérance 1 faute : essaie sans chaque caractère du query
+  for (let skip = 0; skip < query.length; skip++) {
+    const shortened = query.slice(0, skip) + query.slice(skip + 1)
+    if (text.includes(shortened)) return true
+  }
+  return false
+}
 
 function LangSwitcher() {
   const { lang, setLang } = useLang()
@@ -37,18 +59,168 @@ function LangSwitcher() {
   )
 }
 
+function SearchBox({ placeholder, onNavigate }) {
+  const [val, setVal] = useState('')
+  const [debouncedVal, setDebouncedVal] = useState('')
+  const [suggestions, setSuggestions] = useState([])
+  const [allProducts, setAllProducts] = useState([])
+  const [open, setOpen] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const inputRef = useRef(null)
+  const boxRef = useRef(null)
+  const navigate = useNavigate()
+
+  // Charger tous les produits une seule fois
+  useEffect(() => {
+    api.get('/products').then(res => setAllProducts(res.data || [])).catch(() => {})
+  }, [])
+
+  // Debounce 250ms
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedVal(val), 250)
+    return () => clearTimeout(timer)
+  }, [val])
+
+  // Calculer suggestions avec recherche floue
+  useEffect(() => {
+    if (!debouncedVal.trim() || debouncedVal.length < 2) {
+      setSuggestions([])
+      setOpen(false)
+      return
+    }
+    const inStock = allProducts.filter(p => {
+      const stock = p.sizes?.length > 0
+        ? p.sizes.reduce((s, x) => s + x.stock, 0)
+        : (p.stock ?? 0)
+      return stock > 0
+    })
+    const matches = inStock.filter(p =>
+      fuzzyMatch(p.name || '', debouncedVal) ||
+      fuzzyMatch(p.brand || '', debouncedVal) ||
+      fuzzyMatch(p.category || '', debouncedVal) ||
+      (p.tags || []).some(tag => fuzzyMatch(tag, debouncedVal))
+    ).slice(0, 6)
+    setSuggestions(matches)
+    setOpen(matches.length > 0)
+  }, [debouncedVal, allProducts])
+
+  // Fermer si clic en dehors
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (boxRef.current && !boxRef.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (val.trim()) {
+      navigate(`/products?search=${encodeURIComponent(val.trim())}`)
+      setVal('')
+      setSuggestions([])
+      setOpen(false)
+      onNavigate?.()
+    }
+  }
+
+  const handleSelect = (product) => {
+    navigate(`/products/${product._id}`)
+    setVal('')
+    setSuggestions([])
+    setOpen(false)
+    onNavigate?.()
+  }
+
+  return (
+    <div ref={boxRef} style={{ position: 'relative', flex: 1, maxWidth: 280 }}>
+      <form onSubmit={handleSubmit}>
+        <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: focused ? '#9B5FC0' : '#C4B0D8', transition: 'color .2s', zIndex: 1 }} />
+        <input
+          ref={inputRef}
+          value={val}
+          onChange={e => setVal(e.target.value)}
+          onFocus={() => { setFocused(true); if (suggestions.length) setOpen(true) }}
+          onBlur={() => setFocused(false)}
+          placeholder={placeholder}
+          style={{
+            width: '100%', borderRadius: 50, padding: '9px 36px 9px 34px', fontSize: 13,
+            fontFamily: 'Nunito, sans-serif', outline: 'none', color: '#2D2340',
+            background: 'rgba(255,255,255,0.95)',
+            border: `1.5px solid ${focused ? '#9B5FC0' : 'rgba(249,200,212,0.5)'}`,
+            boxShadow: focused ? '0 0 0 3px rgba(155,95,192,0.1)' : 'none',
+            transition: 'all .2s',
+          }}
+        />
+        {val && (
+          <button type="button" onClick={() => { setVal(''); setSuggestions([]); setOpen(false) }}
+            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#C4B0D8', display: 'flex', padding: 2 }}>
+            <X size={13} />
+          </button>
+        )}
+      </form>
+
+      {/* Dropdown suggestions */}
+      {open && suggestions.length > 0 && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 8px)', left: 0, right: 0,
+          background: 'white', borderRadius: 16, overflow: 'hidden',
+          boxShadow: '0 8px 32px rgba(155,95,192,0.18)',
+          border: '1.5px solid rgba(249,200,212,0.4)',
+          zIndex: 100,
+        }}>
+          {suggestions.map((p, i) => {
+            const stock = p.sizes?.length > 0
+              ? p.sizes.reduce((s, x) => s + x.stock, 0)
+              : (p.stock ?? 0)
+            return (
+              <button key={p._id} onMouseDown={() => handleSelect(p)}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer',
+                  borderBottom: i < suggestions.length - 1 ? '1px solid rgba(249,200,212,0.2)' : 'none',
+                  textAlign: 'left', transition: 'background .15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(155,95,192,0.05)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'none'}>
+                {/* Miniature */}
+                <div style={{ width: 36, height: 36, borderRadius: 10, overflow: 'hidden', background: '#F8F3FC', flexShrink: 0 }}>
+                  {p.images?.[0]
+                    ? <img src={p.images[0]} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🌸</div>
+                  }
+                </div>
+                {/* Infos */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: '#2D2340', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</p>
+                  <p style={{ fontSize: 10, color: '#C4B0D8', fontWeight: 600 }}>{p.brand} · {p.category}</p>
+                </div>
+                {/* Prix */}
+                <span style={{ fontSize: 12, fontWeight: 800, color: '#9B5FC0', flexShrink: 0 }}>
+                  {(p.price ?? 0).toLocaleString('fr-DZ')} DA
+                </span>
+              </button>
+            )
+          })}
+          {/* Voir tous les résultats */}
+          {val.trim().length >= 2 && (
+            <button onMouseDown={handleSubmit}
+              style={{ width: '100%', padding: '9px 12px', background: 'rgba(155,95,192,0.05)', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700, color: '#9B5FC0', fontFamily: 'Nunito, sans-serif' }}>
+              Voir tous les résultats pour "{val}" →
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Navbar() {
   const { itemCount } = useCart()
   const { count: wishCount } = useWishlist()
   const { t } = useLang()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [searchVal, setSearchVal] = useState('')
   const navigate = useNavigate()
-
-  const handleSearch = (e) => {
-    e.preventDefault()
-    if (searchVal.trim()) { navigate(`/products?search=${searchVal}`); setSearchVal('') }
-  }
 
   const links = NAV_LINKS(t)
 
@@ -83,12 +255,7 @@ function Navbar() {
             </div>
           </div>
           <div className="pb-2.5">
-            <form onSubmit={handleSearch} className="relative">
-              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input value={searchVal} onChange={e => setSearchVal(e.target.value)} placeholder={t('nav_search')}
-                className="w-full rounded-2xl pl-10 pr-4 py-2.5 text-sm font-body text-tb-text outline-none"
-                style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(249,200,212,0.4)', fontSize: 13 }} />
-            </form>
+            <SearchBox placeholder={t('nav_search')} onNavigate={() => setMenuOpen(false)} />
           </div>
         </div>
 
@@ -110,12 +277,7 @@ function Navbar() {
                 </Link>
               ))}
             </div>
-            <form onSubmit={handleSearch} className="relative flex-1" style={{ maxWidth: 260 }}>
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input value={searchVal} onChange={e => setSearchVal(e.target.value)} placeholder={t('nav_search')}
-                className="w-full rounded-2xl pl-8 pr-4 py-2 text-sm font-body outline-none"
-                style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(249,200,212,0.4)', fontSize: 13, color: '#2D2340' }} />
-            </form>
+            <SearchBox placeholder={t('nav_search')} />
             <div className="flex items-center gap-3 flex-shrink-0">
               <LangSwitcher />
               <Link to="/wishlist" className="flex items-center gap-1.5" style={{ fontSize: 13, fontWeight: 600, color: '#5A4A6A', textDecoration: 'none' }}>
@@ -132,8 +294,6 @@ function Navbar() {
           </div>
         </div>
       </nav>
-
-
 
       {/* Menu slide mobile */}
       {menuOpen && (

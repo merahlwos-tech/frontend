@@ -15,6 +15,24 @@ const CATEGORIES = [
 ]
 
 
+// Recherche floue identique à la Navbar
+function fuzzyMatch(text, query) {
+  if (!query) return true
+  text = text.toLowerCase()
+  query = query.toLowerCase()
+  if (text.includes(query)) return true
+  let qi = 0
+  for (let i = 0; i < text.length && qi < query.length; i++) {
+    if (text[i] === query[qi]) qi++
+  }
+  if (qi === query.length) return true
+  for (let skip = 0; skip < query.length; skip++) {
+    const shortened = query.slice(0, skip) + query.slice(skip + 1)
+    if (text.includes(shortened)) return true
+  }
+  return false
+}
+
 function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts]         = useState([])
@@ -47,8 +65,10 @@ function ProductsPage() {
         : (p.stock ?? 0)
       const matchCat    = activeCategory === 'Tous' || p.category === activeCategory
       const matchSearch = !search ||
-        p.name?.toLowerCase().includes(search.toLowerCase()) ||
-        p.brand?.toLowerCase().includes(search.toLowerCase())
+        fuzzyMatch(p.name || '', search) ||
+        fuzzyMatch(p.brand || '', search) ||
+        fuzzyMatch(p.category || '', search) ||
+        (p.tags || []).some(tag => fuzzyMatch(tag, search))
       return stockVal > 0 && matchCat && matchSearch
     })
     if (sortBy === 'price_asc')  list = [...list].sort((a, b) => (a.price ?? 0) - (b.price ?? 0))
