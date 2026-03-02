@@ -140,13 +140,7 @@ function Footer() {
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>
             <AdminSecretAccess /> {new Date().getFullYear()} Tinkerbells — {t('footer_rights')}
           </p>
-          <a href="https://www.instagram.com/cvkdev/"
-            target="_blank" rel="noopener noreferrer"
-            style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, transition: 'color 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
-            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}>
-            <Instagram size={10} /> Developed by CvkDev
-          </a>
+
         </div>
       </footer>
 
